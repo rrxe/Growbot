@@ -10,7 +10,7 @@
     "dev:bot": "tsx bot/index.ts",
     "check": "tsc -b",
     "build": "tsc -b && vite build",
-    "start": "node dist-server/server/index.js"
+    "vercel-build": "npm run build && esbuild api/index.ts --bundle --platform=node --format=esm --packages=external --outfile=api/index.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.0",
@@ -29,8 +29,9 @@
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.2",
     "concurrently": "^9.2.0",
+    "esbuild": "^0.25.9",
     "tsx": "^4.20.3",
     "typescript": "^5.9.2",
-    "vite": "^8.1.0"
+    "vite": "^8.2.2"
   }
 }
