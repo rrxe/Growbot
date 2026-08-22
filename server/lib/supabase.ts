@@ -1,11 +1,17 @@
-import { createClient } from '@supabase/supabase-js'
+import {
+  createClient
+} from '@supabase/supabase-js'
 
-const url = process.env.SUPABASE_URL
+const rawUrl =
+  process.env.SUPABASE_URL || ''
+
 const serviceRoleKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
-if (!url) {
-  throw new Error('SUPABASE_URL is missing')
+if (!rawUrl) {
+  throw new Error(
+    'SUPABASE_URL is missing'
+  )
 }
 
 if (!serviceRoleKey) {
@@ -14,13 +20,40 @@ if (!serviceRoleKey) {
   )
 }
 
-export const supabase = createClient(
-  url,
-  serviceRoleKey,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+let normalizedUrl: string
+
+try {
+  const parsed =
+    new URL(rawUrl.trim())
+
+  parsed.pathname =
+    ''
+
+  parsed.search =
+    ''
+
+  parsed.hash =
+    ''
+
+  normalizedUrl =
+    parsed.toString().replace(
+      /\/$/,
+      ''
+    )
+} catch {
+  throw new Error(
+    'SUPABASE_URL is invalid'
+  )
+}
+
+export const supabase =
+  createClient(
+    normalizedUrl,
+    serviceRoleKey,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     }
-  }
-)
+  )
