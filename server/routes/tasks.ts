@@ -213,9 +213,50 @@ tasksRouter.post(
           })
       }
 
+      const rawChat =
+        chat.trim()
+
+      let chatInput =
+        rawChat
+
+      if (
+        /^https?:\/\/(t\.me|telegram\.me)\//i.test(
+          rawChat
+        )
+      ) {
+        const parsed =
+          new URL(
+            rawChat
+          )
+
+        const parts =
+          parsed.pathname
+            .split('/')
+            .filter(Boolean)
+
+        if (
+          parts.length >= 1 &&
+          !parts[0].startsWith('+') &&
+          parts[0] !== 'joinchat'
+        ) {
+          chatInput =
+            `@${parts[0].replace(/^@/, '')}`
+        }
+      }
+
+      if (
+        /^@?[A-Za-z0-9_]{5,}$/.test(
+          chatInput
+        ) &&
+        !chatInput.startsWith('@')
+      ) {
+        chatInput =
+          `@${chatInput}`
+      }
+
       const chatInfo =
         await getChat(
-          chat.trim()
+          chatInput
         )
 
       if (

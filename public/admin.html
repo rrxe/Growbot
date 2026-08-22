@@ -10,7 +10,7 @@
 
   <meta
     name="theme-color"
-    content="#0F0E1B"
+    content="#0b0a12"
   >
 
   <title>GrowBot Admin</title>
@@ -19,942 +19,581 @@
 
   <style>
     :root {
-      --bg: #0b0a12;
-      --surface: #141220;
-      --surface-2: #1c192d;
-      --surface-3: #242039;
-      --line: #2c2845;
-
-      --lime: #d4ff3d;
-      --blue: #5aa7ff;
-      --coral: #ff6b4a;
-      --purple: #aa8cff;
-      --cyan: #49d8d1;
-
-      --text: #f7f5ff;
-      --muted: #8f8aa8;
-      --muted-2: #69647f;
-
-      --radius: 16px;
+      --bg:#0b0a12;
+      --surface:#141220;
+      --surface2:#1c192d;
+      --surface3:#242039;
+      --line:#2c2845;
+      --lime:#d4ff3d;
+      --blue:#5aa7ff;
+      --red:#ff6b4a;
+      --purple:#aa8cff;
+      --text:#f7f5ff;
+      --muted:#8f8aa8;
+      --muted2:#69647f;
     }
 
     * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
+      box-sizing:border-box;
     }
 
     body {
-      background: #050509;
-      color: var(--text);
-      font-family:
-        Tajawal,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+      margin:0;
+      background:#050509;
+      color:var(--text);
+      font-family:Tajawal,system-ui,sans-serif;
     }
 
     button,
     input,
-    select,
-    textarea {
-      font: inherit;
+    select {
+      font:inherit;
     }
 
     button {
-      cursor: pointer;
+      cursor:pointer;
     }
 
     button:disabled {
-      opacity: .5;
-      cursor: not-allowed;
+      opacity:.5;
+      cursor:not-allowed;
     }
 
     .app {
-      width: 100%;
-      max-width: 1180px;
-      min-height: 100vh;
-      margin: auto;
-      background: var(--bg);
+      width:100%;
+      max-width:1100px;
+      min-height:100vh;
+      margin:auto;
+      background:var(--bg);
     }
 
     .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      position:sticky;
+      top:0;
+      z-index:20;
 
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
 
-      gap: 15px;
+      padding:15px 18px;
 
-      padding: 15px 18px;
+      background:rgba(11,10,18,.92);
+      backdrop-filter:blur(16px);
 
-      background: rgba(11,10,18,.9);
-      backdrop-filter: blur(15px);
-
-      border-bottom: 1px solid var(--line);
+      border-bottom:1px solid var(--line);
     }
 
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
 
     .logo {
-      width: 42px;
-      height: 42px;
+      width:40px;
+      height:40px;
+      display:grid;
+      place-items:center;
 
-      border-radius: 13px;
+      border-radius:12px;
 
-      display: grid;
-      place-items: center;
+      background:var(--lime);
+      color:#0f0e1b;
 
-      background: var(--lime);
-      color: #0f0e1b;
-
-      font-size: 19px;
-      font-weight: 900;
+      font-weight:900;
+      font-size:18px;
     }
 
     .brand-title {
-      font-size: 15px;
-      font-weight: 900;
+      font-size:15px;
+      font-weight:900;
     }
 
     .brand-sub {
-      color: var(--muted);
-      font-size: 9px;
-      margin-top: 2px;
+      margin-top:2px;
+      color:var(--muted);
+      font-size:9px;
     }
 
-    .role-badge {
-      padding: 7px 10px;
+    .role {
+      padding:7px 10px;
+      border-radius:10px;
 
-      color: var(--lime);
+      color:var(--lime);
+      background:rgba(212,255,61,.08);
+      border:1px solid rgba(212,255,61,.18);
 
-      background: rgba(212,255,61,.08);
-
-      border: 1px solid rgba(212,255,61,.18);
-
-      border-radius: 10px;
-
-      font-size: 9px;
-      font-weight: 900;
+      font-size:9px;
+      font-weight:900;
     }
 
     .layout {
-      display: grid;
-      grid-template-columns: 190px minmax(0, 1fr);
-      min-height: calc(100vh - 73px);
+      display:grid;
+      grid-template-columns:180px minmax(0,1fr);
+      min-height:calc(100vh - 71px);
     }
 
     .sidebar {
-      border-left: 1px solid var(--line);
-      background: rgba(20,18,32,.7);
+      position:sticky;
+      top:71px;
 
-      padding: 14px 10px;
+      height:calc(100vh - 71px);
 
-      position: sticky;
-      top: 73px;
-      height: calc(100vh - 73px);
+      padding:12px 9px;
 
-      overflow-y: auto;
-    }
-
-    .nav-group {
-      margin-bottom: 17px;
+      border-left:1px solid var(--line);
+      background:rgba(20,18,32,.7);
     }
 
     .nav-title {
-      padding: 0 9px 7px;
-
-      color: var(--muted-2);
-
-      font-size: 8px;
-      font-weight: 900;
+      padding:8px 9px 6px;
+      color:var(--muted2);
+      font-size:8px;
+      font-weight:900;
     }
 
     .nav-item {
-      width: 100%;
+      width:100%;
 
-      display: flex;
-      align-items: center;
+      display:flex;
+      align-items:center;
+      gap:8px;
 
-      gap: 9px;
+      border:0;
+      border-radius:11px;
 
-      border: 0;
+      background:transparent;
+      color:var(--muted);
 
-      background: transparent;
+      padding:10px 9px;
+      margin-bottom:3px;
 
-      color: var(--muted);
+      text-align:right;
 
-      border-radius: 11px;
-
-      padding: 10px 9px;
-
-      margin-bottom: 4px;
-
-      text-align: right;
-
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .nav-item span:first-child {
-      width: 20px;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    .nav-item:hover {
-      background: rgba(255,255,255,.025);
+      font-size:10px;
+      font-weight:800;
     }
 
     .nav-item.active {
-      background: rgba(212,255,61,.09);
-      color: var(--lime);
+      background:rgba(212,255,61,.09);
+      color:var(--lime);
     }
 
     .content {
-      min-width: 0;
-      padding: 18px;
+      min-width:0;
+      padding:18px;
     }
 
-
     .screen {
-      display: none;
+      display:none;
     }
 
     .screen.active {
-      display: block;
+      display:block;
     }
 
     .page-head {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-
-      gap: 12px;
-
-      margin-bottom: 15px;
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:14px;
     }
 
-    .page-head h1 {
-      margin: 3px 0 0;
-
-      font-size: 23px;
-      line-height: 1.2;
+    h1 {
+      margin:0;
+      font-size:23px;
     }
 
-    .page-head p {
-      color: var(--muted);
-
-      margin: 5px 0 0;
-
-      font-size: 10px;
-    }
-
-    .refresh-btn {
-      border: 1px solid var(--line);
-
-      background: var(--surface);
-
-      color: var(--text);
-
-      border-radius: 11px;
-
-      padding: 9px 12px;
-
-      font-size: 10px;
-      font-weight: 900;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-
-      margin-bottom: 12px;
-    }
-
-    .stat {
-      background: var(--surface);
-      border: 1px solid var(--line);
-
-      border-radius: var(--radius);
-
-      padding: 14px;
-    }
-
-    .stat-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      gap: 8px;
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 9px;
-      font-weight: 700;
-    }
-
-    .stat-icon {
-      width: 27px;
-      height: 27px;
-
-      display: grid;
-      place-items: center;
-
-      border-radius: 9px;
-
-      font-size: 12px;
-    }
-
-    .green {
-      color: var(--lime);
-      background: rgba(212,255,61,.08);
-    }
-
-    .blue {
-      color: var(--blue);
-      background: rgba(90,167,255,.08);
-    }
-
-    .coral {
-      color: var(--coral);
-      background: rgba(255,107,74,.08);
-    }
-
-    .purple {
-      color: var(--purple);
-      background: rgba(170,140,255,.08);
-    }
-
-    .cyan {
-      color: var(--cyan);
-      background: rgba(73,216,209,.08);
-    }
-
-    .stat-number {
-      margin-top: 10px;
-
-      font-family: ui-monospace, monospace;
-
-      font-size: 24px;
-      font-weight: 900;
-    }
-
-    .stat-sub {
-      color: var(--muted-2);
-
-      margin-top: 5px;
-
-      font-size: 8px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 12px;
+    .page-sub {
+      margin-top:4px;
+      color:var(--muted);
+      font-size:9px;
     }
 
     .card {
-      background: var(--surface);
-
-      border: 1px solid var(--line);
-
-      border-radius: var(--radius);
-
-      overflow: hidden;
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:17px;
+      overflow:hidden;
     }
 
     .card-head {
-      padding: 13px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
 
-      border-bottom: 1px solid var(--line);
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 10px;
+      padding:13px 14px;
+      border-bottom:1px solid var(--line);
     }
 
     .card-title {
-      font-size: 12px;
-      font-weight: 900;
+      font-size:12px;
+      font-weight:900;
     }
 
     .card-sub {
-      color: var(--muted);
-
-      margin-top: 2px;
-
-      font-size: 8px;
+      margin-top:2px;
+      color:var(--muted);
+      font-size:8px;
     }
 
     .card-body {
-      padding: 14px;
+      padding:14px;
+    }
+
+    .stats {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .stat {
+      padding:14px;
+      border-radius:16px;
+      background:var(--surface);
+      border:1px solid var(--line);
+    }
+
+    .stat-label {
+      color:var(--muted);
+      font-size:9px;
+    }
+
+    .stat-number {
+      margin-top:8px;
+      font-family:ui-monospace,monospace;
+      font-size:23px;
+      font-weight:900;
+    }
+
+    .green {
+      color:var(--lime);
+    }
+
+    .blue {
+      color:var(--blue);
+    }
+
+    .red {
+      color:var(--red);
+    }
+
+    .grid2 {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
     }
 
     .search-row {
-      display: flex;
-      gap: 7px;
-
-      margin-bottom: 12px;
+      display:flex;
+      gap:7px;
     }
 
     input,
-    select,
-    textarea {
-      width: 100%;
+    select {
+      min-width:0;
+      width:100%;
 
-      background: var(--surface-2);
+      background:var(--surface2);
+      color:var(--text);
 
-      color: var(--text);
+      border:1px solid var(--line);
+      border-radius:11px;
 
-      border: 1px solid var(--line);
+      padding:10px 11px;
+      outline:none;
 
-      border-radius: 11px;
-
-      padding: 10px 11px;
-
-      outline: none;
-
-      font-size: 10px;
+      font-size:10px;
     }
 
-    textarea {
-      min-height: 90px;
-      resize: vertical;
+    button.action {
+      border:0;
+      border-radius:11px;
+      padding:10px 13px;
+
+      font-size:10px;
+      font-weight:900;
+      white-space:nowrap;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #56506f;
+    .green-btn {
+      background:var(--lime);
+      color:#0f0e1b;
     }
 
-    .button {
-      border: 0;
-
-      border-radius: 11px;
-
-      padding: 10px 13px;
-
-      font-size: 10px;
-
-      font-weight: 900;
-
-      white-space: nowrap;
+    .blue-btn {
+      background:var(--blue);
+      color:#07121f;
     }
 
-    .button-green {
-      background: var(--lime);
-      color: #0f0e1b;
+    .red-btn {
+      background:rgba(255,107,74,.1);
+      color:#ff907a;
+      border:1px solid rgba(255,107,74,.2) !important;
     }
 
-    .button-blue {
-      background: var(--blue);
-      color: #07121f;
-    }
-
-    .button-coral {
-      background: rgba(255,107,74,.11);
-      color: #ff907a;
-
-      border: 1px solid rgba(255,107,74,.18);
-    }
-
-    .button-muted {
-      background: var(--surface-3);
-      color: var(--text);
-
-      border: 1px solid var(--line);
-    }
-
-    .button-purple {
-      background: rgba(170,140,255,.12);
-      color: #c0aaff;
-
-      border: 1px solid rgba(170,140,255,.2);
+    .dark-btn {
+      background:var(--surface3);
+      color:var(--text);
+      border:1px solid var(--line) !important;
     }
 
     .user-panel {
-      display: none;
+      display:none;
+      margin-top:12px;
 
-      background: var(--surface-2);
+      padding:14px;
 
-      border: 1px solid var(--line);
-
-      border-radius: 14px;
-
-      padding: 13px;
+      border-radius:15px;
+      background:var(--surface2);
+      border:1px solid var(--line);
     }
 
     .user-panel.show {
-      display: block;
+      display:block;
     }
 
     .user-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
     }
 
+
     .user-name {
-      font-size: 13px;
-      font-weight: 900;
+      font-size:14px;
+      font-weight:900;
     }
 
     .user-username {
-      color: var(--muted);
-
-      margin-top: 3px;
-
-      font-size: 9px;
-
-      direction: ltr;
-      text-align: right;
+      margin-top:3px;
+      color:var(--muted);
+      font-size:9px;
+      direction:ltr;
+      text-align:right;
     }
 
     .user-id {
-      color: var(--blue);
-
-      font-family: ui-monospace, monospace;
-
-      font-size: 9px;
+      color:var(--blue);
+      font-family:ui-monospace,monospace;
+      font-size:9px;
     }
 
     .user-points {
-      margin-top: 12px;
+      margin-top:13px;
 
-      color: var(--lime);
+      color:var(--lime);
+      font-family:ui-monospace,monospace;
 
-      font-family: ui-monospace, monospace;
-
-      font-size: 25px;
-      font-weight: 900;
-    }
-
-    .user-meta {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-
-      gap: 6px;
-
-      margin-top: 10px;
-    }
-
-    .meta {
-      background: #151321;
-
-      border-radius: 10px;
-
-      padding: 8px;
-    }
-
-    .meta span {
-      display: block;
-
-      color: var(--muted-2);
-
-      font-size: 7px;
-    }
-
-    .meta strong {
-      display: block;
-
-      margin-top: 4px;
-
-      font-size: 10px;
+      font-size:27px;
+      font-weight:900;
     }
 
     .user-actions {
-      display: flex;
-      gap: 6px;
-
-      margin-top: 10px;
+      display:flex;
+      gap:7px;
+      margin-top:12px;
     }
 
     .user-actions input {
-      max-width: 150px;
-      direction: ltr;
-      text-align: left;
+      width:140px;
+      flex:0 0 140px;
+      direction:ltr;
+      text-align:left;
     }
 
-    .tables {
-      margin-top: 12px;
+    .meta-grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:7px;
+      margin-top:11px;
+    }
+
+    .meta {
+      padding:9px;
+      border-radius:10px;
+      background:#151321;
+    }
+
+    .meta span {
+      display:block;
+      color:var(--muted2);
+      font-size:7px;
+    }
+
+    .meta strong {
+      display:block;
+      margin-top:4px;
+      font-size:10px;
     }
 
     .table-wrap {
-      overflow-x: auto;
+      overflow:auto;
     }
 
     table {
-      width: 100%;
-
-      min-width: 700px;
-
-      border-collapse: collapse;
+      width:100%;
+      min-width:650px;
+      border-collapse:collapse;
     }
 
     th,
     td {
-      padding: 10px 9px;
-
-      border-bottom: 1px solid var(--line);
-
-      text-align: right;
-
-      font-size: 9px;
-
-      vertical-align: middle;
+      padding:10px 9px;
+      border-bottom:1px solid var(--line);
+      text-align:right;
+      font-size:9px;
     }
 
     th {
-      color: var(--muted);
-
-      font-size: 8px;
-      font-weight: 800;
+      color:var(--muted);
+      font-size:8px;
     }
 
-    td.points {
-      color: var(--lime);
-
-      font-family: ui-monospace, monospace;
-
-      font-weight: 900;
+    .points-cell {
+      color:var(--lime);
+      font-family:ui-monospace,monospace;
+      font-weight:900;
     }
 
-    td.id {
-      color: var(--blue);
-
-      font-family: ui-monospace, monospace;
+    .id-cell {
+      color:var(--blue);
+      font-family:ui-monospace,monospace;
     }
 
     .pill {
-      display: inline-flex;
-
-      align-items: center;
-
-      padding: 4px 7px;
-
-      border-radius: 8px;
-
-      font-size: 7px;
-
-      font-weight: 900;
+      display:inline-flex;
+      padding:4px 7px;
+      border-radius:8px;
+      font-size:7px;
+      font-weight:900;
     }
 
     .pill-green {
-      background: rgba(212,255,61,.08);
-      color: var(--lime);
-    }
-
-    .pill-blue {
-      background: rgba(90,167,255,.08);
-      color: var(--blue);
+      background:rgba(212,255,61,.08);
+      color:var(--lime);
     }
 
     .pill-red {
-      background: rgba(255,107,74,.08);
-      color: #ff8b73;
+      background:rgba(255,107,74,.08);
+      color:#ff8d75;
     }
 
-    .pill-gray {
-      background: rgba(143,138,168,.08);
-      color: var(--muted);
-    }
-
-
-    .toolbar {
-      display: flex;
-
-      flex-wrap: wrap;
-
-      gap: 7px;
-
-      margin-bottom: 12px;
-    }
-
-    .toolbar input {
-      flex: 1 1 200px;
-    }
-
-    .toolbar select {
-      width: auto;
-      min-width: 110px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2,minmax(0,1fr));
-
-      gap: 10px;
-    }
-
-    .field label {
-      display: block;
-
-      color: var(--muted);
-
-      margin-bottom: 6px;
-
-      font-size: 9px;
-
-      font-weight: 800;
-    }
-
-    .field-full {
-      grid-column: 1/-1;
-    }
-
-    .setting-row {
-      display: grid;
-      grid-template-columns: 1fr 150px;
-
-      align-items: center;
-
-      gap: 10px;
-
-      padding: 11px 0;
-
-      border-bottom: 1px solid var(--line);
-    }
-
-    .setting-row:last-child {
-      border-bottom: 0;
-    }
-
-    .setting-name {
-      font-size: 10px;
-      font-weight: 900;
-    }
-
-    .setting-desc {
-      color: var(--muted);
-
-      margin-top: 3px;
-
-      font-size: 8px;
+    .pill-blue {
+      background:rgba(90,167,255,.08);
+      color:var(--blue);
     }
 
     .empty {
-      padding: 30px 15px;
-
-      text-align: center;
-
-      color: var(--muted);
-
-      font-size: 9px;
-    }
-
-    .loading {
-      padding: 24px;
-
-      text-align: center;
-
-      color: var(--muted);
-
-      font-size: 9px;
-    }
-
-    .activity-item {
-      display: flex;
-
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 12px;
-
-      padding: 10px 0;
-
-      border-bottom: 1px solid var(--line);
-    }
-
-    .activity-item:last-child {
-      border-bottom: 0;
-    }
-
-    .activity-main {
-      min-width: 0;
-    }
-
-    .activity-title {
-      font-size: 9px;
-      font-weight: 900;
-    }
-
-    .activity-sub {
-      color: var(--muted);
-
-      margin-top: 3px;
-
-      font-size: 8px;
-    }
-
-    .activity-amount {
-      font-family: ui-monospace, monospace;
-
-      font-size: 10px;
-
-      font-weight: 900;
-    }
-
-    .positive {
-      color: var(--lime);
-    }
-
-    .negative {
-      color: var(--coral);
+      padding:25px;
+      text-align:center;
+      color:var(--muted);
+      font-size:9px;
     }
 
     .toast {
-      position: fixed;
-
-      left: 50%;
-      bottom: 20px;
+      position:fixed;
+      left:50%;
+      bottom:20px;
 
       transform:
         translateX(-50%)
         translateY(15px);
 
-      opacity: 0;
+      opacity:0;
 
-      pointer-events: none;
+      z-index:999;
 
-      z-index: 999;
+      max-width:90vw;
 
-      max-width: min(
-        92vw,
-        450px
-      );
+      background:#f5f3ff;
+      color:#0f0e1b;
 
-      background: #f5f3ff;
+      padding:10px 14px;
+      border-radius:12px;
 
-      color: #0f0e1b;
+      font-size:10px;
+      font-weight:900;
 
-      border-radius: 12px;
-
-      padding: 10px 14px;
-
-      font-size: 10px;
-
-      font-weight: 900;
-
-      transition: .2s;
+      pointer-events:none;
+      transition:.2s;
     }
 
     .toast.show {
-      opacity: 1;
-
+      opacity:1;
       transform:
         translateX(-50%)
         translateY(0);
     }
 
-    @media (max-width: 850px) {
+    @media(max-width:800px) {
       .layout {
-        grid-template-columns: 1fr;
+        display:block;
       }
 
       .sidebar {
-        position: sticky;
+        position:sticky;
+        top:71px;
+        height:auto;
 
-        top: 73px;
+        display:flex;
+        gap:5px;
 
-        height: auto;
+        overflow-x:auto;
 
-        z-index: 30;
+        padding:7px;
 
-        border-left: 0;
+        z-index:10;
 
-        border-bottom: 1px solid var(--line);
-
-        padding: 7px;
-
-        overflow-x: auto;
-
-        display: flex;
-
-        gap: 6px;
-      }
-
-      .nav-group {
-        display: contents;
+        border-left:0;
+        border-bottom:1px solid var(--line);
       }
 
       .nav-title {
-        display: none;
+        display:none;
       }
 
       .nav-item {
-        width: auto;
-
-        flex: 0 0 auto;
-
-        margin: 0;
-
-        padding: 9px 11px;
+        width:auto;
+        flex:0 0 auto;
+        margin:0;
+        padding:9px 11px;
       }
 
       .nav-item span:last-child {
-        display: none;
-      }
-
-      .content {
-        padding: 14px;
+        display:none;
       }
 
       .stats {
-        grid-template-columns:
-          repeat(2,1fr);
+        grid-template-columns:repeat(2,1fr);
       }
 
-      .grid-2 {
-        grid-template-columns: 1fr;
+      .grid2 {
+        grid-template-columns:1fr;
       }
     }
 
-    @media (max-width: 500px) {
-      .page-head {
-        align-items: start;
-        flex-direction: column;
+    @media(max-width:520px) {
+      .content {
+        padding:13px;
       }
 
-      .user-meta {
-        grid-template-columns:
-          repeat(2,1fr);
+      .meta-grid {
+        grid-template-columns:repeat(2,1fr);
       }
 
-      .form-grid {
-        grid-template-columns: 1fr;
+      .user-actions {
+        flex-wrap:wrap;
       }
 
-      .field-full {
-        grid-column: auto;
-      }
-
-      .setting-row {
-        grid-template-columns: 1fr;
-      }
-
-      .setting-row input {
-        width: 100%;
+      .user-actions input {
+        width:100%;
+        flex:1 1 100%;
       }
     }
   </style>
@@ -964,1046 +603,812 @@
 
 <div class="app">
 
-  <header class="topbar">
+<header class="topbar">
 
-    <div class="brand">
+  <div class="brand">
 
-      <div class="logo">
-        G
-      </div>
-
-      <div>
-        <div class="brand-title">
-          GrowBot Admin
-        </div>
-
-        <div class="brand-sub">
-          مركز التحكم والإدارة
-        </div>
-      </div>
-
+    <div class="logo">
+      G
     </div>
 
-    <div
-      class="role-badge"
-      id="roleBadge"
-    >
-      التحقق...
+    <div>
+      <div class="brand-title">
+        GrowBot Admin
+      </div>
+
+      <div class="brand-sub">
+        لوحة الإدارة
+      </div>
     </div>
-
-  </header>
-
-
-  <div class="layout">
-
-    <aside class="sidebar">
-
-      <div class="nav-group">
-
-        <div class="nav-title">
-          الرئيسية
-        </div>
-
-        <button
-          class="nav-item active"
-          data-screen="dashboard"
-        >
-          <span>📊</span>
-          <span>لوحة المعلومات</span>
-        </button>
-
-      </div>
-
-
-      <div class="nav-group">
-
-        <div class="nav-title">
-          الإدارة
-        </div>
-
-        <button
-          class="nav-item"
-          data-screen="users"
-        >
-          <span>👤</span>
-          <span>المستخدمون</span>
-        </button>
-
-        <button
-          class="nav-item"
-          data-screen="tasks"
-        >
-          <span>📋</span>
-          <span>المهام</span>
-        </button>
-
-        <button
-          class="nav-item"
-          data-screen="referrals"
-        >
-          <span>👥</span>
-          <span>الإحالات</span>
-        </button>
-
-        <button
-          class="nav-item"
-          data-screen="purchases"
-        >
-          <span>💳</span>
-          <span>المشتريات</span>
-        </button>
-
-
-        <button
-          class="nav-item"
-          data-screen="transactions"
-        >
-          <span>💰</span>
-          <span>النقاط</span>
-        </button>
-
-      </div>
-
-
-      <div class="nav-group">
-
-        <div class="nav-title">
-          النظام
-        </div>
-
-        <button
-          class="nav-item"
-          data-screen="settings"
-        >
-          <span>⚙️</span>
-          <span>الإعدادات</span>
-        </button>
-
-        <button
-          class="nav-item"
-          data-screen="admins"
-        >
-          <span>🛡️</span>
-          <span>المشرفون</span>
-        </button>
-
-      </div>
-
-    </aside>
-
-
-    <main class="content">
-
-
-      <!-- DASHBOARD -->
-
-      <section
-        class="screen active"
-        data-screen-view="dashboard"
-      >
-
-        <div class="page-head">
-
-          <div>
-            <h1>
-              لوحة المعلومات
-            </h1>
-
-            <p>
-              نظرة عامة على GrowBot
-            </p>
-          </div>
-
-          <button
-            class="refresh-btn"
-            onclick="refreshDashboard()"
-          >
-            ↻ تحديث
-          </button>
-
-        </div>
-
-
-        <div class="stats">
-
-          <div class="stat">
-            <div class="stat-top">
-              <span class="stat-label">
-                المستخدمون
-              </span>
-
-              <span class="stat-icon green">
-                👤
-              </span>
-            </div>
-
-            <div
-              class="stat-number"
-              id="statUsers"
-            >
-              —
-            </div>
-
-            <div
-              class="stat-sub"
-              id="statBanned"
-            >
-              —
-            </div>
-          </div>
-
-
-          <div class="stat">
-            <div class="stat-top">
-              <span class="stat-label">
-                نشطون
-              </span>
-
-              <span class="stat-icon blue">
-                🟢
-              </span>
-            </div>
-
-            <div
-              class="stat-number"
-              id="statActive"
-            >
-              —
-            </div>
-
-            <div class="stat-sub">
-              آخر 5 دقائق
-            </div>
-          </div>
-
-
-          <div class="stat">
-            <div class="stat-top">
-              <span class="stat-label">
-                المهام
-              </span>
-
-              <span class="stat-icon coral">
-                📋
-              </span>
-            </div>
-
-            <div
-              class="stat-number"
-              id="statTasks"
-            >
-              —
-            </div>
-
-            <div
-              class="stat-sub"
-              id="statTaskSub"
-            >
-              —
-            </div>
-          </div>
-
-
-          <div class="stat">
-            <div class="stat-top">
-              <span class="stat-label">
-                إجمالي النقاط
-              </span>
-
-              <span class="stat-icon green">
-                ✦
-              </span>
-            </div>
-
-            <div
-              class="stat-number"
-              id="statPoints"
-            >
-              —
-            </div>
-
-            <div
-              class="stat-sub"
-              id="statRevenue"
-            >
-              —
-            </div>
-          </div>
-
-        </div>
-
-
-        <div class="grid-2">
-
-          <div class="card">
-
-            <div class="card-head">
-
-              <div>
-                <div class="card-title">
-                  أعلى المستخدمين
-                </div>
-
-                <div class="card-sub">
-                  حسب عدد النقاط
-                </div>
-              </div>
-
-              <button
-                class="button button-muted"
-                onclick="loadTopUsers()"
-              >
-                تحديث
-              </button>
-
-            </div>
-
-            <div
-              id="dashboardTopUsers"
-            ></div>
-
-          </div>
-
-
-          <div class="card">
-
-            <div class="card-head">
-
-              <div>
-                <div class="card-title">
-                  آخر عمليات النقاط
-                </div>
-
-                <div class="card-sub">
-                  آخر 10 عمليات
-                </div>
-              </div>
-
-              <button
-                class="button button-muted"
-                onclick="loadTransactions(true)"
-              >
-                تحديث
-              </button>
-
-            </div>
-
-            <div
-              id="dashboardTransactions"
-            ></div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- USERS -->
-
-      <section
-        class="screen"
-        data-screen-view="users"
-      >
-
-        <div class="page-head">
-
-          <div>
-            <h1>
-              المستخدمون
-            </h1>
-
-            <p>
-              ابحث وعدّل حسابات المستخدمين
-            </p>
-          </div>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="card-body">
-
-            <div class="search-row">
-
-              <input
-                id="userSearch"
-                placeholder="Telegram ID أو username"
-                dir="ltr"
-              >
-
-              <button
-                class="button button-green"
-                onclick="searchUser()"
-              >
-                بحث
-              </button>
-
-            </div>
-
-
-            <div
-              class="user-panel"
-              id="userPanel"
-            >
-
-              <div class="user-head">
-
-                <div>
-
-                  <div
-                    class="user-name"
-                    id="userName"
-                  ></div>
-
-                  <div
-                    class="user-username"
-                    id="userUsername"
-                  ></div>
-
-                </div>
-
-                <div
-                  class="user-id"
-                  id="userId"
-                ></div>
-
-              </div>
-
-
-              <div
-                class="user-points"
-                id="userPoints"
-              ></div>
-
-
-              <div class="user-meta">
-
-                <div class="meta">
-                  <span>المهام</span>
-                  <strong
-                    id="userTasks"
-                  ></strong>
-                </div>
-
-                <div class="meta">
-                  <span>الإحالات</span>
-                  <strong
-                    id="userRefs"
-                  ></strong>
-                </div>
-
-                <div class="meta">
-                  <span>الحالة</span>
-                  <strong
-                    id="userStatus"
-                  ></strong>
-                </div>
-
-                <div class="meta">
-                  <span>آخر نشاط</span>
-                  <strong
-                    id="userLastSeen"
-                  ></strong>
-                </div>
-
-              </div>
-
-
-              <div class="user-actions">
-
-                <input
-                  id="userPointAmount"
-                  placeholder="+100 أو -100"
-                  inputmode="numeric"
-                  dir="ltr"
-                >
-
-                <button
-                  class="button button-green"
-                  onclick="changeUserPoints()"
-                >
-                  تعديل النقاط
-                </button>
-
-                <button
-                  class="button button-coral"
-                  id="userBanBtn"
-                  onclick="toggleUserBan()"
-                >
-                  حظر
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="tables card">
-
-          <div class="card-head">
-
-            <div>
-              <div class="card-title">
-                أعلى المستخدمين
-              </div>
-
-              <div class="card-sub">
-                أسرع طريقة لمراجعة أصحاب أكبر الأرصدة
-              </div>
-            </div>
-
-          </div>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>المستخدم</th>
-                  <th>Telegram ID</th>
-                  <th>النقاط</th>
-                  <th>المهام</th>
-                  <th>الإحالات</th>
-                  <th>الحالة</th>
-                </tr>
-              </thead>
-
-              <tbody
-                id="usersTable"
-              ></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- TASKS -->
-
-      <section
-        class="screen"
-        data-screen-view="tasks"
-      >
-
-        <div class="page-head">
-
-          <div>
-            <h1>
-              المهام
-            </h1>
-
-            <p>
-              مراقبة الحملات وإيقافها أو إلغاؤها
-            </p>
-          </div>
-
-          <button
-            class="refresh-btn"
-            onclick="loadAdminTasks()"
-          >
-            ↻ تحديث
-          </button>
-
-        </div>
-
-
-        <div class="toolbar">
-
-          <select
-            id="taskStatusFilter"
-            onchange="loadAdminTasks()"
-          >
-            <option value="">
-              كل الحالات
-            </option>
-
-            <option value="active">
-              نشطة
-            </option>
-
-            <option value="paused">
-              متوقفة
-            </option>
-
-            <option value="completed">
-              مكتملة
-            </option>
-
-            <option value="cancelled">
-              ملغاة
-            </option>
-          </select>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>المهمة</th>
-                  <th>المالك</th>
-                  <th>النوع</th>
-                  <th>التقدم</th>
-                  <th>المتبقي</th>
-                  <th>الحالة</th>
-                  <th>إدارة</th>
-                </tr>
-              </thead>
-
-              <tbody
-                id="tasksTable"
-              ></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- REFERRALS -->
-
-      <section
-        class="screen"
-        data-screen-view="referrals"
-      >
-
-        <div class="page-head">
-
-          <div>
-            <h1>
-              الإحالات
-            </h1>
-
-            <p>
-              متابعة نظام +150 نقطة
-            </p>
-          </div>
-
-          <button
-            class="refresh-btn"
-            onclick="loadReferrals()"
-          >
-            ↻ تحديث
-          </button>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>صاحب الإحالة</th>
-                  <th>الشخص المدعو</th>
-                  <th>التقدم</th>
-                  <th>المكافأة</th>
-                  <th>الحالة</th>
-                  <th>التاريخ</th>
-                </tr>
-              </thead>
-
-              <tbody
-                id="referralsTable"
-              ></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- PURCHASES -->
-
-      <section
-        class="screen"
-        data-screen-view="purchases"
-      >
-
-        <div class="page-head">
-
-          <div>
-            <h1>
-              المشتريات
-            </h1>
-
-            <p>
-              سجل شراء النقاط
-            </p>
-          </div>
-
-          <button
-            class="refresh-btn"
-            onclick="loadPurchases()"
-          >
-            ↻ تحديث
-          </button>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>المستخدم</th>
-                  <th>USD</th>
-                  <th>النقاط</th>
-                  <th>المزود</th>
-                  <th>الحالة</th>
-                  <th>التاريخ</th>
-                </tr>
-              </thead>
-
-              <tbody
-                id="purchasesTable"
-              ></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- TRANSACTIONS -->
-
-      <section
-        class="screen"
-        data-screen-view="transactions"
-      >
-
-        <div class="page-head">
-
-          <div>
-            <h1>
-              عمليات النقاط
-            </h1>
-
-            <p>
-              السجل الكامل لحركة النقاط
-            </p>
-          </div>
-
-          <button
-            class="refresh-btn"
-            onclick="loadTransactions()"
-          >
-            ↻ تحديث
-          </button>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>المستخدم</th>
-                  <th>العملية</th>
-                  <th>القيمة</th>
-                  <th>الرصيد بعد العملية</th>
-                  <th>الوصف</th>
-                  <th>التاريخ</th>
-                </tr>
-              </thead>
-
-              <tbody
-                id="transactionsTable"
-              ></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- SETTINGS -->
-
-      <section
-        class="screen"
-        data-screen-view="settings"
-      >
-
-        <div class="page-head">
-
-          <div>
-            <h1>
-              إعدادات النظام
-            </h1>
-
-            <p>
-              تعديل اقتصاد GrowBot وقواعده
-            </p>
-          </div>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="card-body">
-
-            <div class="setting-row">
-
-              <div>
-                <div class="setting-name">
-                  نقاط تنفيذ المهمة
-                </div>
-
-                <div class="setting-desc">
-                  كم نقطة يحصل عليها المستخدم لكل مهمة
-                </div>
-              </div>
-
-              <input
-                id="settingPointsPerTask"
-                inputmode="numeric"
-                dir="ltr"
-              >
-
-            </div>
-
-
-            <div class="setting-row">
-
-              <div>
-                <div class="setting-name">
-                  نقاط الدولار
-                </div>
-
-                <div class="setting-desc">
-                  عدد النقاط مقابل 1 دولار
-                </div>
-              </div>
-
-              <input
-                id="settingPointsPerUsd"
-                inputmode="numeric"
-                dir="ltr"
-              >
-
-            </div>
-
-
-            <div class="setting-row">
-
-              <div>
-                <div class="setting-name">
-                  مكافأة الإحالة
-                </div>
-
-                <div class="setting-desc">
-                  النقاط بعد إكمال عدد المهام المطلوب
-                </div>
-              </div>
-
-              <input
-                id="settingReferralReward"
-                inputmode="numeric"
-                dir="ltr"
-              >
-
-            </div>
-
-
-            <div class="setting-row">
-
-              <div>
-                <div class="setting-name">
-                  المهام المطلوبة للإحالة
-                </div>
-
-                <div class="setting-desc">
-                  عدد المهام قبل منح +150
-                </div>
-              </div>
-
-              <input
-                id="settingReferralTasks"
-                inputmode="numeric"
-                dir="ltr"
-              >
-
-            </div>
-
-
-            <div class="setting-row">
-
-              <div>
-                <div class="setting-name">
-                  وقت التحقق
-                </div>
-
-                <div class="setting-desc">
-                  بعد كم ساعة نعيد فحص العضوية
-                </div>
-              </div>
-
-              <input
-                id="settingVerificationHours"
-                inputmode="numeric"
-                dir="ltr"
-              >
-
-            </div>
-
-
-            <button
-              class="button button-green"
-              onclick="saveSettings()"
-              style="margin-top:14px"
-            >
-              حفظ الإعدادات
-            </button>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- ADMINS -->
-
-      <section
-        class="screen"
-        data-screen-view="admins"
-      >
-
-        <div class="page-head">
-
-          <div>
-            <h1>
-              المشرفون
-            </h1>
-
-            <p>
-              إدارة الأشخاص الذين يستطيعون دخول اللوحة
-            </p>
-          </div>
-
-        </div>
-
-
-        <div class="grid-2">
-
-          <div class="card">
-
-            <div class="card-head">
-
-              <div>
-                <div class="card-title">
-                  إضافة Admin
-                </div>
-
-                <div class="card-sub">
-                  أدخل Telegram ID
-                </div>
-              </div>
-
-            </div>
-
-            <div class="card-body">
-
-              <div class="search-row">
-
-                <input
-                  id="newAdminId"
-                  placeholder="Telegram ID"
-                  inputmode="numeric"
-                  dir="ltr"
-                >
-
-                <button
-                  class="button button-green"
-                  onclick="addAdmin()"
-                >
-                  إضافة
-                </button>
-
-              </div>
-
-              <div
-                style="color:var(--muted);font-size:8px;line-height:1.8"
-              >
-                الـOwner لا يتم حذفه من هذه القائمة لأنه محدد من إعدادات السيرفر.
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="card">
-
-            <div class="card-head">
-
-              <div>
-                <div class="card-title">
-                  المشرفون الحاليون
-                </div>
-
-                <div class="card-sub">
-                  صلاحيات الوصول
-                </div>
-              </div>
-
-            </div>
-
-            <div
-              id="adminsList"
-              class="card-body"
-            ></div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-    </main>
 
   </div>
+
+  <div
+    class="role"
+    id="roleBadge"
+  >
+    التحقق...
+  </div>
+
+</header>
+
+
+<div class="layout">
+
+<aside class="sidebar">
+
+  <button
+    class="nav-item active"
+    data-screen="dashboard"
+  >
+    <span>📊</span>
+    <span>الرئيسية</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="users"
+  >
+    <span>👤</span>
+    <span>المستخدمون</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="tasks"
+  >
+    <span>📋</span>
+    <span>المهام</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="referrals"
+  >
+    <span>👥</span>
+    <span>الإحالات</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="transactions"
+  >
+    <span>💰</span>
+    <span>النقاط</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="settings"
+  >
+    <span>⚙️</span>
+    <span>الإعدادات</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="admins"
+    id="adminsNav"
+  >
+    <span>🛡️</span>
+    <span>المشرفون</span>
+  </button>
+
+</aside>
+
+
+<main class="content">
+
+
+<section
+  class="screen active"
+  data-view="dashboard"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        الرئيسية
+      </h1>
+
+      <div class="page-sub">
+        نظرة عامة على GrowBot
+      </div>
+    </div>
+
+    <button
+      class="action dark-btn"
+      onclick="loadDashboard()"
+    >
+      ↻ تحديث
+    </button>
+
+  </div>
+
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-label">
+        المستخدمون
+      </div>
+
+      <div
+        class="stat-number green"
+        id="statUsers"
+      >
+        —
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">
+        نشطون
+      </div>
+
+
+      <div
+        class="stat-number blue"
+        id="statActive"
+      >
+        —
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">
+        المهام النشطة
+      </div>
+
+      <div
+        class="stat-number"
+        id="statTasks"
+      >
+        —
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">
+        إجمالي النقاط
+      </div>
+
+      <div
+        class="stat-number green"
+        id="statPoints"
+      >
+        —
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="grid2">
+
+    <div class="card">
+
+      <div class="card-head">
+        <div>
+          <div class="card-title">
+            أكثر المستخدمين نقاطًا
+          </div>
+
+          <div class="card-sub">
+            أعلى الأرصدة
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="topUsers"
+        class="card-body"
+      ></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-head">
+        <div>
+          <div class="card-title">
+            آخر عمليات النقاط
+          </div>
+
+          <div class="card-sub">
+            إضافة وسحب ومكافآت
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="recentTransactions"
+        class="card-body"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="users"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        المستخدمون
+      </h1>
+
+      <div class="page-sub">
+        البحث والتعديل والحظر
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div class="search-row">
+
+        <input
+          id="userSearch"
+          placeholder="Telegram ID أو username"
+          dir="ltr"
+        >
+
+        <button
+          class="action green-btn"
+          onclick="searchUser()"
+        >
+          بحث
+        </button>
+
+      </div>
+
+
+      <div
+        class="user-panel"
+        id="userPanel"
+      >
+
+        <div class="user-head">
+
+          <div>
+            <div
+              class="user-name"
+              id="userName"
+            ></div>
+
+            <div
+              class="user-username"
+              id="userUsername"
+            ></div>
+          </div>
+
+          <div
+            class="user-id"
+            id="userId"
+          ></div>
+
+        </div>
+
+
+        <div
+          class="user-points"
+          id="userPoints"
+        ></div>
+
+
+        <div class="meta-grid">
+
+          <div class="meta">
+            <span>
+              المهام
+            </span>
+
+            <strong
+              id="userTasks"
+            >
+              —
+            </strong>
+          </div>
+
+          <div class="meta">
+            <span>
+              الإحالات
+            </span>
+
+            <strong
+              id="userRefs"
+            >
+              —
+            </strong>
+          </div>
+
+          <div class="meta">
+            <span>
+              الحالة
+            </span>
+
+            <strong
+              id="userStatus"
+            >
+              —
+            </strong>
+          </div>
+
+          <div class="meta">
+            <span>
+              آخر نشاط
+            </span>
+
+            <strong
+              id="userLastSeen"
+            >
+              —
+            </strong>
+          </div>
+
+        </div>
+
+
+        <div class="user-actions">
+
+          <input
+            id="userPointAmount"
+            placeholder="مثلاً 100"
+            inputmode="numeric"
+            dir="ltr"
+          >
+
+          <button
+            class="action green-btn"
+            onclick="addUserPoints()"
+          >
+            + إضافة
+          </button>
+
+          <button
+            class="action red-btn"
+            onclick="removeUserPoints()"
+          >
+            − سحب
+          </button>
+
+          <button
+            class="action dark-btn"
+            id="userBanBtn"
+            onclick="toggleUserBan()"
+          >
+            حظر
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="card"
+    style="margin-top:12px"
+  >
+
+    <div class="card-head">
+      <div>
+        <div class="card-title">
+          أعلى الأرصدة
+        </div>
+
+        <div class="card-sub">
+          اضغط بحث لإدارة مستخدم محدد
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>المستخدم</th>
+            <th>ID</th>
+            <th>النقاط</th>
+            <th>المهام</th>
+            <th>الإحالات</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+
+        <tbody
+          id="usersTable"
+        ></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="tasks"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        المهام
+      </h1>
+
+      <div class="page-sub">
+        إدارة الحملات
+      </div>
+    </div>
+
+    <button
+      class="action dark-btn"
+      onclick="loadTasks()"
+    >
+      ↻ تحديث
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-head">
+
+      <select
+        id="taskFilter"
+        onchange="loadTasks()"
+        style="max-width:160px"
+      >
+        <option value="">
+          كل المهام
+        </option>
+
+        <option value="active">
+          نشطة
+        </option>
+
+        <option value="paused">
+          متوقفة
+        </option>
+
+        <option value="completed">
+          مكتملة
+        </option>
+
+        <option value="cancelled">
+          ملغاة
+        </option>
+      </select>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>المهمة</th>
+            <th>المالك</th>
+            <th>التقدم</th>
+            <th>المتبقي</th>
+            <th>الحالة</th>
+            <th>إدارة</th>
+          </tr>
+        </thead>
+
+        <tbody
+          id="tasksTable"
+        ></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="referrals"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        الإحالات
+      </h1>
+
+      <div class="page-sub">
+        متابعة مكافآت الإحالة
+      </div>
+    </div>
+
+    <button
+      class="action dark-btn"
+      onclick="loadReferrals()"
+    >
+      ↻ تحديث
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>المُحيل</th>
+            <th>المدعو</th>
+            <th>التقدم</th>
+            <th>المكافأة</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+
+        <tbody
+          id="referralsTable"
+        ></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="transactions"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        عمليات النقاط
+      </h1>
+
+      <div class="page-sub">
+        سجل إضافة وسحب النقاط
+      </div>
+    </div>
+
+    <button
+      class="action dark-btn"
+      onclick="loadTransactions()"
+    >
+      ↻ تحديث
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>المستخدم</th>
+            <th>العملية</th>
+            <th>القيمة</th>
+            <th>الرصيد</th>
+            <th>الوصف</th>
+            <th>التاريخ</th>
+          </tr>
+        </thead>
+
+        <tbody
+          id="transactionsTable"
+        ></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="settings"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        الإعدادات
+      </h1>
+
+      <div class="page-sub">
+        اقتصاد النظام
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div style="display:grid;gap:10px">
+
+        <label>
+          <div class="page-sub">
+            نقاط المهمة
+          </div>
+
+          <input
+            id="settingsTask"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+        <label>
+          <div class="page-sub">
+            نقاط الدولار
+          </div>
+
+          <input
+            id="settingsUsd"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+        <label>
+          <div class="page-sub">
+            مكافأة الإحالة
+          </div>
+
+          <input
+            id="settingsReferral"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+        <label>
+          <div class="page-sub">
+            مهام الإحالة
+          </div>
+
+          <input
+            id="settingsReferralTasks"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+        <label>
+          <div class="page-sub">
+            ساعات التحقق
+          </div>
+
+          <input
+            id="settingsHours"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+      </div>
+
+      <button
+        class="action green-btn"
+        style="margin-top:12px"
+        onclick="saveSettings()"
+      >
+        حفظ
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="admins"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        المشرفون
+      </h1>
+
+      <div class="page-sub">
+        Owner فقط
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div class="search-row">
+
+        <input
+          id="newAdminId"
+          placeholder="Telegram ID"
+          inputmode="numeric"
+          dir="ltr"
+        >
+
+        <button
+          class="action green-btn"
+          onclick="addAdmin()"
+        >
+          إضافة Admin
+        </button>
+
+      </div>
+
+      <div
+        id="adminsList"
+        style="margin-top:12px"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+</main>
+
+</div>
 
 </div>
 
@@ -2015,589 +1420,489 @@
 
 
 <script>
-  const tg =
-    window.Telegram?.WebApp
+const tg =
+  window.Telegram?.WebApp
 
-  if (tg) {
-    tg.ready()
-    tg.expand()
+if (tg) {
+  tg.ready()
+  tg.expand()
+}
+
+let currentUser = null
+let currentRole = null
+
+
+function formatNumber(value) {
+  return Number(
+    value || 0
+  ).toLocaleString(
+    'en-US'
+  )
+}
+
+
+function formatDate(value) {
+  if (!value) {
+    return '-'
   }
 
+  const date =
+    new Date(value)
 
-  let currentUser = null
-  let currentRole = null
-
-
-  function formatNumber(value) {
-    return Number(
-      value || 0
-    ).toLocaleString(
-      "en-US"
+  if (
+    Number.isNaN(
+      date.getTime()
     )
+  ) {
+    return '-'
   }
 
-
-  function formatDate(value) {
-    if (!value) {
-      return "-"
+  return date.toLocaleString(
+    'ar-IQ',
+    {
+      dateStyle:'short',
+      timeStyle:'short'
     }
+  )
+}
 
-    const date =
-      new Date(value)
+
+function toast(message) {
+  const box =
+    document.getElementById(
+      'toast'
+    )
+
+  box.textContent =
+    message
+
+  box.classList.add(
+    'show'
+  )
+
+  setTimeout(
+    () =>
+      box.classList.remove(
+        'show'
+      ),
+    2200
+  )
+}
 
 
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
-      return "-"
-    }
+async function api(
+  path,
+  options = {}
+) {
+  const headers = {
+    'Content-Type':
+      'application/json',
+    ...(options.headers || {})
+  }
 
-    return date.toLocaleString(
-      "ar-IQ",
+  if (
+    tg?.initData
+  ) {
+    headers[
+      'X-Telegram-Init-Data'
+    ] =
+      tg.initData
+  }
+
+  const response =
+    await fetch(
+      path,
       {
-        dateStyle: "short",
-        timeStyle: "short"
+        ...options,
+        headers
       }
     )
-  }
 
-
-  function showToast(message) {
-    const element =
-      document.getElementById(
-        "toast"
+  const data =
+    await response
+      .json()
+      .catch(
+        () => ({})
       )
 
-    element.textContent =
-      message
-
-    element.classList.add(
-      "show"
-    )
-
-    setTimeout(
-      () => {
-        element.classList.remove(
-          "show"
-        )
-      },
-      2200
+  if (!response.ok) {
+    throw new Error(
+      data.error ||
+      'حدث خطأ'
     )
   }
 
+  return data
+}
 
-  async function api(
-    path,
-    options = {}
-  ) {
-    const headers = {
-      "Content-Type":
-        "application/json",
-      ...(options.headers || {})
-    }
 
-    if (
-      tg?.initData
-    ) {
-      headers[
-        "X-Telegram-Init-Data"
-      ] =
-        tg.initData
-    }
+document
+  .querySelectorAll(
+    '.nav-item'
+  )
+  .forEach(
+    item => {
+      item.addEventListener(
+        'click',
+        () => {
 
-    const response =
-      await fetch(
-        path,
-        {
-          ...options,
-          headers
+          document
+            .querySelectorAll(
+              '.nav-item'
+            )
+            .forEach(
+              x =>
+                x.classList.remove(
+                  'active'
+                )
+            )
+
+          document
+            .querySelectorAll(
+              '.screen'
+            )
+            .forEach(
+              x =>
+                x.classList.remove(
+                  'active'
+                )
+            )
+
+          item.classList.add(
+            'active'
+          )
+
+          const name =
+            item.dataset.screen
+
+          document
+            .querySelector(
+              `[data-view="${name}"]`
+            )
+            ?.classList.add(
+              'active'
+            )
+
+          loadScreen(
+            name
+          )
         }
       )
+    }
+  )
 
-    const data =
-      await response
-        .json()
-        .catch(
-          () => ({})
-        )
 
+async function loadScreen(
+  name
+) {
+  try {
     if (
-      !response.ok
+      name ===
+      'dashboard'
     ) {
-      throw new Error(
-        data.error ||
-        "حدث خطأ غير متوقع"
-      )
+      await loadDashboard()
     }
 
-    return data
-  }
+    if (
+      name ===
+      'users'
+    ) {
+      await loadTopUsers()
+    }
 
+    if (
+      name ===
+      'tasks'
+    ) {
+      await loadTasks()
+    }
 
-  function renderError(
+    if (
+      name ===
+      'referrals'
+    ) {
+      await loadReferrals()
+    }
+
+    if (
+      name ===
+      'transactions'
+    ) {
+      await loadTransactions()
+    }
+
+    if (
+      name ===
+      'settings'
+    ) {
+      await loadSettings()
+    }
+
+    if (
+      name ===
+      'admins'
+    ) {
+      await loadAdmins()
+    }
+  } catch (
     error
   ) {
-    console.error(
-      error
-    )
-
-    showToast(
+    toast(
       error?.message ||
-      "حدث خطأ"
+      'حدث خطأ'
     )
   }
+}
 
 
-  function activateScreen(
-    name
+async function loadRole() {
+  const data =
+    await api(
+      '/api/admin/me'
+    )
+
+  currentRole =
+    data.role
+
+  document.getElementById(
+    'roleBadge'
+  ).textContent =
+    data.role ===
+      'owner'
+      ? '👑 Owner'
+      : '🛡️ Admin'
+
+  if (
+    data.role !==
+    'owner'
   ) {
-    document
-      .querySelectorAll(
-        ".nav-item"
-      )
-      .forEach(
-        item => {
-          item.classList.toggle(
-            "active",
-            item.dataset.screen ===
-              name
-          )
-        }
-      )
+    document.getElementById(
+      'adminsNav'
+    ).style.display =
+      'none'
+  }
+}
 
-    document
-      .querySelectorAll(
-        ".screen"
-      )
-      .forEach(
-        screen => {
-          screen.classList.toggle(
-            "active",
-            screen.dataset.screenView ===
-              name
-          )
-        }
-      )
 
-    if (
-      name ===
-      "dashboard"
-    ) {
-      refreshDashboard()
-    }
+async function loadDashboard() {
+  const data =
+    await api(
+      '/api/admin/stats'
+    )
 
-    if (
-      name ===
-      "users"
-    ) {
-      loadTopUsers()
-    }
+  document.getElementById(
+    'statUsers'
+  ).textContent =
+    formatNumber(
+      data.stats.users
+    )
 
-    if (
-      name ===
-      "tasks"
-    ) {
-      loadAdminTasks()
-    }
+  document.getElementById(
+    'statActive'
+  ).textContent =
+    formatNumber(
+      data.stats.activeUsers
+    )
 
-    if (
-      name ===
-      "referrals"
-    ) {
-      loadReferrals()
-    }
+  document.getElementById(
+    'statTasks'
+  ).textContent =
+    formatNumber(
+      data.stats.activeTasks
+    )
 
-    if (
-      name ===
-      "purchases"
-    ) {
-      loadPurchases()
-    }
+  document.getElementById(
+    'statPoints'
+  ).textContent =
+    formatNumber(
+      data.stats.totalPoints
+    )
 
-    if (
-      name ===
-      "transactions"
-    ) {
-      loadTransactions()
-    }
+  await loadTopUsers()
+  await loadTransactions(true)
+}
 
-    if (
-      name ===
-      "settings"
-    ) {
-      loadSettings()
-    }
 
-    if (
-      name ===
-      "admins"
-    ) {
-      loadAdmins()
-    }
+async function loadTopUsers() {
+  const data =
+    await api(
+      '/api/admin/top-users?limit=20'
+    )
+
+  const container =
+    document.getElementById(
+      'topUsers'
+    )
+
+  const table =
+    document.getElementById(
+      'usersTable'
+    )
+
+  container.innerHTML =
+    ''
+
+  table.innerHTML =
+    ''
+
+  if (
+    !data.users?.length
+  ) {
+    container.innerHTML =
+      '<div class="empty">لا توجد بيانات.</div>'
+
+    return
   }
 
-
-  document
-    .querySelectorAll(
-      ".nav-item"
-    )
+  data.users
+    .slice(0,8)
     .forEach(
-      item => {
-        item.addEventListener(
-          "click",
-          () => {
-            activateScreen(
-              item.dataset.screen
-            )
-          }
-        )
-      }
-    )
-
-
-  async function loadAdminMe() {
-    const data =
-      await api(
-        "/api/admin/me"
-      )
-
-    currentRole =
-      data.role
-
-    document.getElementById(
-      "roleBadge"
-    ).textContent =
-      data.role ===
-        "owner"
-        ? "👑 Owner"
-        : "🛡️ Admin"
-
-    if (
-      data.role !==
-      "owner"
-    ) {
-      const adminNav =
-        document.querySelector(
-          '[data-screen="admins"]'
-        )
-
-      if (adminNav) {
-        adminNav.style.display =
-          "none"
-      }
-    }
-  }
-
-
-  async function loadStats() {
-    const data =
-      await api(
-        "/api/admin/stats"
-      )
-
-    const stats =
-      data.stats
-
-    document.getElementById(
-      "statUsers"
-    ).textContent =
-      formatNumber(
-        stats.users
-      )
-
-    document.getElementById(
-      "statActive"
-    ).textContent =
-      formatNumber(
-        stats.activeUsers
-      )
-
-    document.getElementById(
-      "statTasks"
-    ).textContent =
-      formatNumber(
-        stats.tasks
-      )
-
-    document.getElementById(
-      "statPoints"
-    ).textContent =
-      formatNumber(
-        stats.totalPoints
-      )
-
-    document.getElementById(
-      "statBanned"
-    ).textContent =
-      `${formatNumber(stats.bannedUsers)} محظور`
-
-    document.getElementById(
-      "statTaskSub"
-    ).textContent =
-      `${formatNumber(stats.activeTasks)} نشطة • ${formatNumber(stats.pendingVerifications)} تنتظر التحقق`
-
-    document.getElementById(
-      "statRevenue"
-    ).textContent =
-      `$${Number(stats.totalRevenue || 0).toFixed(2)} مبيعات`
-  }
-
-
-  async function loadTopUsers() {
-    const [
-      top
-    ] =
-      await Promise.all([
-        api(
-          "/api/admin/top-users?limit=10"
-        )
-      ])
-
-    renderTopUsers(
-      top.users
-    )
-  }
-
-
-  function renderTopUsers(
-    users
-  ) {
-    const dashboard =
-      document.getElementById(
-        "dashboardTopUsers"
-      )
-
-    const usersTable =
-      document.getElementById(
-        "usersTable"
-      )
-
-    dashboard.innerHTML = ""
-
-    usersTable.innerHTML = ""
-
-    if (
-      !users?.length
-    ) {
-      dashboard.innerHTML =
-        '<div class="empty">لا توجد بيانات بعد.</div>'
-
-      usersTable.innerHTML =
-        '<tr><td colspan="7" class="empty">لا يوجد مستخدمون.</td></tr>'
-
-      return
-    }
-
-    users
-      .slice(
-        0,
-        5
-      )
-      .forEach(
-        (
-          user,
-          index
-        ) => {
-          const item =
-            document.createElement(
-              "div"
-            )
-
-          item.className =
-            "activity-item"
-
-          item.innerHTML = `
-            <div class="activity-main">
-              <div class="activity-title">
-                #${index + 1}
-                ${
-                  [
-                    user.first_name,
-                    user.last_name
-                  ]
-                    .filter(
-                      Boolean
-                    )
-                    .join(
-                      " "
-                    ) ||
-                  "بدون اسم"
-                }
-              </div>
-
-              <div class="activity-sub">
-                ${user.telegram_id}
-              </div>
-            </div>
-
-            <div class="activity-amount positive">
-              ${formatNumber(user.points)}
-            </div>
-          `
-
-          dashboard.appendChild(
-            item
-          )
-        }
-      )
-
-    users.forEach(
       (
         user,
         index
       ) => {
+
         const row =
           document.createElement(
-            "tr"
+            'div'
           )
 
+        row.style.display =
+          'flex'
+
+        row.style.justifyContent =
+          'space-between'
+
+        row.style.padding =
+          '9px 0'
+
+        row.style.borderBottom =
+          '1px solid var(--line)'
+
         row.innerHTML = `
-          <td>
-            ${index + 1}
-          </td>
+          <div>
+            <strong style="font-size:10px">
+              #${index + 1}
+              ${
+                user.first_name ||
+                user.username ||
+                'مستخدم'
+              }
+            </strong>
 
-          <td>
-            ${
-              [
-                user.first_name,
-                user.last_name
-              ]
-                .filter(
-                  Boolean
-                )
-                .join(
-                  " "
-                ) ||
-              "-"
-            }
-          </td>
+            <div style="color:var(--muted);font-size:8px;margin-top:2px">
+              ${user.telegram_id}
+            </div>
+          </div>
 
-          <td class="id">
-            ${user.telegram_id}
-          </td>
-
-          <td class="points">
+          <strong style="color:var(--lime);font-family:monospace">
             ${formatNumber(user.points)}
-          </td>
-
-          <td>
-            ${formatNumber(user.completed_tasks)}
-          </td>
-
-          <td>
-            ${formatNumber(user.successful_referrals)}
-          </td>
-
-          <td>
-            ${
-              user.is_banned
-                ? '<span class="pill pill-red">محظور</span>'
-                : '<span class="pill pill-green">نشط</span>'
-            }
-          </td>
+          </strong>
         `
 
-        usersTable.appendChild(
+        container.appendChild(
           row
         )
       }
     )
+
+  data.users.forEach(
+    (
+      user,
+      index
+    ) => {
+
+      const row =
+        document.createElement(
+          'tr'
+        )
+
+      row.innerHTML = `
+        <td>${index + 1}</td>
+
+        <td>
+          ${
+            [
+              user.first_name,
+              user.last_name
+            ]
+              .filter(Boolean)
+              .join(' ') ||
+            '-'
+          }
+        </td>
+
+        <td class="id-cell">
+          ${user.telegram_id}
+        </td>
+
+        <td class="points-cell">
+          ${formatNumber(user.points)}
+        </td>
+
+        <td>
+          ${formatNumber(user.completed_tasks)}
+        </td>
+
+        <td>
+          ${formatNumber(user.successful_referrals)}
+        </td>
+
+        <td>
+          ${
+            user.is_banned
+              ? '<span class="pill pill-red">محظور</span>'
+              : '<span class="pill pill-green">نشط</span>'
+          }
+        </td>
+      `
+
+      table.appendChild(
+        row
+      )
+    }
+  )
+}
+
+
+async function loadTransactions(
+  compact = false
+) {
+  const data =
+    await api(
+      '/api/admin/transactions'
+    )
+
+  const container =
+    document.getElementById(
+      'recentTransactions'
+    )
+
+  const table =
+    document.getElementById(
+      'transactionsTable'
+    )
+
+  container.innerHTML =
+    ''
+
+  table.innerHTML =
+    ''
+
+  if (
+    !data.transactions?.length
+  ) {
+    container.innerHTML =
+      '<div class="empty">لا توجد عمليات.</div>'
+
+    return
   }
 
-
-  async function loadTransactions(
-    dashboardOnly = false
-  ) {
-    const data =
-      await api(
-        "/api/admin/transactions"
-      )
-
-    const container =
-      document.getElementById(
-        "dashboardTransactions"
-      )
-
-    const table =
-      document.getElementById(
-        "transactionsTable"
-      )
-
-    container.innerHTML = ""
-
-    table.innerHTML = ""
-
-    if (
-      !data.transactions?.length
-    ) {
-      container.innerHTML =
-        '<div class="empty">لا توجد عمليات.</div>'
-
-      table.innerHTML =
-        '<tr><td colspan="6" class="empty">لا توجد عمليات.</td></tr>'
-
-      return
-    }
-
-    data.transactions
-      .slice(
-        0,
-        10
-      )
-      .forEach(
-        transaction => {
-          const item =
-            document.createElement(
-              "div"
-            )
-
-          item.className =
-            "activity-item"
-
-          const amount =
-            Number(
-              transaction.amount
-            )
-
-          item.innerHTML = `
-            <div class="activity-main">
-              <div class="activity-title">
-                ${
-                  transaction.user?.first_name ||
-                  transaction.user?.username ||
-                  transaction.user?.telegram_id ||
-                  "مستخدم"
-                }
-              </div>
-
-              <div class="activity-sub">
-                ${transaction.transaction_type}
-              </div>
-            </div>
-
-            <div class="activity-amount ${
-              amount >= 0
-                ? "positive"
-                : "negative"
-            }">
-              ${
-                amount > 0
-                  ? "+"
-                  : ""
-              }${formatNumber(amount)}
-            </div>
-          `
-
-          container.appendChild(
-            item
-          )
-        }
-      )
-
-    data.transactions.forEach(
+  data.transactions
+    .slice(0,10)
+    .forEach(
       transaction => {
+
         const amount =
           Number(
             transaction.amount
@@ -2605,1087 +1910,1015 @@
 
         const row =
           document.createElement(
-            "tr"
+            'div'
           )
 
-        row.innerHTML = `
-          <td class="id">
-            ${
-              transaction.user?.telegram_id ||
-              "-"
-            }
-          </td>
+        row.style.display =
+          'flex'
 
-          <td>
-            ${
-              transaction.transaction_type ||
-              "-"
-            }
-          </td>
+        row.style.justifyContent =
+          'space-between'
 
-          <td class="${
-            amount >= 0
-              ? "points"
-              : ""
-          }">
-            ${
-              amount > 0
-                ? "+"
-                : ""
-            }${formatNumber(amount)}
-          </td>
+        row.style.padding =
+          '8px 0'
 
-          <td>
-            ${formatNumber(transaction.balance_after)}
-          </td>
-
-          <td>
-            ${
-              transaction.description ||
-              "-"
-            }
-          </td>
-
-          <td>
-            ${formatDate(transaction.created_at)}
-          </td>
-        `
-
-        table.appendChild(
-          row
-        )
-      }
-    )
-  }
-
-
-  async function refreshDashboard() {
-    try {
-      await Promise.all([
-        loadStats(),
-        loadTopUsers(),
-        loadTransactions(
-          true
-        )
-      ])
-    } catch (
-      error
-    ) {
-      renderError(
-        error
-      )
-    }
-  }
-
-
-  async function searchUser() {
-    const input =
-      document.getElementById(
-        "userSearch"
-      )
-
-    const value =
-      input.value.trim()
-
-    if (!value) {
-      showToast(
-        "أدخل Telegram ID أو username"
-      )
-
-      return
-    }
-
-    try {
-      const data =
-        await api(
-          `/api/admin/users/search?q=${encodeURIComponent(value)}`
-        )
-
-      const user =
-        data.users?.[0]
-
-      if (!user) {
-        showToast(
-          "لم يتم العثور على المستخدم"
-        )
-
-        return
-      }
-
-      await openUser(
-        user.telegram_id
-      )
-    } catch (
-      error
-    ) {
-      renderError(
-        error
-      )
-    }
-  }
-
-
-  async function openUser(
-    telegramId
-  ) {
-    const data =
-      await api(
-        `/api/admin/users/${telegramId}`
-      )
-
-    currentUser =
-      data.user
-
-    const panel =
-      document.getElementById(
-        "userPanel"
-      )
-
-    panel.classList.add(
-      "show"
-    )
-
-    document.getElementById(
-      "userName"
-    ).textContent =
-      [
-        currentUser.first_name,
-        currentUser.last_name
-      ]
-        .filter(
-          Boolean
-        )
-        .join(
-          " "
-        ) ||
-      "بدون اسم"
-
-    document.getElementById(
-      "userUsername"
-    ).textContent =
-      currentUser.username
-        ? `@${currentUser.username}`
-        : "بدون username"
-
-    document.getElementById(
-      "userId"
-    ).textContent =
-      currentUser.telegram_id
-
-    document.getElementById(
-      "userPoints"
-    ).textContent =
-      `${formatNumber(currentUser.points)} نقطة`
-
-    document.getElementById(
-      "userTasks"
-    ).textContent =
-      formatNumber(
-        currentUser.completed_tasks
-      )
-
-    document.getElementById(
-      "userRefs"
-    ).textContent =
-      formatNumber(
-        currentUser.successful_referrals
-      )
-
-    document.getElementById(
-      "userStatus"
-    ).textContent =
-      currentUser.is_banned
-        ? "محظور"
-        : "نشط"
-
-    document.getElementById(
-      "userLastSeen"
-    ).textContent =
-      formatDate(
-        currentUser.last_seen_at
-      )
-
-    const banButton =
-      document.getElementById(
-        "userBanBtn"
-      )
-
-    banButton.textContent =
-      currentUser.is_banned
-        ? "فك الحظر"
-        : "حظر"
-
-    banButton.className =
-      currentUser.is_banned
-        ? "button button-green"
-        : "button button-coral"
-  }
-
-
-  async function changeUserPoints() {
-    if (
-      !currentUser
-    ) {
-      showToast(
-        "ابحث عن المستخدم أولًا"
-      )
-
-      return
-    }
-
-    const input =
-      document.getElementById(
-        "userPointAmount"
-      )
-
-    const amount =
-      Number(
-        input.value
-      )
-
-    if (
-      !Number.isSafeInteger(
-        amount
-      ) ||
-      amount === 0
-    ) {
-      showToast(
-        "اكتب قيمة مثل 100 أو -100"
-      )
-
-      return
-    }
-
-    if (
-      !confirm(
-        `هل تريد تعديل رصيد المستخدم بقيمة ${amount} نقطة؟`
-      )
-    ) {
-      return
-    }
-
-    try {
-      const data =
-        await api(
-          `/api/admin/users/${currentUser.telegram_id}/points`,
-          {
-            method: "POST",
-
-            body:
-              JSON.stringify({
-                amount,
-
-                description:
-                  "تعديل من لوحة الإدارة"
-              })
-          }
-        )
-
-      input.value = ""
-
-      showToast(
-        "تم تعديل النقاط"
-      )
-
-      await openUser(
-        currentUser.telegram_id
-      )
-
-      await loadStats()
-      await loadTopUsers()
-    } catch (
-      error
-    ) {
-      renderError(
-        error
-      )
-    }
-  }
-
-
-  async function toggleUserBan() {
-    if (
-      !currentUser
-    ) {
-      return
-    }
-
-    const action =
-      currentUser.is_banned
-        ? "unban"
-        : "ban"
-
-    if (
-      !confirm(
-        currentUser.is_banned
-          ? "فك حظر المستخدم؟"
-          : "حظر المستخدم؟"
-      )
-    ) {
-      return
-    }
-
-    try {
-      await api(
-        `/api/admin/users/${currentUser.telegram_id}/${action}`,
-        {
-          method: "POST",
-
-          body:
-            JSON.stringify({
-              reason:
-                "إجراء من لوحة الإدارة"
-            })
-        }
-      )
-
-      await openUser(
-        currentUser.telegram_id
-      )
-
-      await loadStats()
-      await loadTopUsers()
-
-      showToast(
-        currentUser.is_banned
-          ? "تم حظر المستخدم"
-          : "تم فك الحظر"
-      )
-    } catch (
-      error
-    ) {
-      renderError(
-        error
-      )
-    }
-  }
-
-
-  async function loadAdminTasks() {
-    const filter =
-      document.getElementById(
-        "taskStatusFilter"
-      ).value
-
-    const url =
-      filter
-        ? `/api/admin/tasks?status=${encodeURIComponent(filter)}`
-        : "/api/admin/tasks"
-
-    const data =
-      await api(
-        url
-      )
-
-    const table =
-      document.getElementById(
-        "tasksTable"
-      )
-
-    table.innerHTML = ""
-
-    if (
-      !data.tasks?.length
-    ) {
-      table.innerHTML =
-        '<tr><td colspan="7" class="empty">لا توجد مهام.</td></tr>'
-
-      return
-    }
-
-    data.tasks.forEach(
-      task => {
-        const progress =
-          task.target_completions > 0
-            ? Math.round(
-                (
-                  task.completed_completions /
-                  task.target_completions
-                ) *
-                100
-              )
-            : 0
-
-        let statusHtml
-
-        if (
-          task.status ===
-          "active"
-        ) {
-          statusHtml =
-            '<span class="pill pill-green">نشطة</span>'
-        } else if (
-          task.status ===
-          "paused"
-        ) {
-          statusHtml =
-            '<span class="pill pill-blue">متوقفة</span>'
-
-        } else if (
-          task.status ===
-          "completed"
-        ) {
-          statusHtml =
-            '<span class="pill pill-green">مكتملة</span>'
-        } else {
-          statusHtml =
-            '<span class="pill pill-red">ملغاة</span>'
-        }
-
-        const row =
-          document.createElement(
-            "tr"
-          )
+        row.style.borderBottom =
+          '1px solid var(--line)'
 
         row.innerHTML = `
-          <td>
-            <strong>
-              ${task.title}
+          <div>
+            <strong style="font-size:9px">
+              ${
+                transaction.user?.first_name ||
+                transaction.user?.telegram_id ||
+                'مستخدم'
+              }
             </strong>
 
-            <div style="color:var(--muted);font-size:8px;margin-top:3px">
-              ${
-                task.chat_username ||
-                task.chat_title ||
-                "-"
-              }
-            </div>
-          </td>
-
-          <td>
-            ${
-              task.owner?.first_name ||
-              task.owner?.username ||
-              task.owner?.telegram_id ||
-              "-"
-            }
-          </td>
-
-          <td>
-            ${
-              task.type ===
-              "channel"
-                ? "قناة"
-                : "مجموعة"
-            }
-          </td>
-
-          <td>
-            ${task.completed_completions}
-            /
-            ${task.target_completions}
-
-            <div style="
-              width:90px;
-              height:4px;
-              background:var(--surface-3);
-              border-radius:4px;
-              margin-top:5px;
-              overflow:hidden;
-            ">
-              <div style="
-                width:${Math.min(
-                  progress,
-                  100
-                )}%;
-                height:100%;
-                background:var(--lime);
-              "></div>
-            </div>
-          </td>
-
-          <td class="points">
-            ${formatNumber(task.remaining_points)}
-          </td>
-
-          <td>
-            ${statusHtml}
-          </td>
-
-          <td>
-            <div style="display:flex;gap:5px">
-
-              ${
-                task.status ===
-                "active"
-                  ? `
-                    <button
-                      class="button button-blue"
-                      onclick="changeTaskStatus('${task.id}','paused')"
-                    >
-                      إيقاف
-                    </button>
-                  `
-                  : task.status ===
-                      "paused"
-                    ? `
-                      <button
-                        class="button button-green"
-                        onclick="changeTaskStatus('${task.id}','active')"
-                      >
-                        استئناف
-                      </button>
-                    `
-                    : ""
-              }
-
-              ${
-                [
-                  "active",
-                  "paused"
-                ].includes(
-                  task.status
-                )
-                  ? `
-                    <button
-                      class="button button-coral"
-                      onclick="cancelTask('${task.id}')"
-                    >
-                      إلغاء
-                    </button>
-                  `
-                  : ""
-              }
-
-            </div>
-          </td>
-        `
-
-        table.appendChild(
-          row
-        )
-      }
-    )
-  }
-
-
-  async function changeTaskStatus(
-    taskId,
-    status
-  ) {
-    try {
-      await api(
-        `/api/admin/tasks/${taskId}/status`,
-        {
-          method: "POST",
-          body:
-            JSON.stringify({
-              status
-            })
-        }
-      )
-
-      showToast(
-        status ===
-          "active"
-          ? "تم استئناف المهمة"
-          : "تم إيقاف المهمة"
-      )
-
-      await loadAdminTasks()
-    } catch (
-      error
-    ) {
-      renderError(
-        error
-      )
-    }
-  }
-
-
-  async function cancelTask(
-    taskId
-  ) {
-    if (
-      !confirm(
-        "إلغاء المهمة وإرجاع النقاط المتبقية للمالك؟"
-      )
-    ) {
-      return
-    }
-
-    try {
-      await api(
-        `/api/admin/tasks/${taskId}/cancel`,
-        {
-          method: "POST"
-        }
-      )
-
-      showToast(
-        "تم إلغاء المهمة وإرجاع الميزانية المتبقية"
-      )
-
-      await loadAdminTasks()
-      await loadStats()
-    } catch (
-      error
-    ) {
-      renderError(
-        error
-      )
-    }
-  }
-
-
-  async function loadReferrals() {
-    const data =
-      await api(
-        "/api/admin/referrals"
-      )
-
-    const table =
-      document.getElementById(
-        "referralsTable"
-      )
-
-    table.innerHTML = ""
-
-    if (
-      !data.referrals?.length
-    ) {
-      table.innerHTML =
-        '<tr><td colspan="6" class="empty">لا توجد إحالات.</td></tr>'
-
-      return
-    }
-
-    data.referrals.forEach(
-      referral => {
-        const row =
-          document.createElement(
-            "tr"
-          )
-
-        const referrer =
-          referral.referrer
-
-        const referred =
-          referral.referred
-
-        row.innerHTML = `
-          <td>
-            ${
-              referrer?.first_name ||
-              referrer?.username ||
-              referrer?.telegram_id ||
-              "-"
-            }
-          </td>
-
-          <td>
-            ${
-              referred?.first_name ||
-              referred?.username ||
-              referred?.telegram_id ||
-              "-"
-            }
-          </td>
-
-          <td>
-            ${referral.completed_tasks}
-            /
-            ${referral.required_tasks}
-          </td>
-
-          <td class="points">
-            +${formatNumber(referral.reward_points)}
-          </td>
-
-          <td>
-            ${
-              referral.rewarded
-                ? '<span class="pill pill-green">تم الصرف</span>'
-                : '<span class="pill pill-blue">قيد التقدم</span>'
-            }
-          </td>
-
-          <td>
-            ${formatDate(referral.created_at)}
-          </td>
-        `
-
-        table.appendChild(
-          row
-        )
-      }
-    )
-  }
-
-
-  async function loadPurchases() {
-    const data =
-      await api(
-        "/api/admin/purchases"
-      )
-
-    const table =
-      document.getElementById(
-        "purchasesTable"
-      )
-
-    table.innerHTML = ""
-
-    if (
-      !data.purchases?.length
-    ) {
-      table.innerHTML =
-        '<tr><td colspan="6" class="empty">لا توجد عمليات شراء.</td></tr>'
-
-      return
-    }
-
-    data.purchases.forEach(
-      purchase => {
-        const row =
-          document.createElement(
-            "tr"
-          )
-
-        row.innerHTML = `
-          <td>
-            ${
-              purchase.user?.first_name ||
-              purchase.user?.username ||
-              purchase.user?.telegram_id ||
-              "-"
-            }
-          </td>
-
-          <td class="points">
-            $${Number(
-              purchase.usd_amount
-            ).toFixed(2)}
-          </td>
-
-          <td class="points">
-            ${formatNumber(
-              purchase.points_amount
-            )}
-          </td>
-
-          <td>
-            ${
-              purchase.provider ||
-              "-"
-            }
-          </td>
-
-          <td>
-            ${
-              purchase.status ===
-              "completed"
-                ? '<span class="pill pill-green">مكتملة</span>'
-                : '<span class="pill pill-blue">' +
-                  purchase.status +
-                  '</span>'
-            }
-          </td>
-
-          <td>
-            ${formatDate(
-              purchase.created_at
-            )}
-          </td>
-        `
-
-        table.appendChild(
-          row
-        )
-      }
-    )
-  }
-
-
-  async function loadSettings() {
-    const data =
-      await api(
-        "/api/admin/settings"
-      )
-
-    const s =
-      data.settings || {}
-
-    document.getElementById(
-      "settingPointsPerTask"
-    ).value =
-      s.points_per_task ||
-      "5"
-
-    document.getElementById(
-      "settingPointsPerUsd"
-    ).value =
-      s.points_per_usd ||
-      "500"
-
-    document.getElementById(
-      "settingReferralReward"
-    ).value =
-      s.referral_reward ||
-      "150"
-
-    document.getElementById(
-      "settingReferralTasks"
-    ).value =
-      s.referral_required_tasks ||
-      "5"
-
-    document.getElementById(
-      "settingVerificationHours"
-    ).value =
-      s.verification_delay_hours ||
-      "10"
-  }
-
-
-  async function saveSettings() {
-    if (
-      currentRole !==
-      "owner"
-    ) {
-      showToast(
-        "الإعدادات للـOwner فقط"
-      )
-
-      return
-    }
-
-    const settings = {
-      points_per_task:
-        document.getElementById(
-          "settingPointsPerTask"
-        ).value,
-
-      points_per_usd:
-        document.getElementById(
-          "settingPointsPerUsd"
-        ).value,
-
-      referral_reward:
-        document.getElementById(
-          "settingReferralReward"
-        ).value,
-
-      referral_required_tasks:
-        document.getElementById(
-          "settingReferralTasks"
-        ).value,
-
-      verification_delay_hours:
-        document.getElementById(
-          "settingVerificationHours"
-        ).value
-    }
-
-    try {
-      await api(
-        "/api/admin/settings",
-        {
-          method: "POST",
-
-          body:
-            JSON.stringify({
-              settings
-            })
-        }
-      )
-
-      showToast(
-        "تم حفظ الإعدادات"
-      )
-    } catch (
-      error
-    ) {
-      renderError(
-        error
-      )
-    }
-  }
-
-
-  async function loadAdmins() {
-    if (
-      currentRole !==
-      "owner"
-    ) {
-      return
-    }
-
-    const data =
-      await api(
-        "/api/admin/admins"
-      )
-
-    const list =
-      document.getElementById(
-        "adminsList"
-      )
-
-    list.innerHTML = ""
-
-    if (
-      !data.admins?.length
-    ) {
-      list.innerHTML =
-        '<div class="empty">لا يوجد Admins إضافيين.</div>'
-
-      return
-    }
-
-    data.admins.forEach(
-      admin => {
-        const item =
-          document.createElement(
-            "div"
-          )
-
-        item.className =
-          "activity-item"
-
-        item.innerHTML = `
-          <div class="activity-main">
-            <div class="activity-title">
-              ${admin.telegram_id}
-            </div>
-
-            <div class="activity-sub">
-              ${
-                admin.is_active
-                  ? "فعال"
-                  : "معطّل"
-              }
-              •
-              ${admin.role}
+            <div style="color:var(--muted);font-size:8px;margin-top:2px">
+              ${transaction.description || transaction.transaction_type}
             </div>
           </div>
 
-          ${
-            admin.role ===
-            "admin"
-              ? `
-                <button
-                  class="button button-coral"
-                  onclick="removeAdmin(${admin.telegram_id})"
-                >
-                  إزالة
-                </button>
-              `
-              : ""
-          }
+          <strong style="
+            color:${
+              amount >= 0
+                ? 'var(--lime)'
+                : 'var(--red)'
+            };
+            font-family:monospace;
+          ">
+            ${
+              amount > 0
+                ? '+'
+                : ''
+            }${formatNumber(amount)}
+          </strong>
         `
 
-        list.appendChild(
-          item
+        container.appendChild(
+          row
         )
       }
     )
+
+  data.transactions.forEach(
+    transaction => {
+
+      const amount =
+        Number(
+          transaction.amount
+        )
+
+      const row =
+        document.createElement(
+          'tr'
+        )
+
+      row.innerHTML = `
+        <td class="id-cell">
+          ${
+            transaction.user?.telegram_id ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${
+            transaction.transaction_type ||
+            '-'
+          }
+        </td>
+
+        <td class="${
+          amount >= 0
+            ? 'points-cell'
+            : 'red'
+        }">
+          ${
+            amount > 0
+              ? '+'
+              : ''
+          }${formatNumber(amount)}
+        </td>
+
+        <td>
+          ${formatNumber(
+            transaction.balance_after
+          )}
+        </td>
+
+        <td>
+          ${
+            transaction.description ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${formatDate(
+            transaction.created_at
+          )}
+        </td>
+      `
+
+      table.appendChild(
+        row
+      )
+    }
+  )
+}
+
+
+async function searchUser() {
+  const value =
+    document.getElementById(
+      'userSearch'
+    ).value.trim()
+
+  if (!value) {
+    toast(
+      'أدخل Telegram ID أو username'
+    )
+
+    return
   }
 
-
-  async function addAdmin() {
-    const input =
-      document.getElementById(
-        "newAdminId"
-      )
-
-    const telegramId =
-      Number(
-        input.value
+  try {
+    const data =
+      await api(
+        `/api/admin/users/search?q=${encodeURIComponent(value)}`
       )
 
     if (
-      !Number.isSafeInteger(
-        telegramId
-      ) ||
-      telegramId <= 0
+      !data.users?.length
     ) {
-      showToast(
-        "أدخل Telegram ID صحيح"
+      toast(
+        'المستخدم غير موجود'
       )
 
       return
     }
 
-    try {
+    await openUser(
+      data.users[0]
+        .telegram_id
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error.message
+    )
+  }
+}
+
+
+async function openUser(
+  telegramId
+) {
+  const data =
+    await api(
+      `/api/admin/users/${telegramId}`
+    )
+
+  currentUser =
+    data.user
+
+  document.getElementById(
+    'userPanel'
+  ).classList.add(
+    'show'
+  )
+
+  document.getElementById(
+    'userName'
+  ).textContent =
+    [
+      currentUser.first_name,
+      currentUser.last_name
+    ]
+      .filter(Boolean)
+      .join(' ') ||
+    'بدون اسم'
+
+  document.getElementById(
+    'userUsername'
+  ).textContent =
+    currentUser.username
+      ? `@${currentUser.username}`
+      : 'بدون username'
+
+  document.getElementById(
+    'userId'
+  ).textContent =
+    currentUser.telegram_id
+
+  document.getElementById(
+    'userPoints'
+  ).textContent =
+    `${formatNumber(currentUser.points)} نقطة`
+
+  document.getElementById(
+    'userTasks'
+  ).textContent =
+    formatNumber(
+      currentUser.completed_tasks
+    )
+
+  document.getElementById(
+    'userRefs'
+  ).textContent =
+    formatNumber(
+      currentUser.successful_referrals
+    )
+
+  document.getElementById(
+    'userStatus'
+  ).textContent =
+    currentUser.is_banned
+      ? 'محظور'
+      : 'نشط'
+
+  document.getElementById(
+    'userLastSeen'
+  ).textContent =
+    formatDate(
+      currentUser.last_seen_at
+    )
+
+  const button =
+    document.getElementById(
+      'userBanBtn'
+    )
+
+  button.textContent =
+    currentUser.is_banned
+      ? 'فك الحظر'
+      : 'حظر'
+
+  button.className =
+    currentUser.is_banned
+      ? 'action green-btn'
+      : 'action red-btn'
+}
+
+
+async function addUserPoints() {
+  await adjustUserPoints(
+    1
+  )
+}
+
+
+async function removeUserPoints() {
+  await adjustUserPoints(
+    -1
+  )
+}
+
+
+async function adjustUserPoints(
+  direction
+) {
+  if (!currentUser) {
+    toast(
+      'ابحث عن المستخدم أولاً'
+    )
+
+    return
+  }
+
+  const input =
+    document.getElementById(
+      'userPointAmount'
+    )
+
+  const value =
+    Math.abs(
+      Number(
+        input.value
+      )
+    )
+
+  if (
+    !Number.isSafeInteger(
+      value
+    ) ||
+    value <= 0
+  ) {
+    toast(
+      'أدخل قيمة صحيحة مثل 100'
+    )
+
+    return
+  }
+
+  const amount =
+    direction === 1
+      ? value
+      : -value
+
+  const actionText =
+    direction === 1
+      ? `إضافة ${value} نقطة`
+      : `سحب ${value} نقطة`
+
+  if (
+    !confirm(
+      `تأكيد ${actionText}؟`
+    )
+  ) {
+    return
+  }
+
+  try {
+    const result =
       await api(
-        "/api/admin/admins",
+        `/api/admin/users/${currentUser.telegram_id}/points`,
         {
-          method: "POST",
+          method:'POST',
 
           body:
             JSON.stringify({
-              telegramId
+              amount,
+
+              description:
+                direction === 1
+                  ? 'إضافة نقاط من الإدارة'
+                  : 'سحب نقاط من الإدارة'
             })
         }
       )
 
-      input.value = ""
+    input.value =
+      ''
 
-      await loadAdmins()
+    await openUser(
+      currentUser.telegram_id
+    )
 
-      showToast(
-        "تمت إضافة Admin"
-      )
-    } catch (
-      error
-    ) {
-      renderError(
-        error
-      )
-    }
-  }
+    await loadDashboard()
+    await loadTopUsers()
 
+    toast(
+      direction === 1
+        ? `تمت إضافة ${value} نقطة`
+        : `تم سحب ${value} نقطة`
+    )
 
-  async function removeAdmin(
-    telegramId
+    void result
+  } catch (
+    error
   ) {
-    if (
-      !confirm(
-        `إزالة Admin ${telegramId}؟`
-      )
-    ) {
-      return
-    }
+    toast(
+      error?.message ||
+      'تعذر تعديل النقاط'
+    )
+  }
+}
 
-    try {
-      await api(
-        `/api/admin/admins/${telegramId}`,
-        {
-          method: "DELETE"
+
+async function toggleUserBan() {
+  if (!currentUser) {
+    return
+  }
+
+  const banned =
+    currentUser.is_banned
+
+  if (
+    !confirm(
+      banned
+        ? 'فك حظر المستخدم؟'
+        : 'حظر المستخدم؟'
+    )
+  ) {
+    return
+  }
+
+  try {
+    await api(
+      `/api/admin/users/${currentUser.telegram_id}/${banned ? 'unban' : 'ban'}`,
+      {
+        method:'POST',
+        body:
+          JSON.stringify({
+            reason:
+              'إجراء من لوحة الإدارة'
+          })
+      }
+    )
+
+    await openUser(
+      currentUser.telegram_id
+    )
+
+    await loadDashboard()
+
+    toast(
+      banned
+        ? 'تم فك الحظر'
+        : 'تم حظر المستخدم'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function loadTasks() {
+  const status =
+    document.getElementById(
+      'taskFilter'
+    ).value
+
+  const url =
+    status
+      ? `/api/admin/tasks?status=${encodeURIComponent(status)}`
+      : '/api/admin/tasks'
+
+  const data =
+    await api(
+      url
+    )
+
+  const table =
+    document.getElementById(
+      'tasksTable'
+    )
+
+  table.innerHTML =
+    ''
+
+  if (
+    !data.tasks?.length
+  ) {
+    table.innerHTML =
+      '<tr><td colspan="6" class="empty">لا توجد مهام.</td></tr>'
+
+    return
+  }
+
+  data.tasks.forEach(
+    task => {
+
+      const row =
+        document.createElement(
+          'tr'
+        )
+
+      const status =
+        task.status
+
+      const statusHtml =
+        status === 'active'
+          ? '<span class="pill pill-green">نشطة</span>'
+          : status === 'paused'
+            ? '<span class="pill pill-blue">متوقفة</span>'
+            : status === 'completed'
+              ? '<span class="pill pill-green">مكتملة</span>'
+              : '<span class="pill pill-red">ملغاة</span>'
+
+      row.innerHTML = `
+        <td>
+          <strong>
+            ${task.title}
+          </strong>
+
+          <div style="color:var(--muted);font-size:8px;margin-top:3px">
+            ${
+              task.chat_username ||
+              task.chat_title ||
+              '-'
+            }
+          </div>
+        </td>
+
+        <td>
+          ${
+            task.owner?.telegram_id ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${task.completed_completions}
+          /
+          ${task.target_completions}
+        </td>
+
+        <td class="points-cell">
+          ${formatNumber(task.remaining_points)}
+        </td>
+
+        <td>
+          ${statusHtml}
+        </td>
+
+        <td>
+          <div style="display:flex;gap:5px">
+            ${
+              status === 'active'
+                ? `
+                  <button
+                    class="action blue-btn"
+                    onclick="changeTaskStatus('${task.id}','paused')"
+                  >
+                    إيقاف
+                  </button>
+                `
+                : status === 'paused'
+                  ? `
+                    <button
+                      class="action green-btn"
+                      onclick="changeTaskStatus('${task.id}','active')"
+                    >
+                      استئناف
+                    </button>
+                  `
+                  : ''
+            }
+
+            ${
+              status === 'active' ||
+              status === 'paused'
+                ? `
+                  <button
+                    class="action red-btn"
+                    onclick="cancelTask('${task.id}')"
+                  >
+                    إلغاء
+                  </button>
+                `
+                : ''
+            }
+          </div>
+        </td>
+      `
+
+      table.appendChild(
+        row
+      )
+    }
+  )
+}
+
+
+async function changeTaskStatus(
+  id,
+  status
+) {
+  try {
+    await api(
+      `/api/admin/tasks/${id}/status`,
+      {
+        method:'POST',
+        body:
+          JSON.stringify({
+            status
+          })
+      }
+    )
+
+    await loadTasks()
+
+    toast(
+      status === 'active'
+        ? 'تم استئناف المهمة'
+        : 'تم إيقاف المهمة'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function cancelTask(
+  id
+) {
+  if (
+    !confirm(
+      'إلغاء المهمة وإرجاع الميزانية المتبقية للمالك؟'
+    )
+  ) {
+    return
+  }
+
+  try {
+    await api(
+      `/api/admin/tasks/${id}/cancel`,
+      {
+        method:'POST'
+      }
+    )
+
+    await loadTasks()
+    await loadDashboard()
+
+    toast(
+      'تم إلغاء المهمة وإرجاع الميزانية'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function loadReferrals() {
+  const data =
+    await api(
+      '/api/admin/referrals'
+    )
+
+  const table =
+    document.getElementById(
+      'referralsTable'
+    )
+
+  table.innerHTML =
+    ''
+
+  if (
+    !data.referrals?.length
+  ) {
+    table.innerHTML =
+      '<tr><td colspan="5" class="empty">لا توجد إحالات.</td></tr>'
+
+    return
+  }
+
+  data.referrals.forEach(
+    referral => {
+
+      const row =
+        document.createElement(
+          'tr'
+        )
+
+      row.innerHTML = `
+        <td>
+          ${
+            referral.referrer?.telegram_id ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${
+            referral.referred?.telegram_id ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${referral.completed_tasks}
+          /
+          ${referral.required_tasks}
+        </td>
+
+        <td class="points-cell">
+          +${formatNumber(
+            referral.reward_points
+          )}
+        </td>
+
+        <td>
+          ${
+            referral.rewarded
+              ? '<span class="pill pill-green">تم الصرف</span>'
+              : '<span class="pill pill-blue">قيد التقدم</span>'
+          }
+        </td>
+      `
+
+      table.appendChild(
+        row
+      )
+    }
+  )
+}
+
+
+async function loadSettings() {
+  const data =
+    await api(
+      '/api/admin/settings'
+    )
+
+  const s =
+    data.settings || {}
+
+  document.getElementById(
+    'settingsTask'
+  ).value =
+    s.points_per_task ||
+    '5'
+
+  document.getElementById(
+    'settingsUsd'
+  ).value =
+    s.points_per_usd ||
+    '500'
+
+  document.getElementById(
+    'settingsReferral'
+  ).value =
+    s.referral_reward ||
+    '150'
+
+  document.getElementById(
+    'settingsReferralTasks'
+  ).value =
+    s.referral_required_tasks ||
+    '5'
+
+  document.getElementById(
+    'settingsHours'
+  ).value =
+    s.verification_delay_hours ||
+    '10'
+}
+
+
+async function saveSettings() {
+  if (
+    currentRole !==
+    'owner'
+  ) {
+    toast(
+      'الإعدادات للـOwner فقط'
+    )
+
+
+    return
+  }
+
+  try {
+    await api(
+      '/api/admin/settings',
+      {
+        method:'POST',
+
+        body:
+          JSON.stringify({
+            settings:{
+              points_per_task:
+                document.getElementById(
+                  'settingsTask'
+                ).value,
+
+              points_per_usd:
+                document.getElementById(
+                  'settingsUsd'
+                ).value,
+
+              referral_reward:
+                document.getElementById(
+                  'settingsReferral'
+                ).value,
+
+              referral_required_tasks:
+                document.getElementById(
+                  'settingsReferralTasks'
+                ).value,
+
+              verification_delay_hours:
+                document.getElementById(
+                  'settingsHours'
+                ).value
+            }
+          })
+      }
+    )
+
+    toast(
+      'تم حفظ الإعدادات'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function loadAdmins() {
+  if (
+    currentRole !==
+    'owner'
+  ) {
+    return
+  }
+
+  const data =
+    await api(
+      '/api/admin/admins'
+    )
+
+  const list =
+    document.getElementById(
+      'adminsList'
+    )
+
+  list.innerHTML =
+    ''
+
+  if (
+    !data.admins?.length
+  ) {
+    list.innerHTML =
+      '<div class="empty">لا يوجد مشرفون.</div>'
+
+    return
+  }
+
+  data.admins.forEach(
+    admin => {
+
+      const row =
+        document.createElement(
+          'div'
+        )
+
+      row.style.display =
+        'flex'
+
+      row.style.justifyContent =
+        'space-between'
+
+      row.style.alignItems =
+        'center'
+
+      row.style.padding =
+        '9px'
+
+      row.style.marginBottom =
+        '6px'
+
+      row.style.borderRadius =
+        '10px'
+
+      row.style.background =
+        'var(--surface2)'
+
+      row.innerHTML = `
+        <div>
+          <strong style="font-size:10px">
+            ${admin.telegram_id}
+          </strong>
+
+          <div style="color:var(--muted);font-size:8px;margin-top:2px">
+            ${admin.role}
+          </div>
+        </div>
+
+        ${
+          admin.role === 'admin'
+            ? `
+              <button
+                class="action red-btn"
+                onclick="removeAdmin(${admin.telegram_id})"
+              >
+                إزالة
+              </button>
+            `
+            : ''
         }
-      )
+      `
 
-      await loadAdmins()
-
-      showToast(
-        "تمت إزالة Admin"
-      )
-    } catch (
-      error
-    ) {
-      renderError(
-        error
+      list.appendChild(
+        row
       )
     }
+  )
+}
+
+
+async function addAdmin() {
+  const id =
+    Number(
+      document.getElementById(
+        'newAdminId'
+      ).value
+    )
+
+  if (
+    !Number.isSafeInteger(
+      id
+    ) ||
+    id <= 0
+  ) {
+    toast(
+      'Telegram ID غير صحيح'
+    )
+
+    return
   }
 
+  try {
+    await api(
+      '/api/admin/admins',
+      {
+        method:'POST',
 
-  async function init() {
-    try {
-      await loadAdminMe()
+        body:
+          JSON.stringify({
+            telegramId:id
+          })
+      }
+    )
 
-      await refreshDashboard()
-    } catch (
-      error
-    ) {
-      renderError(
-        error
-      )
-    }
+    document.getElementById(
+      'newAdminId'
+    ).value =
+      ''
+
+    await loadAdmins()
+
+    toast(
+      'تمت إضافة Admin'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function removeAdmin(
+  id
+) {
+  if (
+    !confirm(
+      `إزالة Admin ${id}؟`
+    )
+  ) {
+    return
   }
 
+  try {
+    await api(
+      `/api/admin/admins/${id}`,
+      {
+        method:'DELETE'
+      }
+    )
 
-  init()
+    await loadAdmins()
+
+    toast(
+      'تمت إزالة Admin'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function init() {
+  try {
+    await loadRole()
+    await loadDashboard()
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر تحميل لوحة الإدارة'
+    )
+  }
+}
+
+
+init()
 </script>
 
 </body>

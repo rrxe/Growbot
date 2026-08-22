@@ -12,6 +12,7 @@ interface TelegramWebAppUser {
 
 interface TelegramWebApp {
   initData: string
+
   initDataUnsafe: {
     user?: TelegramWebAppUser
     start_param?: string
@@ -19,9 +20,18 @@ interface TelegramWebApp {
     auth_date?: number
     hash?: string
   }
+
   ready(): void
   expand(): void
   close(): void
+
+  openInvoice(
+    url: string,
+    callback?: (
+      status: string
+    ) => void
+  ): void
+
   showPopup(params: {
     title?: string
     message: string
@@ -30,19 +40,58 @@ interface TelegramWebApp {
       type?: 'default' | 'ok' | 'close' | 'cancel' | 'destructive'
       text: string
     }>
-  }, callback?: (id?: string) => void): void
-  showAlert(message: string, callback?: () => void): void
-  openTelegramLink(url: string): void
-  openLink(url: string): void
+  }, callback?: (
+    id?: string
+  ) => void): void
+
+  showAlert(
+    message: string,
+    callback?: () => void
+  ): void
+
+  openTelegramLink(
+    url: string
+  ): void
+
+  openLink(
+    url: string
+  ): void
+
   HapticFeedback?: {
-    impactOccurred(style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft'): void
-    notificationOccurred(type: 'error' | 'success' | 'warning'): void
+    impactOccurred(
+      style:
+        | 'light'
+        | 'medium'
+        | 'heavy'
+        | 'rigid'
+        | 'soft'
+    ): void
+
+    notificationOccurred(
+      type:
+        | 'error'
+        | 'success'
+        | 'warning'
+    ): void
+
     selectionChanged(): void
   }
+}
+
+interface AdsgramController {
+  show(): Promise<unknown>
+}
+
+interface AdsgramApi {
+  init(options: {
+    blockId: string
+  }): AdsgramController
 }
 
 interface Window {
   Telegram?: {
     WebApp: TelegramWebApp
   }
+
+  Adsgram?: AdsgramApi
 }
