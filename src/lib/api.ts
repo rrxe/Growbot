@@ -142,10 +142,30 @@ export function getAdStatus() {
 export function startAdSession() {
   return request<{
     ok: true
+    session: {
+      id: string
+    }
   }>(
     '/api/ads/start',
     {
       method: 'POST'
+    }
+  )
+}
+
+
+export function cancelAdSession(
+  sessionId: string
+) {
+  return request<{
+    cancelled: boolean
+  }>(
+    '/api/ads/cancel',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        sessionId
+      })
     }
   )
 }

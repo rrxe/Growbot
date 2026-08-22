@@ -155,6 +155,58 @@ adsRouter.post(
 )
 
 
+adsRouter.post(
+  '/cancel',
+  authMiddleware,
+  async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const sessionId =
+        typeof req.body?.sessionId ===
+        'string'
+          ? req.body.sessionId
+          : ''
+
+      if (!sessionId) {
+        return res
+          .status(400)
+          .json({
+            error:
+              'sessionId مطلوب'
+          })
+      }
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        'cancel_ad_session',
+        {
+          p_user_id:
+            req.dbUser.id,
+
+          p_session_id:
+            sessionId
+        }
+      )
+
+      if (error) {
+        throw error
+      }
+
+      res.json({
+        cancelled:
+          Boolean(data)
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
 adsRouter.get(
   '/reward',
   async (

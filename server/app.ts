@@ -26,6 +26,10 @@ import {
   paymentsRouter
 } from './routes/payments.js'
 
+import {
+  runVerificationJob
+} from './jobs/verification.js'
+
 const app = express()
 
 app.use(
@@ -79,6 +83,52 @@ app.use(
   paymentsRouter
 )
 
+// Vercel serverless ما بيسمح بـ setInterval بالخلفية،
+// فـ startJobs() بملف server/index.ts ما بينشغل أبدًا بالإنتاج.
+// هاد الـ endpoint لازم يتنادى من Vercel Cron كل بضع دقايق.
+app.get(
+  '/api/cron/verify',
+  async (
+    req: Request,
+    res: Response
+  ) => {
+    const secret =
+      process.env.CRON_SECRET || ''
+
+    const given =
+      req.header('authorization') ||
+      ''
+
+    if (
+      !secret ||
+      given !== `Bearer ${secret}`
+    ) {
+      return res
+        .status(401)
+        .json({
+          error: 'Unauthorized'
+        })
+    }
+
+    try {
+      await runVerificationJob()
+
+      res.status(200).json({
+        ok: true
+      })
+    } catch (error) {
+      console.error(
+        '[cron:verify]',
+        error
+      )
+
+      res.status(500).json({
+        ok: false
+      })
+    }
+  }
+)
+
 app.use(
   (
     _req: Request,
@@ -102,11 +152,15 @@ app.use(
       error
     )
 
+    const message =
+      error instanceof Error
+        ? error.message
+        : (error as any)?.message ||
+          (error as any)?.error_description ||
+          'Internal server error'
+
     res.status(500).json({
-      error:
-        error instanceof Error
-          ? error.message
-          : 'Internal server error'
+      error: message
     })
   }
 )

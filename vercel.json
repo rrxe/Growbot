@@ -7,5 +7,11 @@
       "source": "/api/:path*",
       "destination": "/api"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/verify",
+      "schedule": "*/10 * * * *"
+    }
   ]
 }

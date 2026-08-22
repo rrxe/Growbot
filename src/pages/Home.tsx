@@ -7,6 +7,7 @@ import {
 import {
   getAdStatus,
   startAdSession,
+  cancelAdSession,
   createStarsInvoice
 } from '../lib/api.js'
 
@@ -129,10 +130,16 @@ export function Home({
       return
     }
 
+    let sessionId: string | null = null
+
     try {
       setAdLoading(true)
 
-      await startAdSession()
+      const started =
+        await startAdSession()
+
+      sessionId =
+        started.session.id
 
       if (
         !controllerRef.current
@@ -144,7 +151,19 @@ export function Home({
           })
       }
 
-      await controllerRef.current.show()
+      try {
+        await controllerRef.current.show()
+      } catch (showError) {
+        // الإعلان ما ظهر (no fill / تم إغلاقه بدري)
+        // لازم نلغي الجلسة فورًا وإلا تضل "pending" وتقفل المستخدم 15 دقيقة
+        if (sessionId) {
+          await cancelAdSession(
+            sessionId
+          ).catch(() => {})
+        }
+
+        throw showError
+      }
 
       for (
         let i = 0;
@@ -558,7 +577,7 @@ export function Home({
 
             <p className="payment-note">
               الدفع يتم داخل Telegram عبر Stars.
-              لا نستخدم بطاقة أو مزود دفع خارجي داخل الـMini App. 4
+              لا نستخدم بطاقة أو مزود دفع خارجي داخل الـMini App.
             </p>
 
           </div>

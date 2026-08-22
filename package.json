@@ -4,10 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"vite\" \"tsx server/index.ts\" \"tsx bot/index.ts\"",
+    "dev": "concurrently \"vite\" \"tsx server/index.ts\"",
     "dev:web": "vite",
     "dev:server": "tsx server/index.ts",
-    "dev:bot": "tsx bot/index.ts",
     "check": "tsc -b",
     "build": "tsc -b && vite build"
   },

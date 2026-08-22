@@ -48,21 +48,60 @@ function appKeyboard(
     )
   }
 
-  if (
-    ownerId > 0 &&
-    userId === ownerId &&
-    webAppUrl
-  ) {
-    keyboard.webApp(
-      '⚙️ لوحة الإدارة',
-      `${webAppUrl.replace(
-        /\/$/,
-        ''
-      )}/admin.html`
-    )
+  return keyboard
+}
+
+
+function adminAppUrl() {
+  if (!webAppUrl) {
+    return ''
   }
 
-  return keyboard
+  return `${webAppUrl.replace(
+    /\/$/,
+    ''
+  )}/admin.html`
+}
+
+
+async function resolveRole(
+  telegramId: number
+) {
+  if (
+    ownerId > 0 &&
+    telegramId === ownerId
+  ) {
+    return 'owner' as const
+  }
+
+  const {
+    data,
+    error
+  } = await supabase
+    .from('admin_users')
+    .select('role')
+    .eq(
+      'telegram_id',
+      telegramId
+    )
+    .eq(
+      'is_active',
+      true
+    )
+    .maybeSingle()
+
+  if (error) {
+    throw error
+  }
+
+  if (
+    data?.role === 'admin' ||
+    data?.role === 'owner'
+  ) {
+    return data.role
+  }
+
+  return null
 }
 
 
@@ -97,13 +136,39 @@ bot.command(
       )
     }
 
+    let role:
+      'owner' | 'admin' | null =
+      null
+
+    try {
+      role = await resolveRole(
+        ctx.from.id
+      )
+    } catch (error) {
+      console.error(
+        '[bot:role]',
+        error
+      )
+    }
+
+    const keyboard =
+      appKeyboard(ctx.from.id)
+
+    if (
+      role &&
+      adminAppUrl()
+    ) {
+      keyboard.webApp(
+        '⚙️ لوحة الإدارة',
+        adminAppUrl()
+      )
+    }
+
     await ctx.reply(
       lines.join('\n'),
       {
         reply_markup:
-          appKeyboard(
-            ctx.from.id
-          )
+          keyboard
       }
     )
   }
@@ -134,6 +199,69 @@ bot.command(
             )
       }
     )
+  }
+)
+
+
+bot.command(
+  'admin',
+  async (
+    ctx
+  ) => {
+    try {
+      const role =
+        await resolveRole(
+          ctx.from.id
+        )
+
+      if (!role) {
+        await ctx.reply(
+          '⛔ ليس لديك صلاحية دخول لوحة الإدارة.'
+        )
+
+        return
+      }
+
+      const url =
+        adminAppUrl()
+
+      if (!url) {
+        await ctx.reply(
+          '🚧 لوحة الإدارة جاهزة، لكن WEBAPP_URL غير مضبوط بعد.'
+        )
+
+        return
+      }
+
+      await ctx.reply(
+        [
+          '🔐 لوحة الإدارة',
+          '',
+          `الصلاحية: ${
+            role === 'owner'
+              ? '👑 Owner'
+              : '🛡️ Admin'
+          }`
+        ].join('\n'),
+        {
+          reply_markup:
+            new InlineKeyboard()
+              .webApp(
+                '⚙️ فتح لوحة الإدارة',
+                url
+              )
+        }
+      )
+    } catch (error) {
+      console.error(
+        '[bot:admin]',
+        error
+      )
+
+      await ctx.reply(
+        'تعذر التحقق من صلاحياتك حاليًا.'
+      )
+    }
   }
 )
 
@@ -204,6 +332,7 @@ bot.command(
         '',
         '/start — فتح البوت',
         '/app — فتح التطبيق',
+        '/admin — لوحة الإدارة',
         '/id — معرفة Telegram ID',
         '/support — الدعم',
         '/paysupport — مشاكل الدفع',
@@ -355,10 +484,29 @@ bot.on(
     } catch (
       error
     ) {
+      // تيليجرام سحب الستارز فعليًا هون، بس ما قدرنا نضيف النقاط.
+      // لازم نعلم المستخدم بدل ما نسكت، ونسجل charge_id عشان الدعم يقدر يرجعله يدويًا.
       console.error(
         '[payment:success]',
-        error
+        {
+          chargeId:
+            payment.telegram_payment_charge_id,
+          invoicePayload:
+            payment.invoice_payload,
+          telegramId:
+            ctx.from.id,
+          error
+        }
       )
+
+      await ctx.reply(
+        [
+          '⚠️ تم خصم الـ Stars لكن حصل خطأ مؤقت بإضافة النقاط.',
+          '',
+          `رقم العملية: ${payment.telegram_payment_charge_id}`,
+          'تواصل مع @ncryptix وأرسل له هذا الرقم وسيتم إضافة نقاطك يدويًا فورًا.'
+        ].join('\n')
+      ).catch(() => {})
     }
   }
 )
@@ -374,6 +522,8 @@ bot.catch(
 )
 
 
+let commandsRegistered = false
+
 export default async function handler(
   req: any,
   res: any
@@ -382,6 +532,55 @@ export default async function handler(
     req.method !==
     'POST'
   ) {
+    // bot/index.ts القديم كان يسجل الأوامر عند الإقلاع (setMyCommands).
+    // بما إنه انحذف والـ webhook هو الوحيد المتبقي، نسجلها هون
+    // (مرة واحدة لكل cold start، الاستدعاء آمن ومكرر بدون ضرر لو صار أكتر من مرة)
+    if (!commandsRegistered) {
+      commandsRegistered = true
+
+      await bot.api
+        .setMyCommands([
+          {
+            command: 'start',
+            description: 'فتح البوت'
+          },
+          {
+            command: 'app',
+            description: 'فتح التطبيق'
+          },
+          {
+            command: 'admin',
+            description: 'لوحة الإدارة'
+          },
+          {
+            command: 'id',
+            description: 'معرفة Telegram ID'
+          },
+          {
+            command: 'support',
+            description: 'الدعم'
+          },
+          {
+            command: 'paysupport',
+            description: 'مشاكل الدفع'
+          },
+          {
+            command: 'terms',
+            description: 'الشروط'
+          },
+          {
+            command: 'help',
+            description: 'المساعدة'
+          }
+        ])
+        .catch(error => {
+          console.error(
+            '[telegram:setMyCommands]',
+            error
+          )
+        })
+    }
+
     res.status(200).json({
       ok: true,
       bot:
