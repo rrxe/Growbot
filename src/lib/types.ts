@@ -56,6 +56,11 @@ export interface TaskCompletion {
 
 export interface MeResponse {
   user: User
+  dailyCheckin: {
+    claimedToday: boolean
+    justClaimed: boolean
+    points: number
+  }
   referral: {
     code: string
     link: string | null

@@ -3,7 +3,7 @@ import { Home } from './pages/Home'
 import { Tasks } from './pages/Tasks'
 import { Publish } from './pages/Publish'
 import { Profile } from './pages/Profile'
-import { initTelegram } from './lib/telegram'
+import { initTelegram, hapticSuccess, showAlert } from './lib/telegram'
 import { getMe } from './lib/api'
 import type { User } from './lib/types'
 import './styles/app.css'
@@ -17,6 +17,7 @@ export type Screen =
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home')
   const [user, setUser] = useState<User | null>(null)
+  const [checkedInToday, setCheckedInToday] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -28,6 +29,17 @@ export default function App() {
       const response = await getMe()
 
       setUser(response.user)
+      setCheckedInToday(response.dailyCheckin.claimedToday)
+
+      // أول فتحة لليوم: المكافأة انضافت تلقائيًا على السيرفر،
+      // هون بس منعلم المستخدم إنها انضافت.
+      if (response.dailyCheckin.justClaimed) {
+        hapticSuccess()
+
+        showAlert(
+          `☀️ تسجيل دخول تلقائي: تمت إضافة +${response.dailyCheckin.points} نقطة.`
+        )
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -84,6 +96,7 @@ export default function App() {
         {screen === 'home' && (
           <Home
             user={user}
+            checkedInToday={checkedInToday}
             onNavigate={setScreen}
             onUserChanged={setUser}
           />

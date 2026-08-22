@@ -19,10 +19,6 @@ import {
 } from './routes/admin.js'
 
 import {
-  checkinRouter
-} from './routes/checkin.js'
-
-import {
   paymentsRouter
 } from './routes/payments.js'
 
@@ -71,11 +67,6 @@ app.use(
 app.use(
   '/api/admin',
   adminRouter
-)
-
-app.use(
-  '/api/checkin',
-  checkinRouter
 )
 
 app.use(

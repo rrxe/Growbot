@@ -221,22 +221,7 @@
   margin-top: 7px;
 }
 
-.checkin-button {
-  width: 100%;
-  margin-top: 13px;
-  border: 0;
-  border-radius: 12px;
-  padding: 12px;
-  background: #5aa7ff;
-  color: #07121f;
-  font-size: 12px;
-  font-weight: 900;
-}
 
-.checkin-button:disabled {
-  background: #252238;
-  color: #6d6882;
-}
 
 .home-info-card {
   display: flex;

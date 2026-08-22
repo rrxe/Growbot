@@ -1,17 +1,13 @@
 import {
-  useEffect,
   useState
 } from 'react'
 
 import {
   getMe,
-  getCheckinStatus,
-  claimDailyCheckin,
   createStarsInvoice
 } from '../lib/api.js'
 
 import {
-  hapticError,
   hapticSuccess,
   openInvoice,
   openTelegramLink,
@@ -30,6 +26,7 @@ import '../styles/home.css'
 
 interface Props {
   user: User
+  checkedInToday: boolean
   onNavigate: (
     screen: Screen
   ) => void
@@ -65,40 +62,14 @@ const STAR_PACKAGES = [
 
 export function Home({
   user,
+  checkedInToday,
   onNavigate,
   onUserChanged
 }: Props) {
   const [
-    checkedInToday,
-    setCheckedInToday
-  ] = useState(false)
-
-  const [
-    checkinLoading,
-    setCheckinLoading
-  ] = useState(false)
-
-  const [
     showBuy,
     setShowBuy
   ] = useState(false)
-
-  async function loadCheckinStatus() {
-    try {
-      const result =
-        await getCheckinStatus()
-
-      setCheckedInToday(
-        result.checkedInToday
-      )
-    } catch {
-      // ما بنعطل الصفحة إذا فشل التحقق من حالة التسجيل اليومي
-    }
-  }
-
-  useEffect(() => {
-    void loadCheckinStatus()
-  }, [])
 
   async function refreshUser() {
     try {
@@ -110,47 +81,6 @@ export function Home({
       )
     } catch {
       // إذا فشل التحديث بنسيب رصيد المستخدم متل ما هو، رح يتحدث لاحقًا
-    }
-  }
-
-  async function claimCheckin() {
-    if (
-      checkinLoading ||
-      checkedInToday
-    ) {
-      return
-    }
-
-    try {
-      setCheckinLoading(true)
-
-      const result =
-        await claimDailyCheckin()
-
-      setCheckedInToday(true)
-
-      hapticSuccess()
-
-      showAlert(
-        `✅ تم تسجيل الدخول اليومي وإضافة +${result.points} نقطة.`
-      )
-
-      await refreshUser()
-    } catch (
-      error
-    ) {
-      hapticError()
-
-      showAlert(
-        error instanceof Error
-          ? error.message
-          : 'تعذر تسجيل الدخول اليومي.'
-      )
-
-      // إذا كان السبب إنه استلم مسبقًا، نحدث الحالة بدل ما نضل نعرض الزر شغال
-      void loadCheckinStatus()
-    } finally {
-      setCheckinLoading(false)
     }
   }
 
@@ -340,20 +270,14 @@ export function Home({
             </strong>
 
             <span>
-              +{DAILY_CHECKIN_POINTS} نقطة كل يوم
+              بتاخد +{DAILY_CHECKIN_POINTS} نقطة أوتوماتيك أول ما تفتح التطبيق كل يوم
             </span>
           </div>
 
-          <div
-            className={
-              checkedInToday
-                ? 'checkin-status-badge done'
-                : 'checkin-status-badge'
-            }
-          >
+          <div className="checkin-status-badge done">
             {checkedInToday
               ? 'تم اليوم ✓'
-              : 'متاح'}
+              : 'رح تنضاف'}
           </div>
 
         </div>
@@ -361,31 +285,13 @@ export function Home({
 
         <div className="checkin-meta">
           <span>
-            المكافأة تتجدد كل يوم
+            ما في زر تضغطه — بتتحدد أوتوماتيك
           </span>
 
           <span>
-            مرة واحدة يوميًا
+            مرة كل يوم
           </span>
         </div>
-
-
-        <button
-          className="checkin-button"
-          disabled={
-            checkinLoading ||
-            checkedInToday
-          }
-          onClick={() =>
-            void claimCheckin()
-          }
-        >
-          {checkinLoading
-            ? 'جاري التسجيل...'
-            : checkedInToday
-              ? 'تم استلام مكافأة اليوم'
-              : `سجّل دخولك +${DAILY_CHECKIN_POINTS}`}
-        </button>
 
       </section>
 

@@ -127,30 +127,6 @@ export function completeTask(
 }
 
 
-export function getCheckinStatus() {
-  return request<{
-    checkedInToday: boolean
-    rewardPoints: number
-  }>(
-    '/api/checkin/status'
-  )
-}
-
-
-export function claimDailyCheckin() {
-  return request<{
-    checkedIn: boolean
-    points: number
-    balance: number
-  }>(
-    '/api/checkin/claim',
-    {
-      method: 'POST'
-    }
-  )
-}
-
-
 export function createStarsInvoice(
   stars: number
 ) {
