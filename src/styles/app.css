@@ -1,0 +1,137 @@
+.app-shell {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #0f0e1b;
+  color: #f5f3ff;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.screen-container {
+  min-height: 100vh;
+  padding-bottom: 90px;
+}
+
+.page {
+  padding: 18px 20px 24px;
+}
+
+.loading-screen,
+.error-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+}
+
+.loading-logo {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: #d4ff3d;
+  color: #0f0e1b;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.loading-title {
+  margin-top: 14px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #2a2745;
+  border-top-color: #d4ff3d;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin-top: 22px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 107, 74, .12);
+  color: #ff6b4a;
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.error-screen h2 {
+  margin: 18px 0 7px;
+}
+
+.error-screen p {
+  color: #8b87a8;
+  line-height: 1.8;
+  margin: 0 0 18px;
+  max-width: 320px;
+}
+
+.primary-button {
+  border: 0;
+  background: #d4ff3d;
+  color: #0f0e1b;
+  border-radius: 13px;
+  padding: 12px 18px;
+  font-weight: 900;
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 20;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 10px 12px 17px;
+  background: rgba(15, 14, 27, .92);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid #2a2745;
+}
+
+.nav-item {
+  border: 0;
+  background: transparent;
+  color: #8b87a8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+}
+
+.nav-item span {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.nav-item small {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.nav-item.active {
+  color: #d4ff3d;
+}

@@ -1,0 +1,143 @@
+.avatar-large {
+  width: 44px;
+  height: 44px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #d4ff3d, #7ce0ff);
+  color: #0f0e1b;
+  font-weight: 900;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-top: 17px;
+}
+
+.stats-grid > div {
+  padding: 13px 8px;
+  border-radius: 14px;
+  background: #17152a;
+  border: 1px solid #2a2745;
+  text-align: center;
+}
+
+.stats-grid strong,
+.stats-grid span {
+  display: block;
+}
+
+.stats-grid strong {
+  font-size: 17px;
+  font-family: ui-monospace, monospace;
+}
+
+.stats-grid span {
+  margin-top: 5px;
+  color: #8b87a8;
+  font-size: 9px;
+}
+
+.referral-card {
+  margin-top: 14px;
+  padding: 18px;
+  border-radius: 19px;
+  background:
+    linear-gradient(
+      135deg,
+      #201d38,
+      #17152a
+    );
+  border: 1px solid #2a2745;
+}
+
+.referral-card h2 {
+  margin: 6px 0 0;
+  font-size: 17px;
+}
+
+.referral-card > p {
+  color: #8b87a8;
+  font-size: 10.5px;
+  line-height: 1.8;
+  margin: 7px 0 13px;
+}
+
+.referral-progress {
+  height: 7px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #2a2745;
+}
+
+.referral-progress > div {
+  height: 100%;
+  background: #d4ff3d;
+  border-radius: inherit;
+}
+
+.referral-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  color: #8b87a8;
+  font-size: 9px;
+}
+
+.referral-meta strong {
+  color: #d4ff3d;
+  font-family: ui-monospace, monospace;
+}
+
+.referral-link {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  margin-top: 13px;
+  background: #201d38;
+  border: 1px solid #2a2745;
+  border-radius: 12px;
+  padding: 8px 9px;
+}
+
+.referral-link span {
+  flex: 1;
+  min-width: 0;
+  color: #8b87a8;
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.referral-link button {
+  border: 0;
+  background: #d4ff3d;
+  color: #0f0e1b;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.rules-card {
+  margin-top: 13px;
+  padding: 15px;
+  border-radius: 16px;
+  background: #17152a;
+  border: 1px solid #2a2745;
+}
+
+.rules-card h3 {
+  margin: 0 0 9px;
+  font-size: 12px;
+}
+
+.rules-card p {
+  margin: 5px 0;
+  color: #8b87a8;
+  font-size: 10px;
+  line-height: 1.7;
+}

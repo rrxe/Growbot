@@ -1,0 +1,140 @@
+.publish-info {
+  margin-top: 17px;
+  padding: 14px;
+  border-radius: 15px;
+  border: 1px solid rgba(74, 156, 255, .2);
+  background: rgba(74, 156, 255, .07);
+}
+
+.publish-info strong {
+  color: #4a9cff;
+  font-size: 12px;
+}
+
+.publish-info p {
+  color: #8b87a8;
+  font-size: 10.5px;
+  line-height: 1.7;
+  margin: 6px 0 0;
+}
+
+.field-section {
+  margin-top: 16px;
+}
+
+.field-section > label {
+  display: block;
+  color: #8b87a8;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 7px;
+}
+
+.field-section input {
+  width: 100%;
+  border: 1px solid #2a2745;
+  background: #17152a;
+  color: #f5f3ff;
+  border-radius: 13px;
+  padding: 12px 13px;
+  outline: none;
+  font-size: 12px;
+}
+
+.field-section input:focus {
+  border-color: #6d678e;
+}
+
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #17152a;
+  border: 1px solid #2a2745;
+  border-radius: 14px;
+}
+
+.segmented button {
+  flex: 1;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #8b87a8;
+  padding: 9px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.segmented button.active {
+  background: #201d38;
+  color: #f5f3ff;
+}
+
+.budget-card {
+  margin-top: 18px;
+  padding: 17px;
+  border-radius: 18px;
+  background: #17152a;
+  border: 1px solid #2a2745;
+}
+
+.budget-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.budget-head > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.budget-head span {
+  color: #8b87a8;
+  font-size: 10px;
+}
+
+.budget-head strong {
+  font-size: 20px;
+  font-family: ui-monospace, monospace;
+}
+
+.budget-result {
+  text-align: left;
+}
+
+.budget-result strong {
+  color: #ff6b4a;
+}
+
+.budget-card input[type="range"] {
+  width: 100%;
+  margin-top: 19px;
+  accent-color: #d4ff3d;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 7px;
+  color: #6f6a89;
+  font-size: 8px;
+}
+
+.publish-submit {
+  width: 100%;
+  margin-top: 16px;
+  border: 0;
+  background: #ff6b4a;
+  color: #1a0a05;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.publish-submit:disabled {
+  opacity: .55;
+}
