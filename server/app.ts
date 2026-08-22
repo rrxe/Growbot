@@ -18,6 +18,14 @@ import {
   adminRouter
 } from './routes/admin.js'
 
+import {
+  adsRouter
+} from './routes/ads.js'
+
+import {
+  paymentsRouter
+} from './routes/payments.js'
+
 const app = express()
 
 app.use(
@@ -59,6 +67,16 @@ app.use(
 app.use(
   '/api/admin',
   adminRouter
+)
+
+app.use(
+  '/api/ads',
+  adsRouter
+)
+
+app.use(
+  '/api/payments',
+  paymentsRouter
 )
 
 app.use(
