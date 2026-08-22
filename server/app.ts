@@ -8,15 +8,15 @@ import cors from 'cors'
 
 import {
   meRouter
-} from './routes/me'
+} from './routes/me.js'
 
 import {
   tasksRouter
-} from './routes/tasks'
+} from './routes/tasks.js'
 
 import {
   adminRouter
-} from './routes/admin'
+} from './routes/admin.js'
 
 const app = express()
 

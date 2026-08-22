@@ -2,18 +2,18 @@ import { Router } from 'express'
 
 import {
   authMiddleware
-} from '../lib/auth'
+} from '../lib/auth.js'
 
-import { getSettings } from '../lib/settings'
+import { getSettings } from '../lib/settings.js'
 
 import {
   supabase
-} from '../lib/supabase'
+} from '../lib/supabase.js'
 
 import {
   getChat,
   getChatMember
-} from '../lib/telegram'
+} from '../lib/telegram.js'
 
 export const tasksRouter =
   Router()

@@ -1,7 +1,7 @@
 import { Router } from 'express'
-import { config } from '../lib/config'
-import { supabase } from '../lib/supabase'
-import { authMiddleware } from '../lib/auth'
+import { config } from '../lib/config.js'
+import { supabase } from '../lib/supabase.js'
+import { authMiddleware } from '../lib/auth.js'
 
 export const meRouter =
   Router()

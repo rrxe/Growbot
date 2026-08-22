@@ -1,9 +1,9 @@
 import { Router } from 'express'
 
-import { adminMiddleware } from '../lib/admin-auth'
-import { clearSettingsCache } from '../lib/settings'
+import { adminMiddleware } from '../lib/admin-auth.js'
+import { clearSettingsCache } from '../lib/settings.js'
 
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/supabase.js'
 
 export const adminRouter =
   Router()

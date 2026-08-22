@@ -1,18 +1,18 @@
 import 'dotenv/config'
 
-import app from './app'
+import app from './app.js'
 
 import {
   config
-} from './lib/config'
+} from './lib/config.js'
 
 import {
   getMe as getTelegramMe
-} from './lib/telegram'
+} from './lib/telegram.js'
 
 import {
   startJobs
-} from './jobs'
+} from './jobs/index.js'
 
 async function start() {
   if (

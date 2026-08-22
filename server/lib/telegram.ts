@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { config } from './config'
+import { config } from './config.js'
 
 export interface TelegramUser {
   id: number

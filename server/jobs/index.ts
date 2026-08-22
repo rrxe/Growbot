@@ -1,4 +1,4 @@
-import { runVerificationJob } from './verification'
+import { runVerificationJob } from './verification.js'
 
 let started = false
 

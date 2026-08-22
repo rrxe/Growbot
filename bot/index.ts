@@ -7,11 +7,11 @@ import {
 
 import {
   config
-} from '../server/lib/config'
+} from '../server/lib/config.js'
 
 import {
   supabase
-} from '../server/lib/supabase'
+} from '../server/lib/supabase.js'
 
 if (!config.botToken) {
   console.error(

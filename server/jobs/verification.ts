@@ -1,9 +1,9 @@
-import { supabase } from '../lib/supabase'
-import { getSettings } from '../lib/settings'
+import { supabase } from '../lib/supabase.js'
+import { getSettings } from '../lib/settings.js'
 
 import {
   getChatMember
-} from '../lib/telegram'
+} from '../lib/telegram.js'
 
 let running = false
 

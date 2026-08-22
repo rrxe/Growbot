@@ -2,15 +2,15 @@ import crypto from 'node:crypto'
 
 import {
   supabase
-} from './supabase'
+} from './supabase.js'
 
 import {
   getSettings
-} from './settings'
+} from './settings.js'
 
 import type {
   TelegramUser
-} from './telegram'
+} from './telegram.js'
 
 function makeReferralCode() {
   return crypto

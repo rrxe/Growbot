@@ -6,13 +6,13 @@ import type {
 
 import {
   validateTelegramInitData
-} from './telegram'
+} from './telegram.js'
 
 import {
   getOrCreateUser
-} from './users'
+} from './users.js'
 
-import { supabase } from './supabase'
+import { supabase } from './supabase.js'
 
 export type AdminRole =
   | 'owner'

@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from 'express'
 import {
   validateTelegramInitData
-} from './telegram'
-import { getOrCreateUser } from './users'
+} from './telegram.js'
+import { getOrCreateUser } from './users.js'
 
 declare global {
   namespace Express {

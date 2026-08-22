@@ -9,8 +9,7 @@
     "dev:server": "tsx server/index.ts",
     "dev:bot": "tsx bot/index.ts",
     "check": "tsc -b",
-    "build": "tsc -b && vite build",
-    "vercel-build": "npm run build && esbuild api/index.ts --bundle --platform=node --format=esm --packages=external --outfile=api/index.js"
+    "build": "tsc -b && vite build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.0",
