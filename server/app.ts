@@ -5,32 +5,20 @@ import express, {
 } from 'express'
 
 import cors from 'cors'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-import { meRouter } from './routes/me'
-import { tasksRouter } from './routes/tasks'
-import { adminRouter } from './routes/admin'
+import {
+  meRouter
+} from './routes/me'
+
+import {
+  tasksRouter
+} from './routes/tasks'
+
+import {
+  adminRouter
+} from './routes/admin'
 
 const app = express()
-
-const __filename =
-  fileURLToPath(import.meta.url)
-
-const __dirname =
-  path.dirname(__filename)
-
-const projectRoot =
-  path.resolve(
-    __dirname,
-    '..'
-  )
-
-const distDir =
-  path.join(
-    projectRoot,
-    'dist'
-  )
 
 app.use(
   cors({
@@ -51,10 +39,9 @@ app.get(
     _req: Request,
     res: Response
   ) => {
-    res.json({
+    res.status(200).json({
       ok: true,
-      service: 'growbot-api',
-      time: new Date().toISOString()
+      service: 'growbot-api'
     })
   }
 )
@@ -75,34 +62,13 @@ app.use(
 )
 
 app.use(
-  express.static(
-    distDir
-  )
-)
-
-app.get(
-  '*',
   (
-    req: Request,
-    res: Response,
-    next: NextFunction
+    _req: Request,
+    res: Response
   ) => {
-    if (
-      req.path.startsWith('/api/')
-    ) {
-      return next(
-        new Error(
-          'API_ROUTE_NOT_FOUND'
-        )
-      )
-    }
-
-    return res.sendFile(
-      path.join(
-        distDir,
-        'index.html'
-      )
-    )
+    res.status(404).json({
+      error: 'API route not found'
+    })
   }
 )
 
@@ -114,28 +80,16 @@ app.use(
     _next: NextFunction
   ) => {
     console.error(
-      '[server]',
+      '[growbot-api]',
       error
     )
 
-    const status =
-      typeof error === 'object' &&
-      error !== null &&
-      'statusCode' in error &&
-      typeof error.statusCode === 'number'
-        ? error.statusCode
-        : 500
-
-    const message =
-      error instanceof Error
-        ? error.message
-        : 'Internal server error'
-
-    res
-      .status(status)
-      .json({
-        error: message
-      })
+    res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : 'Internal server error'
+    })
   }
 )
 
