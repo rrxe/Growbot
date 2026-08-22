@@ -1,13 +1,12 @@
 import {
   useEffect,
-  useRef,
   useState
 } from 'react'
 
 import {
-  getAdStatus,
-  startAdSession,
-  cancelAdSession,
+  getMe,
+  getCheckinStatus,
+  claimDailyCheckin,
   createStarsInvoice
 } from '../lib/api.js'
 
@@ -34,9 +33,12 @@ interface Props {
   onNavigate: (
     screen: Screen
   ) => void
+  onUserChanged: (
+    user: User
+  ) => void
 }
 
-const ADS_BLOCK_ID = '43643'
+const DAILY_CHECKIN_POINTS = 100
 
 const STAR_PACKAGES = [
   {
@@ -63,16 +65,17 @@ const STAR_PACKAGES = [
 
 export function Home({
   user,
-  onNavigate
+  onNavigate,
+  onUserChanged
 }: Props) {
   const [
-    watchedAds,
-    setWatchedAds
-  ] = useState(0)
+    checkedInToday,
+    setCheckedInToday
+  ] = useState(false)
 
   const [
-    adLoading,
-    setAdLoading
+    checkinLoading,
+    setCheckinLoading
   ] = useState(false)
 
   const [
@@ -80,124 +83,59 @@ export function Home({
     setShowBuy
   ] = useState(false)
 
-  const controllerRef =
-    useRef<
-      AdsgramController | null
-    >(null)
-
-  async function loadAds() {
+  async function loadCheckinStatus() {
     try {
       const result =
-        await getAdStatus()
+        await getCheckinStatus()
 
-      setWatchedAds(
-        result.watched
+      setCheckedInToday(
+        result.checkedInToday
       )
     } catch {
-      setWatchedAds(0)
+      // ما بنعطل الصفحة إذا فشل التحقق من حالة التسجيل اليومي
     }
   }
 
   useEffect(() => {
-    void loadAds()
-
-    if (
-      window.Adsgram
-    ) {
-      controllerRef.current =
-        window.Adsgram.init({
-          blockId:
-            ADS_BLOCK_ID
-        })
-    }
+    void loadCheckinStatus()
   }, [])
 
-  async function watchAd() {
-    if (
-      adLoading ||
-      watchedAds >= 10
-    ) {
-      return
-    }
+  async function refreshUser() {
+    try {
+      const result =
+        await getMe()
 
-    if (
-      !window.Adsgram
-    ) {
-      showAlert(
-        'تعذر تحميل نظام الإعلانات الآن.'
+      onUserChanged(
+        result.user
       )
+    } catch {
+      // إذا فشل التحديث بنسيب رصيد المستخدم متل ما هو، رح يتحدث لاحقًا
+    }
+  }
 
+  async function claimCheckin() {
+    if (
+      checkinLoading ||
+      checkedInToday
+    ) {
       return
     }
-
-    let sessionId: string | null = null
 
     try {
-      setAdLoading(true)
+      setCheckinLoading(true)
 
-      const started =
-        await startAdSession()
+      const result =
+        await claimDailyCheckin()
 
-      sessionId =
-        started.session.id
+      setCheckedInToday(true)
 
-      if (
-        !controllerRef.current
-      ) {
-        controllerRef.current =
-          window.Adsgram.init({
-            blockId:
-              ADS_BLOCK_ID
-          })
-      }
+      hapticSuccess()
 
-      try {
-        await controllerRef.current.show()
-      } catch (showError) {
-        // الإعلان ما ظهر (no fill / تم إغلاقه بدري)
-        // لازم نلغي الجلسة فورًا وإلا تضل "pending" وتقفل المستخدم 15 دقيقة
-        if (sessionId) {
-          await cancelAdSession(
-            sessionId
-          ).catch(() => {})
-        }
+      showAlert(
+        `✅ تم تسجيل الدخول اليومي وإضافة +${result.points} نقطة.`
+      )
 
-        throw showError
-      }
-
-      for (
-        let i = 0;
-        i < 8;
-        i++
-      ) {
-        await new Promise(
-          resolve =>
-            setTimeout(
-              resolve,
-              1000
-            )
-        )
-
-        const result =
-          await getAdStatus()
-
-        setWatchedAds(
-          result.watched
-        )
-
-        if (
-          result.watched >
-          watchedAds
-        ) {
-          hapticSuccess()
-
-          showAlert(
-            '✅ تم تسجيل الإعلان وإضافة +10 نقاط.'
-          )
-
-          break
-        }
-      }
+      await refreshUser()
     } catch (
       error
     ) {
@@ -206,10 +144,13 @@ export function Home({
       showAlert(
         error instanceof Error
           ? error.message
-          : 'لم يكتمل الإعلان.'
+          : 'تعذر تسجيل الدخول اليومي.'
       )
+
+      // إذا كان السبب إنه استلم مسبقًا، نحدث الحالة بدل ما نضل نعرض الزر شغال
+      void loadCheckinStatus()
     } finally {
-      setAdLoading(false)
+      setCheckinLoading(false)
     }
   }
 
@@ -236,6 +177,10 @@ export function Home({
             showAlert(
               `✅ تم الدفع. تمت إضافة ${result.points} نقطة.`
             )
+
+            // نحدث رصيد المستخدم فورًا من السيرفر، وإلا الرصيد المعروض
+            // بضل قديم لحد ما يعيد فتح التطبيق
+            void refreshUser()
           }
 
           if (
@@ -265,15 +210,6 @@ export function Home({
       )
     }
   }
-
-  const remaining =
-    Math.max(
-      0,
-      10 - watchedAds
-    )
-
-  const progress =
-    `${(watchedAds / 10) * 100}%`
 
   return (
     <section className="page">
@@ -390,67 +326,65 @@ export function Home({
       </div>
 
 
-      <section className="ads-card">
+      <section className="checkin-card">
 
-        <div className="ads-card-top">
+        <div className="checkin-card-top">
 
-          <div className="ads-icon">
-            ▶
+          <div className="checkin-icon">
+            📅
           </div>
 
-          <div className="ads-copy">
+          <div className="checkin-copy">
             <strong>
-              شاهد إعلان واكسب
+              تسجيل الدخول اليومي
             </strong>
 
             <span>
-              +10 نقاط لكل إعلان
+              +{DAILY_CHECKIN_POINTS} نقطة كل يوم
             </span>
           </div>
 
-          <div className="ads-count-badge">
-            {watchedAds}/10
+          <div
+            className={
+              checkedInToday
+                ? 'checkin-status-badge done'
+                : 'checkin-status-badge'
+            }
+          >
+            {checkedInToday
+              ? 'تم اليوم ✓'
+              : 'متاح'}
           </div>
 
         </div>
 
 
-        <div className="ads-progress">
-          <div
-            style={{
-              width:
-                progress
-            }}
-          />
-        </div>
-
-
-        <div className="ads-meta">
+        <div className="checkin-meta">
           <span>
-            باقي اليوم: {remaining}
+            المكافأة تتجدد كل يوم
           </span>
 
           <span>
-            الحد اليومي 10
+            مرة واحدة يوميًا
           </span>
         </div>
 
 
         <button
-          className="ads-button"
+          className="checkin-button"
           disabled={
-            adLoading ||
-            watchedAds >= 10
+            checkinLoading ||
+            checkedInToday
           }
           onClick={() =>
-            void watchAd()
+            void claimCheckin()
           }
         >
-          {adLoading
-            ? 'جاري تشغيل الإعلان...'
-            : watchedAds >= 10
-              ? 'اكتمل حد اليوم'
-              : 'شاهد الإعلان +10'}
+          {checkinLoading
+            ? 'جاري التسجيل...'
+            : checkedInToday
+              ? 'تم استلام مكافأة اليوم'
+              : `سجّل دخولك +${DAILY_CHECKIN_POINTS}`}
         </button>
 
       </section>

@@ -158,7 +158,7 @@
   font-weight: 800;
 }
 
-.ads-card {
+.checkin-card {
   margin-top: 18px;
   padding: 16px;
   border-radius: 18px;
@@ -166,13 +166,13 @@
   border: 1px solid #2a2745;
 }
 
-.ads-card-top {
+.checkin-card-top {
   display: flex;
   align-items: center;
   gap: 11px;
 }
 
-.ads-icon {
+.checkin-icon {
   width: 43px;
   height: 43px;
   border-radius: 13px;
@@ -182,23 +182,23 @@
   color: #5aa7ff;
 }
 
-.ads-copy {
+.checkin-copy {
   flex: 1;
 }
 
-.ads-copy strong {
+.checkin-copy strong {
   display: block;
   font-size: 13px;
 }
 
-.ads-copy span {
+.checkin-copy span {
   display: block;
   color: #8b87a8;
   font-size: 10px;
   margin-top: 2px;
 }
 
-.ads-count-badge {
+.checkin-status-badge {
   color: #5aa7ff;
   background: rgba(90,167,255,.1);
   border-radius: 9px;
@@ -208,25 +208,12 @@
   font-weight: 900;
 }
 
-.ads-progress {
-  height: 7px;
-  margin-top: 14px;
-  border-radius: 5px;
-  overflow: hidden;
-  background: #252238;
+.checkin-status-badge.done {
+  color: #d4ff3d;
+  background: rgba(212,255,61,.12);
 }
 
-.ads-progress > div {
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    #5aa7ff,
-    #d4ff3d
-  );
-  border-radius: inherit;
-}
-
-.ads-meta {
+.checkin-meta {
   display: flex;
   justify-content: space-between;
   color: #8b87a8;
@@ -234,7 +221,7 @@
   margin-top: 7px;
 }
 
-.ads-button {
+.checkin-button {
   width: 100%;
   margin-top: 13px;
   border: 0;
@@ -246,7 +233,7 @@
   font-weight: 900;
 }
 
-.ads-button:disabled {
+.checkin-button:disabled {
   background: #252238;
   color: #6d6882;
 }

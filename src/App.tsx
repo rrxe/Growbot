@@ -85,6 +85,7 @@ export default function App() {
           <Home
             user={user}
             onNavigate={setScreen}
+            onUserChanged={setUser}
           />
         )}
 

@@ -78,20 +78,8 @@ interface TelegramWebApp {
   }
 }
 
-interface AdsgramController {
-  show(): Promise<unknown>
-}
-
-interface AdsgramApi {
-  init(options: {
-    blockId: string
-  }): AdsgramController
-}
-
 interface Window {
   Telegram?: {
     WebApp: TelegramWebApp
   }
-
-  Adsgram?: AdsgramApi
 }

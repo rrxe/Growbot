@@ -127,45 +127,25 @@ export function completeTask(
 }
 
 
-export function getAdStatus() {
+export function getCheckinStatus() {
   return request<{
-    watched: number
-    remaining: number
-    limit: number
+    checkedInToday: boolean
     rewardPoints: number
   }>(
-    '/api/ads/status'
+    '/api/checkin/status'
   )
 }
 
 
-export function startAdSession() {
+export function claimDailyCheckin() {
   return request<{
-    ok: true
-    session: {
-      id: string
-    }
+    checkedIn: boolean
+    points: number
+    balance: number
   }>(
-    '/api/ads/start',
+    '/api/checkin/claim',
     {
       method: 'POST'
-    }
-  )
-}
-
-
-export function cancelAdSession(
-  sessionId: string
-) {
-  return request<{
-    cancelled: boolean
-  }>(
-    '/api/ads/cancel',
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        sessionId
-      })
     }
   )
 }

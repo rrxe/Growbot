@@ -19,8 +19,8 @@ import {
 } from './routes/admin.js'
 
 import {
-  adsRouter
-} from './routes/ads.js'
+  checkinRouter
+} from './routes/checkin.js'
 
 import {
   paymentsRouter
@@ -74,8 +74,8 @@ app.use(
 )
 
 app.use(
-  '/api/ads',
-  adsRouter
+  '/api/checkin',
+  checkinRouter
 )
 
 app.use(
