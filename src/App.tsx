@@ -119,6 +119,7 @@ export default function App() {
         {screen === 'profile' && (
           <Profile
             user={user}
+            onUserChanged={setUser}
           />
         )}
       </main>

@@ -626,3 +626,148 @@ tasksRouter.post(
     }
   }
 )
+
+
+tasksRouter.get(
+  '/mine',
+  authMiddleware,
+  async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const {
+        data: tasks,
+        error
+      } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq(
+          'owner_id',
+          req.dbUser.id
+        )
+        .order(
+          'created_at',
+          {
+            ascending: false
+          }
+        )
+        .limit(200)
+
+      if (error) {
+        throw error
+      }
+
+      res.json({
+        tasks:
+          tasks || []
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
+tasksRouter.post(
+  '/:taskId/cancel',
+  authMiddleware,
+  async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const {
+        data: task,
+        error: taskError
+      } = await supabase
+        .from('tasks')
+        .select(
+          'id, owner_id, status, remaining_points'
+        )
+        .eq(
+          'id',
+          req.params.taskId
+        )
+        .maybeSingle()
+
+      if (
+        taskError
+      ) {
+        throw taskError
+      }
+
+      if (
+        !task ||
+        task.owner_id !==
+          req.dbUser.id
+      ) {
+        return res
+          .status(404)
+          .json({
+            error:
+              'المهمة غير موجودة.'
+          })
+      }
+
+      if (
+        task.status !==
+        'active'
+      ) {
+        return res
+          .status(400)
+          .json({
+            error:
+              'المهمة متوقفة أو مغلقة أصلًا.'
+          })
+      }
+
+      const {
+        error: cancelError
+      } = await supabase.rpc(
+        'cancel_task_and_refund',
+        {
+          p_task_id:
+            req.params.taskId
+        }
+      )
+
+      if (
+        cancelError
+      ) {
+        throw cancelError
+      }
+
+      const {
+        data: freshUser,
+        error: userError
+      } = await supabase
+        .from('users')
+        .select('points')
+        .eq(
+          'id',
+          req.dbUser.id
+        )
+        .maybeSingle()
+
+      if (
+        userError
+      ) {
+        throw userError
+      }
+
+      res.json({
+        ok: true,
+        refundedPoints:
+          task.remaining_points,
+        userPoints:
+          freshUser?.points ??
+          req.dbUser.points
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)

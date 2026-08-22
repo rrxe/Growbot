@@ -127,6 +127,31 @@ export function completeTask(
 }
 
 
+export function getMyTasks() {
+  return request<{
+    tasks: Task[]
+  }>(
+    '/api/tasks/mine'
+  )
+}
+
+
+export function cancelTask(
+  taskId: string
+) {
+  return request<{
+    ok: true
+    refundedPoints: number
+    userPoints: number
+  }>(
+    `/api/tasks/${taskId}/cancel`,
+    {
+      method: 'POST'
+    }
+  )
+}
+
+
 export function createStarsInvoice(
   stars: number
 ) {

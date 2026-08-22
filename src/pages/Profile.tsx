@@ -2,17 +2,29 @@ import {
   useEffect,
   useState
 } from 'react'
-import { getMe } from '../lib/api'
-import { showAlert } from '../lib/telegram'
-import type { User } from '../lib/types'
+import { getMe, getMyTasks, cancelTask } from '../lib/api'
+import { hapticError, hapticSuccess, showAlert } from '../lib/telegram'
+import type { Task, User } from '../lib/types'
 import '../styles/profile.css'
 
 interface Props {
   user: User
+  onUserChanged: (user: User) => void
+}
+
+const STATUS_LABEL: Record<
+  Task['status'],
+  string
+> = {
+  active: 'نشطة',
+  paused: 'متوقفة',
+  completed: 'مكتملة',
+  cancelled: 'ملغاة'
 }
 
 export function Profile({
-  user
+  user,
+  onUserChanged
 }: Props) {
   const [referral, setReferral] = useState<{
     code: string
@@ -23,6 +35,10 @@ export function Profile({
     rewarded: boolean
   } | null>(null)
 
+  const [myTasks, setMyTasks] = useState<Task[]>([])
+  const [tasksLoading, setTasksLoading] = useState(true)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
+
   useEffect(() => {
     void getMe()
       .then((response) => {
@@ -31,7 +47,68 @@ export function Profile({
       .catch(() => {
         setReferral(null)
       })
+
+    void loadMyTasks()
   }, [])
+
+  async function loadMyTasks() {
+    try {
+      setTasksLoading(true)
+
+      const response = await getMyTasks()
+
+      setMyTasks(response.tasks)
+    } catch {
+      // ما بنعطل باقي الصفحة إذا فشل تحميل قائمة مهامي
+    } finally {
+      setTasksLoading(false)
+    }
+  }
+
+  async function handleCancel(task: Task) {
+    if (cancellingId) return
+
+    const confirmed = window.confirm(
+      `بتوقف "${task.title}" وبيرجعلك الباقي من الميزانية (${task.remaining_points.toLocaleString('en-US')} نقطة). أكمل؟`
+    )
+
+    if (!confirmed) return
+
+    try {
+      setCancellingId(task.id)
+
+      const result = await cancelTask(task.id)
+
+      hapticSuccess()
+
+      showAlert(
+        `تم إيقاف المهمة واسترجاع ${result.refundedPoints.toLocaleString('en-US')} نقطة.`
+      )
+
+      setMyTasks((current) =>
+        current.map((item) =>
+          item.id === task.id
+            ? { ...item, status: 'cancelled', remaining_points: 0 }
+            : item
+        )
+      )
+
+      onUserChanged({
+        ...user,
+        points: result.userPoints
+      })
+    } catch (error) {
+      hapticError()
+
+      showAlert(
+        error instanceof Error
+          ? error.message
+          : 'تعذر إيقاف المهمة.'
+      )
+    } finally {
+      setCancellingId(null)
+    }
+  }
 
   const progress = referral
     ? Math.min(
@@ -144,6 +221,100 @@ export function Profile({
             نسخ
           </button>
         </div>
+      </div>
+
+      <div className="my-tasks-section">
+        <div className="my-tasks-head">
+          <span className="eyebrow">
+            متابعة النشر
+          </span>
+
+          <h2>مهامي</h2>
+        </div>
+
+        {tasksLoading ? (
+          <div className="my-tasks-empty">
+            <div className="loading-spinner" />
+            <p>جاري التحميل...</p>
+          </div>
+        ) : myTasks.length === 0 ? (
+          <div className="my-tasks-empty">
+            <p>لسا ما نشرت أي مهمة.</p>
+          </div>
+        ) : (
+          <div className="my-task-list">
+            {myTasks.map((task) => {
+              const percent =
+                task.target_completions > 0
+                  ? Math.min(
+                      100,
+                      Math.round(
+                        (task.completed_completions /
+                          task.target_completions) *
+                        100
+                      )
+                    )
+                  : 0
+
+              return (
+                <div
+                  className="my-task-card"
+                  key={task.id}
+                >
+                  <div className="my-task-top">
+                    <strong>{task.title}</strong>
+
+                    <span
+                      className={`status-pill status-${task.status}`}
+                    >
+                      {STATUS_LABEL[task.status]}
+                    </span>
+                  </div>
+
+                  <span className="my-task-sub">
+                    {task.chat_title || task.chat_username}
+                  </span>
+
+                  <div className="my-task-progress-row">
+                    <div className="task-progress-bar">
+                      <div
+                        style={{
+                          width: `${percent}%`
+                        }}
+                      />
+                    </div>
+
+                    <small>
+                      {task.completed_completions} من {task.target_completions}
+                    </small>
+                  </div>
+
+                  <div className="my-task-bottom">
+                    <span>
+                      باقي من الميزانية:{' '}
+                      <b>
+                        {task.remaining_points.toLocaleString('en-US')}
+                      </b>{' '}
+                      نقطة
+                    </span>
+
+                    {task.status === 'active' && (
+                      <button
+                        className="my-task-cancel"
+                        disabled={cancellingId === task.id}
+                        onClick={() => void handleCancel(task)}
+                      >
+                        {cancellingId === task.id
+                          ? 'جاري الإيقاف...'
+                          : 'إيقاف واسترجاع'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       <div className="rules-card">

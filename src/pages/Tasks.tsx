@@ -179,9 +179,21 @@ export function Tasks({
                   {task.chat_title || task.chat_username || 'مهمة'}
                 </span>
 
-                <small>
-                  متبقي {task.remaining_points.toLocaleString('en-US')} نقطة
-                </small>
+                <div className="task-progress-row">
+                  <div className="task-progress-bar">
+                    <div
+                      style={{
+                        width: `${task.target_completions > 0
+                          ? Math.min(100, Math.round((task.completed_completions / task.target_completions) * 100))
+                          : 0}%`
+                      }}
+                    />
+                  </div>
+
+                  <small>
+                    {task.completed_completions} من {task.target_completions} انضموا
+                  </small>
+                </div>
               </div>
 
               <div className="task-right">
