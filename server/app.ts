@@ -5,21 +5,32 @@ import express, {
 } from 'express'
 
 import cors from 'cors'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-import {
-  meRouter
-} from './routes/me'
+import { meRouter } from './routes/me'
+import { tasksRouter } from './routes/tasks'
+import { adminRouter } from './routes/admin'
 
-import {
-  tasksRouter
-} from './routes/tasks'
+const app = express()
 
-import {
-  adminRouter
-} from './routes/admin'
+const __filename =
+  fileURLToPath(import.meta.url)
 
-export const app =
-  express()
+const __dirname =
+  path.dirname(__filename)
+
+const projectRoot =
+  path.resolve(
+    __dirname,
+    '..'
+  )
+
+const distDir =
+  path.join(
+    projectRoot,
+    'dist'
+  )
 
 app.use(
   cors({
@@ -64,14 +75,32 @@ app.use(
 )
 
 app.use(
+  express.static(
+    distDir
+  )
+)
+
+app.get(
+  '*',
   (
-    _req: Request,
-    _res: Response,
+    req: Request,
+    res: Response,
     next: NextFunction
   ) => {
-    next(
-      new Error(
-        'API_ROUTE_NOT_FOUND'
+    if (
+      req.path.startsWith('/api/')
+    ) {
+      return next(
+        new Error(
+          'API_ROUTE_NOT_FOUND'
+        )
+      )
+    }
+
+    return res.sendFile(
+      path.join(
+        distDir,
+        'index.html'
       )
     )
   }
@@ -109,3 +138,5 @@ app.use(
       })
   }
 )
+
+export default app
