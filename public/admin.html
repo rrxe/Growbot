@@ -13,7 +13,7 @@
     content="#0b0a12"
   >
 
-  <title>GrowBot Admin</title>
+  <title>StormGrow Admin</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -364,6 +364,98 @@
       gap:10px;
     }
 
+    .user-identity {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .user-avatar {
+      flex:0 0 40px;
+      width:40px;
+      height:40px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,var(--lime),#7cff9c);
+      color:#0f0e1b;
+      font-weight:900;
+      font-size:15px;
+    }
+
+    .status-pill {
+      flex:0 0 auto;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:8.5px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .status-pill.ok {
+      color:var(--lime);
+      background:rgba(212,255,61,.12);
+    }
+
+    .status-pill.banned {
+      color:#ff907a;
+      background:rgba(255,107,74,.12);
+    }
+
+    .user-id-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:10px;
+      padding:8px 10px;
+      border-radius:10px;
+      background:#151321;
+    }
+
+    .user-id-row span {
+      color:var(--muted2);
+      font-size:8px;
+    }
+
+    .user-id-row strong {
+      color:var(--blue);
+      font-family:ui-monospace,monospace;
+      font-size:10px;
+    }
+
+    .user-section-label {
+      margin:14px 0 7px;
+      color:var(--muted);
+      font-size:8.5px;
+      font-weight:900;
+    }
+
+    .points-edit-row {
+      display:flex;
+      gap:7px;
+    }
+
+    .points-edit-row input {
+      flex:1;
+      direction:ltr;
+      text-align:left;
+    }
+
+    .points-edit-row button {
+      flex:0 0 auto;
+    }
+
+    .reason-input {
+      margin-top:7px;
+    }
+
+    .account-actions-row {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:7px;
+    }
+
 
     .user-name {
       font-size:14px;
@@ -378,12 +470,6 @@
       text-align:right;
     }
 
-    .user-id {
-      color:var(--blue);
-      font-family:ui-monospace,monospace;
-      font-size:9px;
-    }
-
     .user-points {
       margin-top:13px;
 
@@ -392,19 +478,6 @@
 
       font-size:27px;
       font-weight:900;
-    }
-
-    .user-actions {
-      display:flex;
-      gap:7px;
-      margin-top:12px;
-    }
-
-    .user-actions input {
-      width:140px;
-      flex:0 0 140px;
-      direction:ltr;
-      text-align:left;
     }
 
     .meta-grid {
@@ -587,11 +660,11 @@
         grid-template-columns:repeat(2,1fr);
       }
 
-      .user-actions {
+      .points-edit-row {
         flex-wrap:wrap;
       }
 
-      .user-actions input {
+      .points-edit-row input {
         width:100%;
         flex:1 1 100%;
       }
@@ -613,7 +686,7 @@
 
     <div>
       <div class="brand-title">
-        GrowBot Admin
+        StormGrow Admin
       </div>
 
       <div class="brand-sub">
@@ -713,7 +786,7 @@
       </h1>
 
       <div class="page-sub">
-        نظرة عامة على GrowBot
+        نظرة عامة على StormGrow
       </div>
     </div>
 
@@ -884,23 +957,39 @@
 
         <div class="user-head">
 
-          <div>
+          <div class="user-identity">
             <div
-              class="user-name"
-              id="userName"
+              class="user-avatar"
+              id="userAvatar"
             ></div>
 
-            <div
-              class="user-username"
-              id="userUsername"
-            ></div>
+            <div>
+              <div
+                class="user-name"
+                id="userName"
+              ></div>
+
+              <div
+                class="user-username"
+                id="userUsername"
+              ></div>
+            </div>
           </div>
 
-          <div
-            class="user-id"
-            id="userId"
-          ></div>
+          <span
+            class="status-pill"
+            id="userStatusPill"
+          ></span>
 
+        </div>
+
+
+        <div class="user-id-row">
+          <span>Telegram ID</span>
+
+          <strong
+            id="userId"
+          ></strong>
         </div>
 
 
@@ -963,11 +1052,15 @@
         </div>
 
 
-        <div class="user-actions">
+        <div class="user-section-label">
+          تعديل النقاط
+        </div>
+
+        <div class="points-edit-row">
 
           <input
             id="userPointAmount"
-            placeholder="مثلاً 100"
+            placeholder="القيمة، مثلاً 100"
             inputmode="numeric"
             dir="ltr"
           >
@@ -986,8 +1079,30 @@
             − سحب
           </button>
 
+        </div>
+
+        <input
+          id="userPointReason"
+          class="reason-input"
+          placeholder="سبب التعديل (اختياري)"
+        >
+
+
+        <div class="user-section-label">
+          إجراءات الحساب
+        </div>
+
+        <div class="account-actions-row">
+
           <button
             class="action dark-btn"
+            onclick="zeroUserPoints()"
+          >
+            ⭘ تصفير النقاط
+          </button>
+
+          <button
+            class="action red-btn"
             id="userBanBtn"
             onclick="toggleUserBan()"
           >
@@ -2178,6 +2293,83 @@ async function removeUserPoints() {
 }
 
 
+function getPointReason(
+  fallback
+) {
+  const raw =
+    document.getElementById(
+      'userPointReason'
+    ).value.trim()
+
+  return raw || fallback
+}
+
+
+async function submitPointsAdjustment(
+  amount,
+  description,
+  confirmText,
+  successText
+) {
+  if (!currentUser) {
+    toast(
+      'ابحث عن المستخدم أولاً'
+    )
+
+    return
+  }
+
+  if (
+    !confirm(
+      confirmText
+    )
+  ) {
+    return
+  }
+
+  try {
+    await api(
+      `/api/admin/users/${currentUser.telegram_id}/points`,
+      {
+        method:'POST',
+
+        body:
+          JSON.stringify({
+            amount,
+            description
+          })
+      }
+    )
+
+    document.getElementById(
+      'userPointAmount'
+    ).value = ''
+
+    document.getElementById(
+      'userPointReason'
+    ).value = ''
+
+    await openUser(
+      currentUser.telegram_id
+    )
+
+    await loadDashboard()
+    await loadTopUsers()
+
+    toast(
+      successText
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر تعديل النقاط'
+    )
+  }
+}
+
+
 async function adjustUserPoints(
   direction
 ) {
@@ -2224,58 +2416,51 @@ async function adjustUserPoints(
       ? `إضافة ${value} نقطة`
       : `سحب ${value} نقطة`
 
-  if (
-    !confirm(
-      `تأكيد ${actionText}؟`
+  await submitPointsAdjustment(
+    amount,
+    getPointReason(
+      direction === 1
+        ? 'إضافة نقاط من الإدارة'
+        : 'سحب نقاط من الإدارة'
+    ),
+    `تأكيد ${actionText}؟`,
+    direction === 1
+      ? `تمت إضافة ${value} نقطة`
+      : `تم سحب ${value} نقطة`
+  )
+}
+
+
+async function zeroUserPoints() {
+  if (!currentUser) {
+    toast(
+      'ابحث عن المستخدم أولاً'
     )
-  ) {
+
     return
   }
 
-  try {
-    const result =
-      await api(
-        `/api/admin/users/${currentUser.telegram_id}/points`,
-        {
-          method:'POST',
-
-          body:
-            JSON.stringify({
-              amount,
-
-              description:
-                direction === 1
-                  ? 'إضافة نقاط من الإدارة'
-                  : 'سحب نقاط من الإدارة'
-            })
-        }
-      )
-
-    input.value =
-      ''
-
-    await openUser(
-      currentUser.telegram_id
-    )
-
-    await loadDashboard()
-    await loadTopUsers()
-
-    toast(
-      direction === 1
-        ? `تمت إضافة ${value} نقطة`
-        : `تم سحب ${value} نقطة`
-    )
-
-    void result
-  } catch (
-    error
+  if (
+    currentUser.points === 0
   ) {
     toast(
-      error?.message ||
-      'تعذر تعديل النقاط'
+      'رصيد المستخدم صفر أصلًا'
     )
+
+    return
   }
+
+  const amount =
+    -currentUser.points
+
+  await submitPointsAdjustment(
+    amount,
+    getPointReason(
+      'تصفير الرصيد من الإدارة'
+    ),
+    `تصفير رصيد المستخدم بالكامل (${formatNumber(currentUser.points)} نقطة)؟`,
+    'تم تصفير رصيد المستخدم'
+  )
 }
 
 
@@ -2291,7 +2476,7 @@ async function toggleUserBan() {
     !confirm(
       banned
         ? 'فك حظر المستخدم؟'
-        : 'حظر المستخدم؟'
+        : 'حظر المستخدم؟ لن يقدر يستخدم StormGrow.'
     )
   ) {
     return
@@ -2305,10 +2490,16 @@ async function toggleUserBan() {
         body:
           JSON.stringify({
             reason:
-              'إجراء من لوحة الإدارة'
+              getPointReason(
+                'إجراء من لوحة الإدارة'
+              )
           })
       }
     )
+
+    document.getElementById(
+      'userPointReason'
+    ).value = ''
 
     await openUser(
       currentUser.telegram_id

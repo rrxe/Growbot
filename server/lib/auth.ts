@@ -51,7 +51,7 @@ export async function authMiddleware(
         .status(403)
         .json({
           error:
-            'تم إيقاف حسابك عن استخدام GrowBot.'
+            'تم إيقاف حسابك عن استخدام StormGrow.'
         })
     }
 
