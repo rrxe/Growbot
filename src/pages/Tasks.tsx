@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { completeTask, getTasks } from '../lib/api'
 import {
   hapticError,
@@ -31,7 +31,7 @@ export function Tasks({
   const [joinedIds, setJoinedIds] = useState<string[]>([])
   const [loading, setLoading] = useState(!initialTasks)
   const [busyId, setBusyId] = useState<string | null>(null)
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(Boolean(initialTasks))
+  const isMountRender = useRef(true)
 
   async function loadTasks() {
     try {
@@ -55,11 +55,14 @@ export function Tasks({
   }
 
   useEffect(() => {
-    // أول تحميل: عندنا البيانات جاهزة أصلًا من صفحة التحميل الأولى،
-    // ما في داعي نعيد جلبها ونعرض سبينر ثاني.
-    if (!hasLoadedOnce) {
-      setHasLoadedOnce(true)
-      return
+    // أول رندر: إذا عندنا بيانات جاهزة من صفحة التحميل الأولى (فلتر "الكل")
+    // ما في داعي نعيد جلبها ونعرض سبينر ثاني. أي تغيير فلتر بعد هيك بيجيب طازة.
+    if (isMountRender.current) {
+      isMountRender.current = false
+
+      if (initialTasks) {
+        return
+      }
     }
 
     void loadTasks()

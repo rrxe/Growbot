@@ -43,7 +43,7 @@ function appKeyboard(
 
   if (webAppUrl) {
     keyboard.webApp(
-      '🚀 فتح GrowBot',
+      '🚀 فتح StormGrow',
       webAppUrl
     )
   }
@@ -115,14 +115,14 @@ bot.command(
       ''
 
     const lines = [
-      '🚀 أهلًا بك في GrowBot',
+      '⚡ أهلًا بك في StormGrow',
       '',
-      'منصة لتبادل نمو القنوات والمجموعات.',
+      'منصة تبادل حقيقية لنمو القنوات والمجموعات.',
       '',
-      '💚 تنفيذ المهمة = +5 نقاط',
-      '🎁 الإحالة = +150 نقطة بعد 5 مهام',
+      '💚 تنفيذ مهمة = +5 نقاط',
+      '🎁 دعوة صديق = +150 نقطة بعد 5 مهام',
       '',
-      'افتح التطبيق من الزر بالأسفل.'
+      'افتح التطبيق من الزر بالأسفل وابدأ.'
     ]
 
     if (
@@ -189,12 +189,12 @@ bot.command(
     }
 
     await ctx.reply(
-      '🚀 افتح GrowBot:',
+      '🚀 افتح StormGrow:',
       {
         reply_markup:
           new InlineKeyboard()
             .webApp(
-              '🚀 فتح GrowBot',
+              '🚀 فتح StormGrow',
               webAppUrl
             )
       }
@@ -309,12 +309,12 @@ bot.command(
   ) => {
     await ctx.reply(
       [
-        '📄 شروط استخدام GrowBot',
+        '📄 شروط استخدام StormGrow',
         '',
-        'النقاط داخل GrowBot تستخدم لشراء وتنفيذ المهام داخل المنصة.',
-        'الطلبات الملغاة تعيد فقط الميزانية المتبقية.',
-        'نظام الإحالات يعتمد على مهام حقيقية.',
-        'عمليات الشراء عبر Telegram Stars تتم عبر نظام Telegram.'
+        'النقاط داخل StormGrow تُستخدم لنشر وتنفيذ المهام داخل المنصة فقط.',
+        'إيقاف مهمة يعيد فقط الميزانية المتبقية منها.',
+        'نظام الإحالات يعتمد على تنفيذ مهام حقيقية، مش تسجيل دخول فقط.',
+        'عمليات الشراء عبر Telegram Stars تتم بالكامل عبر نظام Telegram.'
       ].join('\n')
     )
   }
@@ -326,19 +326,43 @@ bot.command(
   async (
     ctx
   ) => {
+    let role:
+      'owner' | 'admin' | null =
+      null
+
+    try {
+      role = await resolveRole(
+        ctx.from.id
+      )
+    } catch (error) {
+      console.error(
+        '[bot:help:role]',
+        error
+      )
+    }
+
+    const lines = [
+      'ℹ️ StormGrow',
+      '',
+      '/start — فتح البوت',
+      '/app — فتح التطبيق',
+      '/id — معرفة Telegram ID',
+      '/support — الدعم',
+      '/paysupport — مشاكل الدفع',
+      '/terms — الشروط',
+      '/help — المساعدة'
+    ]
+
+    if (role) {
+      lines.splice(
+        4,
+        0,
+        '/admin — لوحة الإدارة'
+      )
+    }
+
     await ctx.reply(
-      [
-        'ℹ️ GrowBot',
-        '',
-        '/start — فتح البوت',
-        '/app — فتح التطبيق',
-        '/admin — لوحة الإدارة',
-        '/id — معرفة Telegram ID',
-        '/support — الدعم',
-        '/paysupport — مشاكل الدفع',
-        '/terms — الشروط',
-        '/help — المساعدة'
-      ].join('\n')
+      lines.join('\n')
     )
   }
 )
@@ -475,7 +499,7 @@ bot.on(
             webAppUrl
               ? new InlineKeyboard()
                   .webApp(
-                    '🚀 فتح GrowBot',
+                    '🚀 فتح StormGrow',
                     webAppUrl
                   )
               : undefined
@@ -538,47 +562,77 @@ export default async function handler(
     if (!commandsRegistered) {
       commandsRegistered = true
 
+      const publicCommands = [
+        {
+          command: 'start',
+          description: 'فتح البوت'
+        },
+        {
+          command: 'app',
+          description: 'فتح التطبيق'
+        },
+        {
+          command: 'id',
+          description: 'معرفة Telegram ID'
+        },
+        {
+          command: 'support',
+          description: 'الدعم'
+        },
+        {
+          command: 'paysupport',
+          description: 'مشاكل الدفع'
+        },
+        {
+          command: 'terms',
+          description: 'الشروط'
+        },
+        {
+          command: 'help',
+          description: 'المساعدة'
+        }
+      ]
+
+      // القائمة العامة: بدون /admin، حتى ما يشوفها أي مستخدم عادي.
+      // الأدمن أصلًا بياخد زر لوحة الإدارة تلقائيًا من /start،
+      // ومحتاج ما يشوف الأمر بالقائمة أساسًا.
       await bot.api
-        .setMyCommands([
-          {
-            command: 'start',
-            description: 'فتح البوت'
-          },
-          {
-            command: 'app',
-            description: 'فتح التطبيق'
-          },
-          {
-            command: 'admin',
-            description: 'لوحة الإدارة'
-          },
-          {
-            command: 'id',
-            description: 'معرفة Telegram ID'
-          },
-          {
-            command: 'support',
-            description: 'الدعم'
-          },
-          {
-            command: 'paysupport',
-            description: 'مشاكل الدفع'
-          },
-          {
-            command: 'terms',
-            description: 'الشروط'
-          },
-          {
-            command: 'help',
-            description: 'المساعدة'
-          }
-        ])
+        .setMyCommands(
+          publicCommands
+        )
         .catch(error => {
           console.error(
             '[telegram:setMyCommands]',
             error
           )
         })
+
+      // قائمة خاصة بالمالك بس (owner) فيها /admin إضافيًا —
+      // ما بتأثر على أي مستخدم تاني إطلاقًا.
+      if (ownerId > 0) {
+        await bot.api
+          .setMyCommands(
+            [
+              ...publicCommands,
+              {
+                command: 'admin',
+                description: 'لوحة الإدارة'
+              }
+            ],
+            {
+              scope: {
+                type: 'chat',
+                chat_id: ownerId
+              }
+            }
+          )
+          .catch(error => {
+            console.error(
+              '[telegram:setMyCommands:owner]',
+              error
+            )
+          })
+      }
     }
 
     res.status(200).json({
