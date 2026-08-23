@@ -4,6 +4,7 @@ import {
 } from 'react'
 import { getMe, getMyTasks, cancelTask } from '../lib/api'
 import { hapticError, hapticSuccess, showAlert } from '../lib/telegram'
+import { taskDisplayName, avatarColors } from '../lib/format'
 import type { Task, User } from '../lib/types'
 import '../styles/profile.css'
 
@@ -69,7 +70,7 @@ export function Profile({
     if (cancellingId) return
 
     const confirmed = window.confirm(
-      `بتوقف "${task.title}" وبيرجعلك الباقي من الميزانية (${task.remaining_points.toLocaleString('en-US')} نقطة). أكمل؟`
+      `بتوقف "${taskDisplayName(task)}" وبيرجعلك الباقي من الميزانية (${task.remaining_points.toLocaleString('en-US')} نقطة). أكمل؟`
     )
 
     if (!confirmed) return
@@ -256,13 +257,27 @@ export function Profile({
                     )
                   : 0
 
+              const name = taskDisplayName(task)
+              const [colorFrom, colorTo] = avatarColors(name)
+
               return (
                 <div
                   className="my-task-card"
                   key={task.id}
                 >
                   <div className="my-task-top">
-                    <strong>{task.title}</strong>
+                    <div className="my-task-identity">
+                      <div
+                        className="my-task-avatar"
+                        style={{
+                          background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})`
+                        }}
+                      >
+                        {name.charAt(0).toUpperCase()}
+                      </div>
+
+                      <strong>{name}</strong>
+                    </div>
 
                     <span
                       className={`status-pill status-${task.status}`}
@@ -272,7 +287,8 @@ export function Profile({
                   </div>
 
                   <span className="my-task-sub">
-                    {task.chat_title || task.chat_username}
+                    {task.type === 'channel' ? '📢 قناة' : '👥 مجموعة'}
+                    {task.chat_username ? ` · ${task.chat_username}` : ''}
                   </span>
 
                   <div className="my-task-progress-row">

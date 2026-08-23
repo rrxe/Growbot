@@ -24,6 +24,9 @@ export const config = {
   botUsername:
     process.env.BOT_USERNAME || '',
 
+  botAppShortName:
+    process.env.BOT_APP_SHORT_NAME || 'start',
+
   webAppUrl:
     process.env.WEBAPP_URL || '',
 

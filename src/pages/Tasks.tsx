@@ -6,6 +6,7 @@ import {
   openTelegramLink,
   showAlert
 } from '../lib/telegram'
+import { taskDisplayName, avatarColors } from '../lib/format'
 import type { Task, User } from '../lib/types'
 import '../styles/tasks.css'
 
@@ -161,22 +162,32 @@ export function Tasks({
         </div>
       ) : (
         <div className="task-list">
-          {visibleTasks.map((task) => (
+          {visibleTasks.map((task) => {
+            const name = taskDisplayName(task)
+            const [colorFrom, colorTo] = avatarColors(name)
+
+            return (
             <article
               className="task-card"
               key={task.id}
             >
-              <div className="task-avatar">
-                {task.type === 'channel' ? 'ق' : 'ج'}
+              <div
+                className="task-avatar"
+                style={{
+                  background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})`
+                }}
+              >
+                {name.charAt(0).toUpperCase()}
               </div>
 
               <div className="task-content">
                 <strong>
-                  {task.title}
+                  {name}
                 </strong>
 
                 <span>
-                  {task.chat_title || task.chat_username || 'مهمة'}
+                  {task.type === 'channel' ? '📢 قناة' : '👥 مجموعة'}
+                  {task.chat_username ? ` · ${task.chat_username}` : ''}
                 </span>
 
                 <div className="task-progress-row">
@@ -210,7 +221,8 @@ export function Tasks({
                 </button>
               </div>
             </article>
-          ))}
+            )
+          })}
         </div>
       )}
     </section>
