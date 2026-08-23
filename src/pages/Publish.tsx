@@ -199,7 +199,7 @@ export function Publish({
           </strong>
 
           <p>
-            لازم تضيف GrowBot أدمن بالقناة أو الكروب قبل ما تنشر —
+            لازم تضيف StormGrow أدمن بالقناة أو الكروب قبل ما تنشر —
             من دون هالصلاحية ما فينا نتحقق من الأعضاء
             والمهمة رح تنرفض.
           </p>
@@ -286,7 +286,7 @@ export function Publish({
 
         <small className="field-help">
           حط رابط تيليجرام أو @username،
-          وتأكد إنه GrowBot أدمن بنفس المكان.
+          وتأكد إنه StormGrow أدمن بنفس المكان.
         </small>
       </div>
 

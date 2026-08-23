@@ -27,27 +27,64 @@
   justify-content: center;
   padding: 30px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-glow {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(212, 255, 61, .12),
+    transparent 70%
+  );
+  animation: pulse-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: .6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
 }
 
 .loading-logo {
-  width: 58px;
-  height: 58px;
-  border-radius: 18px;
+  position: relative;
+  width: 62px;
+  height: 62px;
+  border-radius: 19px;
   display: grid;
   place-items: center;
-  background: #d4ff3d;
+  background: linear-gradient(135deg, #d4ff3d, #7cff9c);
   color: #0f0e1b;
-  font-size: 26px;
-  font-weight: 900;
+  font-size: 27px;
+  box-shadow: 0 10px 30px rgba(212, 255, 61, .18);
 }
 
 .loading-title {
-  margin-top: 14px;
-  font-size: 18px;
-  font-weight: 800;
+  position: relative;
+  margin-top: 16px;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+
+.loading-tagline {
+  position: relative;
+  margin-top: 6px;
+  color: #8b87a8;
+  font-size: 11px;
 }
 
 .loading-spinner {
+  position: relative;
   width: 24px;
   height: 24px;
   border: 3px solid #2a2745;

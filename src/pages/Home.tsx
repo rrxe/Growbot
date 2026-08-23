@@ -147,11 +147,11 @@ export function Home({
       <header className="topbar">
         <div className="brand">
           <div className="brand-mark">
-            G
+            ⚡
           </div>
 
           <div>
-            <strong>GrowBot</strong>
+            <strong>StormGrow</strong>
             <span>نقاط ونمو</span>
           </div>
         </div>

@@ -157,6 +157,11 @@
   min-width: 58px;
 }
 
+.task-action-verify {
+  background: #d4ff3d;
+  color: #0f0e1b;
+}
+
 .task-action:disabled {
   opacity: .55;
 }

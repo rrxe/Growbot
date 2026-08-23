@@ -106,3 +106,38 @@ export function showAlert(
     message
   )
 }
+
+// تأكيد بستايل تيليجرام الأصلي بدل نافذة المتصفح القبيحة (window.confirm)
+export function showConfirm(
+  message: string
+): Promise<boolean> {
+  const webApp =
+    getTelegramWebApp()
+
+  if (!webApp) {
+    return Promise.resolve(
+      window.confirm(message)
+    )
+  }
+
+  return new Promise((resolve) => {
+    webApp.showPopup(
+      {
+        message,
+        buttons: [
+          {
+            id: 'cancel',
+            type: 'cancel',
+            text: 'إلغاء'
+          },
+          {
+            id: 'ok',
+            type: 'default',
+            text: 'تأكيد'
+          }
+        ]
+      },
+      (id) => resolve(id === 'ok')
+    )
+  })
+}

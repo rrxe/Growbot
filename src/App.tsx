@@ -4,8 +4,8 @@ import { Tasks } from './pages/Tasks'
 import { Publish } from './pages/Publish'
 import { Profile } from './pages/Profile'
 import { initTelegram, hapticSuccess, showAlert } from './lib/telegram'
-import { getMe } from './lib/api'
-import type { User } from './lib/types'
+import { getMe, getTasks, getMyTasks } from './lib/api'
+import type { MeResponse, Task, User } from './lib/types'
 import './styles/app.css'
 
 export type Screen =
@@ -18,26 +18,45 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('home')
   const [user, setUser] = useState<User | null>(null)
   const [checkedInToday, setCheckedInToday] = useState(false)
+  const [referral, setReferral] = useState<MeResponse['referral'] | null>(null)
+  const [browseTasks, setBrowseTasks] = useState<Task[]>([])
+  const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([])
+  const [myTasks, setMyTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  async function loadUser() {
+  // بنجهّز كل شي (الحساب + المهام + مهامي) مرة وحدة وبالتوازي
+  // وإحنا لسا على شاشة التحميل، حتى ما يحتاج المستخدم يشوف
+  // سبينر ثاني ولا ثالث لما يتنقل بين التبويبات.
+  async function loadAll() {
     try {
       setLoading(true)
       setError('')
 
-      const response = await getMe()
+      const [
+        meResponse,
+        tasksResponse,
+        myTasksResponse
+      ] = await Promise.all([
+        getMe(),
+        getTasks(),
+        getMyTasks()
+      ])
 
-      setUser(response.user)
-      setCheckedInToday(response.dailyCheckin.claimedToday)
+      setUser(meResponse.user)
+      setCheckedInToday(meResponse.dailyCheckin.claimedToday)
+      setReferral(meResponse.referral)
+      setBrowseTasks(tasksResponse.tasks)
+      setCompletedTaskIds(tasksResponse.completedTaskIds)
+      setMyTasks(myTasksResponse.tasks)
 
       // أول فتحة لليوم: المكافأة انضافت تلقائيًا على السيرفر،
       // هون بس منعلم المستخدم إنها انضافت.
-      if (response.dailyCheckin.justClaimed) {
+      if (meResponse.dailyCheckin.justClaimed) {
         hapticSuccess()
 
         showAlert(
-          `☀️ تسجيل دخول تلقائي: تمت إضافة +${response.dailyCheckin.points} نقطة.`
+          `☀️ تسجيل دخول تلقائي: تمت إضافة +${meResponse.dailyCheckin.points} نقطة.`
         )
       }
     } catch (err) {
@@ -53,15 +72,18 @@ export default function App() {
 
   useEffect(() => {
     initTelegram()
-    void loadUser()
+    void loadAll()
   }, [])
 
   if (loading) {
     return (
       <div className="app-shell">
         <div className="loading-screen">
-          <div className="loading-logo">G</div>
-          <div className="loading-title">GrowBot</div>
+          <div className="loading-glow" />
+
+          <div className="loading-logo">⚡</div>
+          <div className="loading-title">StormGrow</div>
+          <div className="loading-tagline">جاري تجهيز حسابك...</div>
           <div className="loading-spinner" />
         </div>
       </div>
@@ -77,7 +99,7 @@ export default function App() {
           <p>{error}</p>
           <button
             className="primary-button"
-            onClick={() => void loadUser()}
+            onClick={() => void loadAll()}
           >
             إعادة المحاولة
           </button>
@@ -105,6 +127,8 @@ export default function App() {
         {screen === 'tasks' && (
           <Tasks
             user={user}
+            initialTasks={browseTasks}
+            initialCompletedIds={completedTaskIds}
             onUserChanged={setUser}
           />
         )}
@@ -112,13 +136,15 @@ export default function App() {
         {screen === 'publish' && (
           <Publish
             user={user}
-            onPublished={loadUser}
+            onPublished={loadAll}
           />
         )}
 
         {screen === 'profile' && (
           <Profile
             user={user}
+            initialMyTasks={myTasks}
+            initialReferral={referral}
             onUserChanged={setUser}
           />
         )}

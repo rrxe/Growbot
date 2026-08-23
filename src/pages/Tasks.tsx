@@ -6,12 +6,14 @@ import {
   openTelegramLink,
   showAlert
 } from '../lib/telegram'
-import { taskDisplayName, avatarColors } from '../lib/format'
+import { taskDisplayName, taskTypeStyle } from '../lib/format'
 import type { Task, User } from '../lib/types'
 import '../styles/tasks.css'
 
 interface Props {
   user: User
+  initialTasks?: Task[]
+  initialCompletedIds?: string[]
   onUserChanged: (user: User) => void
 }
 
@@ -19,13 +21,17 @@ type Filter = 'all' | 'channel' | 'group'
 
 export function Tasks({
   user,
+  initialTasks,
+  initialCompletedIds,
   onUserChanged
 }: Props) {
   const [filter, setFilter] = useState<Filter>('all')
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [completedIds, setCompletedIds] = useState<string[]>([])
-  const [loading, setLoading] = useState(true)
+  const [tasks, setTasks] = useState<Task[]>(initialTasks || [])
+  const [completedIds, setCompletedIds] = useState<string[]>(initialCompletedIds || [])
+  const [joinedIds, setJoinedIds] = useState<string[]>([])
+  const [loading, setLoading] = useState(!initialTasks)
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(Boolean(initialTasks))
 
   async function loadTasks() {
     try {
@@ -49,32 +55,40 @@ export function Tasks({
   }
 
   useEffect(() => {
+    // أول تحميل: عندنا البيانات جاهزة أصلًا من صفحة التحميل الأولى،
+    // ما في داعي نعيد جلبها ونعرض سبينر ثاني.
+    if (!hasLoadedOnce) {
+      setHasLoadedOnce(true)
+      return
+    }
+
     void loadTasks()
   }, [filter])
 
-  async function handleTask(task: Task) {
+  // خطوة 1: فتح القناة/المجموعة، بدون أي نافذة تأكيد مزعجة
+  function handleJoin(task: Task) {
+    if (task.chat_username) {
+      openTelegramLink(
+        `https://t.me/${task.chat_username.replace(/^@/, '')}`
+      )
+    } else if (task.chat_id) {
+      showAlert(
+        'افتح القناة أو المجموعة من الرابط الموجود في المهمة، ثم ارجع واضغط تحقق.'
+      )
+    }
+
+    setJoinedIds((current) => [
+      ...current,
+      task.id
+    ])
+  }
+
+  // خطوة 2: التحقق الفعلي — بعد ما المستخدم يكون انضم فعليًا وضغط تحقق
+  async function handleVerify(task: Task) {
     if (busyId) return
 
     try {
       setBusyId(task.id)
-
-      if (task.chat_username) {
-        openTelegramLink(
-          `https://t.me/${task.chat_username.replace(/^@/, '')}`
-        )
-      } else if (task.chat_id) {
-        showAlert(
-          'افتح القناة أو المجموعة من الرابط الموجود في المهمة، ثم ارجع واضغط تحقق.'
-        )
-      }
-
-      const confirmed = window.confirm(
-        'بعد الانضمام فعليًا، اضغط موافق حتى نتحقق من عضويتك.'
-      )
-
-      if (!confirmed) {
-        return
-      }
 
       const response = await completeTask(task.id)
 
@@ -164,7 +178,8 @@ export function Tasks({
         <div className="task-list">
           {visibleTasks.map((task) => {
             const name = taskDisplayName(task)
-            const [colorFrom, colorTo] = avatarColors(name)
+            const style = taskTypeStyle(task.type)
+            const isJoined = joinedIds.includes(task.id)
 
             return (
             <article
@@ -174,10 +189,10 @@ export function Tasks({
               <div
                 className="task-avatar"
                 style={{
-                  background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})`
+                  background: `linear-gradient(135deg, ${style.colorFrom}, ${style.colorTo})`
                 }}
               >
-                {name.charAt(0).toUpperCase()}
+                {style.icon}
               </div>
 
               <div className="task-content">
@@ -186,7 +201,7 @@ export function Tasks({
                 </strong>
 
                 <span>
-                  {task.type === 'channel' ? '📢 قناة' : '👥 مجموعة'}
+                  {task.type === 'channel' ? 'قناة' : 'مجموعة'}
                   {task.chat_username ? ` · ${task.chat_username}` : ''}
                 </span>
 
@@ -210,15 +225,25 @@ export function Tasks({
               <div className="task-right">
                 <b>+5</b>
 
-                <button
-                  className="task-action"
-                  disabled={busyId !== null}
-                  onClick={() => void handleTask(task)}
-                >
-                  {busyId === task.id
-                    ? 'تحقق...'
-                    : 'انضم'}
-                </button>
+                {isJoined ? (
+                  <button
+                    className="task-action task-action-verify"
+                    disabled={busyId !== null}
+                    onClick={() => void handleVerify(task)}
+                  >
+                    {busyId === task.id
+                      ? 'جاري...'
+                      : 'تحقق ✓'}
+                  </button>
+                ) : (
+                  <button
+                    className="task-action"
+                    disabled={busyId !== null}
+                    onClick={() => handleJoin(task)}
+                  >
+                    انضم
+                  </button>
+                )}
               </div>
             </article>
             )

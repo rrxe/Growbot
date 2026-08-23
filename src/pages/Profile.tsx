@@ -1,15 +1,16 @@
 import {
-  useEffect,
   useState
 } from 'react'
-import { getMe, getMyTasks, cancelTask } from '../lib/api'
-import { hapticError, hapticSuccess, showAlert } from '../lib/telegram'
-import { taskDisplayName, avatarColors } from '../lib/format'
-import type { Task, User } from '../lib/types'
+import { cancelTask } from '../lib/api'
+import { hapticError, hapticSuccess, showAlert, showConfirm } from '../lib/telegram'
+import { taskDisplayName, taskTypeStyle } from '../lib/format'
+import type { MeResponse, Task, User } from '../lib/types'
 import '../styles/profile.css'
 
 interface Props {
   user: User
+  initialMyTasks?: Task[]
+  initialReferral?: MeResponse['referral'] | null
   onUserChanged: (user: User) => void
 }
 
@@ -25,51 +26,22 @@ const STATUS_LABEL: Record<
 
 export function Profile({
   user,
+  initialMyTasks,
+  initialReferral,
   onUserChanged
 }: Props) {
-  const [referral, setReferral] = useState<{
-    code: string
-    link: string | null
-    completed_tasks: number
-    required_tasks: number
-    reward_points: number
-    rewarded: boolean
-  } | null>(null)
+  const [referral] = useState<
+    MeResponse['referral'] | null
+  >(initialReferral || null)
 
-  const [myTasks, setMyTasks] = useState<Task[]>([])
-  const [tasksLoading, setTasksLoading] = useState(true)
+  const [myTasks, setMyTasks] = useState<Task[]>(initialMyTasks || [])
+  const [tasksLoading] = useState(!initialMyTasks)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
-
-  useEffect(() => {
-    void getMe()
-      .then((response) => {
-        setReferral(response.referral)
-      })
-      .catch(() => {
-        setReferral(null)
-      })
-
-    void loadMyTasks()
-  }, [])
-
-  async function loadMyTasks() {
-    try {
-      setTasksLoading(true)
-
-      const response = await getMyTasks()
-
-      setMyTasks(response.tasks)
-    } catch {
-      // ما بنعطل باقي الصفحة إذا فشل تحميل قائمة مهامي
-    } finally {
-      setTasksLoading(false)
-    }
-  }
 
   async function handleCancel(task: Task) {
     if (cancellingId) return
 
-    const confirmed = window.confirm(
+    const confirmed = await showConfirm(
       `بتوقف "${taskDisplayName(task)}" وبيرجعلك الباقي من الميزانية (${task.remaining_points.toLocaleString('en-US')} نقطة). أكمل؟`
     )
 
@@ -145,7 +117,7 @@ export function Profile({
         </div>
 
         <div className="avatar-large">
-          {(user.first_name || 'G')
+          {(user.first_name || 'S')
             .charAt(0)
             .toUpperCase()}
         </div>
@@ -258,7 +230,7 @@ export function Profile({
                   : 0
 
               const name = taskDisplayName(task)
-              const [colorFrom, colorTo] = avatarColors(name)
+              const style = taskTypeStyle(task.type)
 
               return (
                 <div
@@ -270,10 +242,10 @@ export function Profile({
                       <div
                         className="my-task-avatar"
                         style={{
-                          background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})`
+                          background: `linear-gradient(135deg, ${style.colorFrom}, ${style.colorTo})`
                         }}
                       >
-                        {name.charAt(0).toUpperCase()}
+                        {style.icon}
                       </div>
 
                       <strong>{name}</strong>
@@ -287,7 +259,7 @@ export function Profile({
                   </div>
 
                   <span className="my-task-sub">
-                    {task.type === 'channel' ? '📢 قناة' : '👥 مجموعة'}
+                    {task.type === 'channel' ? 'قناة' : 'مجموعة'}
                     {task.chat_username ? ` · ${task.chat_username}` : ''}
                   </span>
 
@@ -334,7 +306,7 @@ export function Profile({
       </div>
 
       <div className="rules-card">
-        <h3>قواعد GrowBot</h3>
+        <h3>قواعد StormGrow</h3>
 
         <p>
           • تنفيذ المهمة يعطيك 5 نقاط.
