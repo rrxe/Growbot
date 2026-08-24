@@ -209,7 +209,7 @@ export function getChat(
 }
 
 export function getChatMember(
-  chatId: number,
+  chatId: string | number,
   userId: number
 ) {
   return telegramRequest<TelegramChatMember>(

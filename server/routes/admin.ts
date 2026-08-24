@@ -4,6 +4,8 @@ import { adminMiddleware } from '../lib/admin-auth.js'
 import { clearSettingsCache } from '../lib/settings.js'
 
 import { supabase } from '../lib/supabase.js'
+import { broadcastToUsers } from '../lib/telegram-send.js'
+import { broadcastToUsers } from '../lib/telegram-send.js'
 
 export const adminRouter =
   Router()
@@ -1391,6 +1393,267 @@ adminRouter.delete(
 
       res.json({
         ok: true
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
+// =========================================================
+// الاشتراك الإجباري (Required Channels)
+// =========================================================
+
+adminRouter.get(
+  '/required-channels',
+  adminMiddleware('admin'),
+  async (_req, res, next) => {
+    try {
+      const {
+        data,
+        error
+      } = await supabase
+        .from('required_channels')
+        .select('*')
+        .order(
+          'created_at',
+          { ascending: false }
+        )
+
+      if (error) {
+        throw error
+      }
+
+      res.json({
+        channels: data || []
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
+adminRouter.post(
+  '/required-channels',
+  adminMiddleware('admin'),
+  async (req, res, next) => {
+    try {
+      const rawInput =
+        typeof req.body?.identifier === 'string'
+          ? req.body.identifier.trim()
+          : ''
+
+      const title =
+        typeof req.body?.title === 'string'
+          ? req.body.title.trim()
+          : ''
+
+      if (!rawInput) {
+        return res
+          .status(400)
+          .json({
+            error:
+              'أدخل @username أو رابط القناة.'
+          })
+      }
+
+      // نقبل @username أو t.me/username أو رابط كامل
+      const username =
+        rawInput
+          .replace(/^https?:\/\/t\.me\//i, '')
+          .replace(/^@/, '')
+          .split('/')[0]
+          .trim()
+
+      if (!username) {
+        return res
+          .status(400)
+          .json({
+            error:
+              'صيغة القناة غير صحيحة.'
+          })
+      }
+
+      const {
+        data,
+        error
+      } = await supabase
+        .from('required_channels')
+        .insert({
+          chat_username: username,
+          title: title || username,
+          invite_link: `https://t.me/${username}`,
+          is_active: true
+        })
+        .select('*')
+        .single()
+
+      if (error) {
+        throw error
+      }
+
+      res.json({
+        ok: true,
+        channel: data
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
+adminRouter.post(
+  '/required-channels/:id/toggle',
+  adminMiddleware('admin'),
+  async (req, res, next) => {
+    try {
+      const {
+        data: current,
+        error: findError
+      } = await supabase
+        .from('required_channels')
+        .select('is_active')
+        .eq('id', req.params.id)
+        .maybeSingle()
+
+      if (findError) {
+        throw findError
+      }
+
+      if (!current) {
+        return res
+          .status(404)
+          .json({
+            error: 'غير موجودة.'
+          })
+      }
+
+      const {
+        data,
+        error
+      } = await supabase
+        .from('required_channels')
+        .update({
+          is_active: !current.is_active
+        })
+        .eq('id', req.params.id)
+        .select('*')
+        .single()
+
+      if (error) {
+        throw error
+      }
+
+      res.json({
+        ok: true,
+        channel: data
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
+adminRouter.delete(
+  '/required-channels/:id',
+  adminMiddleware('admin'),
+  async (req, res, next) => {
+    try {
+      const {
+        error
+      } = await supabase
+        .from('required_channels')
+        .delete()
+        .eq('id', req.params.id)
+
+      if (error) {
+        throw error
+      }
+
+      res.json({
+        ok: true
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
+// =========================================================
+// رسالة جماعية (Broadcast)
+// =========================================================
+
+adminRouter.post(
+  '/broadcast',
+  adminMiddleware('owner'),
+  async (req, res, next) => {
+    try {
+      const message =
+        typeof req.body?.message === 'string'
+          ? req.body.message.trim()
+          : ''
+
+      if (!message) {
+        return res
+          .status(400)
+          .json({
+            error:
+              'اكتب نص الرسالة أولاً.'
+          })
+      }
+
+      if (message.length > 3500) {
+        return res
+          .status(400)
+          .json({
+            error:
+              'الرسالة طويلة كتير (حد أقصى 3500 حرف).'
+          })
+      }
+
+      const {
+        data: users,
+        error
+      } = await supabase
+        .from('users')
+        .select('telegram_id')
+        .eq('is_banned', false)
+
+      if (error) {
+        throw error
+      }
+
+      const telegramIds =
+        (users || [])
+          .map((user) => user.telegram_id)
+          .filter(
+            (id): id is number =>
+              typeof id === 'number' && id > 0
+          )
+
+      if (telegramIds.length === 0) {
+        return res
+          .status(400)
+          .json({
+            error:
+              'ما في مستخدمين لإرسال الرسالة لهم.'
+          })
+      }
+
+      const result =
+        await broadcastToUsers(
+          telegramIds,
+          message
+        )
+
+      res.json({
+        ok: true,
+        ...result
       })
     } catch (error) {
       next(error)

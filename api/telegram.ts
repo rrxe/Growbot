@@ -7,6 +7,10 @@ import {
   supabase
 } from '../server/lib/supabase.js'
 
+import {
+  getChatMember
+} from '../server/lib/telegram.js'
+
 const token =
   process.env.BOT_TOKEN ||
   ''
