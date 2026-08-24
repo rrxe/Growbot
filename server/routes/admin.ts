@@ -5,6 +5,7 @@ import { clearSettingsCache } from '../lib/settings.js'
 
 import { supabase } from '../lib/supabase.js'
 import { broadcastToUsers } from '../lib/telegram-send.js'
+import { getChat } from '../lib/telegram.js'
 
 export const adminRouter =
   Router()
@@ -1475,6 +1476,36 @@ adminRouter.post(
           })
       }
 
+      if (username.startsWith('+')) {
+        return res
+          .status(400)
+          .json({
+            error:
+              'روابط الدعوة الخاصة (تبدأ بـ +) مو مدعومة — لازم قناة/مجموعة عامة إلها @username.'
+          })
+      }
+
+      // نتحقق فعليًا من تيليجرام قبل الحفظ — إذا القناة غلط أو البوت
+      // مو عضو/أدمن فيها، منرجع خطأ واضح بدل ما نحفظ قيمة معطوبة بصمت.
+      let chatInfo
+
+      try {
+        chatInfo = await getChat(
+          `@${username}`
+        )
+      } catch (error) {
+        return res
+          .status(400)
+          .json({
+            error:
+              `تعذر الوصول للقناة @${username}. تأكد إنه البوت عضو أو أدمن فيها والاسم صحيح. (${
+                error instanceof Error
+                  ? error.message
+                  : 'خطأ غير معروف'
+              })`
+          })
+      }
+
       const {
         data,
         error
@@ -1482,7 +1513,11 @@ adminRouter.post(
         .from('required_channels')
         .insert({
           chat_username: username,
-          title: title || username,
+          chat_id: chatInfo.id,
+          title:
+            title ||
+            chatInfo.title ||
+            username,
           invite_link: `https://t.me/${username}`,
           is_active: true
         })
