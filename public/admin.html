@@ -70,15 +70,15 @@
     .topbar {
       position:sticky;
       top:0;
-      z-index:20;
+      z-index:30;
 
       display:flex;
       align-items:center;
       justify-content:space-between;
 
-      padding:15px 18px;
+      padding:14px 18px;
 
-      background:rgba(11,10,18,.92);
+      background:rgba(11,10,18,.95);
       backdrop-filter:blur(16px);
 
       border-bottom:1px solid var(--line);
@@ -88,9 +88,11 @@
       display:flex;
       align-items:center;
       gap:10px;
+      min-width:0;
     }
 
     .logo {
+      flex:0 0 40px;
       width:40px;
       height:40px;
       display:grid;
@@ -98,7 +100,7 @@
 
       border-radius:12px;
 
-      background:var(--lime);
+      background:linear-gradient(135deg,var(--lime),#7cff9c);
       color:#0f0e1b;
 
       font-weight:900;
@@ -106,17 +108,21 @@
     }
 
     .brand-title {
-      font-size:15px;
+      font-size:14px;
       font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
     .brand-sub {
       margin-top:2px;
       color:var(--muted);
-      font-size:9px;
+      font-size:8.5px;
     }
 
     .role {
+      flex:0 0 auto;
       padding:7px 10px;
       border-radius:10px;
 
@@ -126,31 +132,33 @@
 
       font-size:9px;
       font-weight:900;
+      white-space:nowrap;
     }
 
     .layout {
       display:grid;
       grid-template-columns:180px minmax(0,1fr);
-      min-height:calc(100vh - 71px);
+      min-height:calc(100vh - 68px);
     }
 
     .sidebar {
       position:sticky;
-      top:71px;
+      top:68px;
 
-      height:calc(100vh - 71px);
+      height:calc(100vh - 68px);
 
-      padding:12px 9px;
+      padding:14px 10px;
 
       border-left:1px solid var(--line);
       background:rgba(20,18,32,.7);
     }
 
     .nav-title {
-      padding:8px 9px 6px;
+      padding:8px 9px 8px;
       color:var(--muted2);
       font-size:8px;
       font-weight:900;
+      letter-spacing:.4px;
     }
 
     .nav-item {
@@ -158,31 +166,38 @@
 
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:9px;
 
       border:0;
-      border-radius:11px;
+      border-radius:12px;
 
       background:transparent;
       color:var(--muted);
 
-      padding:10px 9px;
-      margin-bottom:3px;
+      padding:11px 10px;
+      margin-bottom:4px;
 
       text-align:right;
 
-      font-size:10px;
+      font-size:10.5px;
       font-weight:800;
+
+      transition:background .15s,color .15s;
+    }
+
+    .nav-item span:first-child {
+      flex:0 0 auto;
+      font-size:14px;
     }
 
     .nav-item.active {
-      background:rgba(212,255,61,.09);
+      background:rgba(212,255,61,.12);
       color:var(--lime);
     }
 
     .content {
       min-width:0;
-      padding:18px;
+      padding:20px 18px 40px;
     }
 
     .screen {
@@ -611,20 +626,27 @@
 
       .sidebar {
         position:sticky;
-        top:71px;
+        top:68px;
         height:auto;
 
         display:flex;
-        gap:5px;
+        gap:6px;
 
         overflow-x:auto;
+        -webkit-overflow-scrolling:touch;
 
-        padding:7px;
+        padding:9px 12px;
 
-        z-index:10;
+        z-index:25;
 
         border-left:0;
         border-bottom:1px solid var(--line);
+        background:rgba(11,10,18,.95);
+        backdrop-filter:blur(16px);
+      }
+
+      .sidebar::-webkit-scrollbar {
+        display:none;
       }
 
       .nav-title {
@@ -635,7 +657,13 @@
         width:auto;
         flex:0 0 auto;
         margin:0;
-        padding:9px 11px;
+        padding:9px 13px;
+        border-radius:20px;
+        border:1px solid transparent;
+      }
+
+      .nav-item.active {
+        border-color:rgba(212,255,61,.25);
       }
 
       .nav-item span:last-child {
@@ -668,6 +696,134 @@
         width:100%;
         flex:1 1 100%;
       }
+    }
+
+    .broadcast-textarea {
+      width:100%;
+      min-height:140px;
+      resize:vertical;
+
+      background:var(--surface2);
+      color:var(--text);
+
+      border:1px solid var(--line);
+      border-radius:13px;
+
+      padding:12px;
+      outline:none;
+
+      font-size:11px;
+      line-height:1.8;
+      font-family:inherit;
+    }
+
+    .broadcast-meta {
+      display:flex;
+      justify-content:space-between;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:8.5px;
+    }
+
+    .broadcast-send-btn {
+      width:100%;
+      margin-top:12px;
+      padding:13px;
+      font-size:11px;
+    }
+
+    .broadcast-result {
+      margin-top:12px;
+    }
+
+    .broadcast-result:empty {
+      display:none;
+    }
+
+    .broadcast-stat-row {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+    }
+
+    .broadcast-stat {
+      padding:11px;
+      border-radius:12px;
+      background:#151321;
+      text-align:center;
+    }
+
+    .broadcast-stat span {
+      display:block;
+      color:var(--muted2);
+      font-size:8px;
+    }
+
+    .broadcast-stat strong {
+      display:block;
+      margin-top:5px;
+      font-size:16px;
+      font-family:ui-monospace,monospace;
+    }
+
+    .empty-hint {
+      padding:16px 4px;
+      text-align:center;
+      color:var(--muted);
+      font-size:10px;
+    }
+
+    .channel-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+
+      padding:11px;
+      margin-bottom:8px;
+
+      border-radius:13px;
+      background:#151321;
+    }
+
+    .channel-row:last-child {
+      margin-bottom:0;
+    }
+
+    .channel-info {
+      min-width:0;
+    }
+
+    .channel-info strong {
+      display:block;
+      font-size:11px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .channel-info span {
+      display:block;
+      margin-top:3px;
+      color:var(--blue);
+      font-size:8.5px;
+      direction:ltr;
+      text-align:right;
+    }
+
+    .channel-actions {
+      flex:0 0 auto;
+      display:flex;
+      gap:6px;
+    }
+
+    .channel-actions button {
+      padding:7px 10px;
+      font-size:8.5px;
+    }
+
+    .channel-row.inactive {
+      opacity:.5;
     }
   </style>
 </head>
@@ -756,6 +912,22 @@
   >
     <span>⚙️</span>
     <span>الإعدادات</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="broadcast"
+  >
+    <span>📢</span>
+    <span>رسالة جماعية</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="required-channels"
+  >
+    <span>🔒</span>
+    <span>الاشتراك الإجباري</span>
   </button>
 
   <button
@@ -1521,6 +1693,150 @@
 </section>
 
 
+<section
+  class="screen"
+  data-view="broadcast"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        رسالة جماعية
+      </h1>
+
+      <div class="page-sub">
+        بتوصل لكل الأعضاء النشطين (غير المحظورين)
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <textarea
+        id="broadcastMessage"
+        class="broadcast-textarea"
+        placeholder="اكتب رسالتك هون... بتوصل لكل مستخدمي StormGrow عبر البوت"
+        maxlength="3500"
+      ></textarea>
+
+      <div class="broadcast-meta">
+        <span id="broadcastCount">
+          0 مستخدم نشط
+        </span>
+
+        <span id="broadcastLength">
+          0 / 3500
+        </span>
+      </div>
+
+      <button
+        class="action green-btn broadcast-send-btn"
+        id="broadcastSendBtn"
+        onclick="sendBroadcast()"
+      >
+        📢 إرسال للجميع
+      </button>
+
+      <div
+        class="broadcast-result"
+        id="broadcastResult"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="required-channels"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        الاشتراك الإجباري
+      </h1>
+
+      <div class="page-sub">
+        قنوات لازم ينضم لها أي مستخدم قبل ما يبدأ استخدام البوت
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div class="search-row">
+
+        <input
+          id="channelIdentifier"
+          placeholder="@username أو رابط القناة"
+          dir="ltr"
+        >
+
+        <button
+          class="action green-btn"
+          onclick="addRequiredChannel()"
+        >
+          + إضافة
+        </button>
+
+      </div>
+
+      <input
+        id="channelTitle"
+        class="reason-input"
+        placeholder="اسم يظهر للمستخدم (اختياري)"
+      >
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="card"
+    style="margin-top:12px"
+  >
+
+    <div class="card-head">
+      <div>
+        <div class="card-title">
+          القنوات الحالية
+        </div>
+
+        <div class="card-sub">
+          البوت لازم يكون أدمن بكل قناة حتى يقدر يتحقق من الأعضاء
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="card-body"
+      id="requiredChannelsList"
+    >
+      <div class="empty-hint">
+        جاري التحميل...
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
 </main>
 
 </div>
@@ -1758,6 +2074,20 @@ async function loadScreen(
       'admins'
     ) {
       await loadAdmins()
+    }
+
+    if (
+      name ===
+      'broadcast'
+    ) {
+      await loadBroadcastCount()
+    }
+
+    if (
+      name ===
+      'required-channels'
+    ) {
+      await loadRequiredChannels()
     }
   } catch (
     error
@@ -2206,9 +2536,7 @@ async function openUser(
     'show'
   )
 
-  document.getElementById(
-    'userName'
-  ).textContent =
+  const displayName =
     [
       currentUser.first_name,
       currentUser.last_name
@@ -2216,6 +2544,18 @@ async function openUser(
       .filter(Boolean)
       .join(' ') ||
     'بدون اسم'
+
+  document.getElementById(
+    'userAvatar'
+  ).textContent =
+    displayName
+      .charAt(0)
+      .toUpperCase()
+
+  document.getElementById(
+    'userName'
+  ).textContent =
+    displayName
 
   document.getElementById(
     'userUsername'
@@ -2228,6 +2568,21 @@ async function openUser(
     'userId'
   ).textContent =
     currentUser.telegram_id
+
+  const statusPill =
+    document.getElementById(
+      'userStatusPill'
+    )
+
+  statusPill.textContent =
+    currentUser.is_banned
+      ? 'محظور'
+      : 'نشط'
+
+  statusPill.className =
+    currentUser.is_banned
+      ? 'status-pill banned'
+      : 'status-pill ok'
 
   document.getElementById(
     'userPoints'
@@ -3089,6 +3444,314 @@ async function removeAdmin(
     toast(
       error?.message ||
       'حدث خطأ'
+    )
+  }
+}
+
+
+async function loadBroadcastCount() {
+  try {
+    const data =
+      await api(
+        '/api/admin/stats'
+      )
+
+    const activeCount =
+      (data.stats.users || 0) -
+      (data.stats.bannedUsers || 0)
+
+    document.getElementById(
+      'broadcastCount'
+    ).textContent =
+      `${formatNumber(activeCount)} مستخدم نشط`
+  } catch (
+    error
+  ) {
+    void error
+  }
+}
+
+
+document
+  .getElementById(
+    'broadcastMessage'
+  )
+  ?.addEventListener(
+    'input',
+    (event) => {
+      document.getElementById(
+        'broadcastLength'
+      ).textContent =
+        `${event.target.value.length} / 3500`
+    }
+  )
+
+
+async function sendBroadcast() {
+  const textarea =
+    document.getElementById(
+      'broadcastMessage'
+    )
+
+  const message =
+    textarea.value.trim()
+
+  if (!message) {
+    toast(
+      'اكتب رسالة أولاً'
+    )
+
+    return
+  }
+
+  if (
+    !confirm(
+      'رح تنبعث هاي الرسالة لكل الأعضاء النشطين. متأكد؟'
+    )
+  ) {
+    return
+  }
+
+  const button =
+    document.getElementById(
+      'broadcastSendBtn'
+    )
+
+  button.disabled = true
+  button.textContent =
+    'جاري الإرسال...'
+
+  try {
+    const data =
+      await api(
+        '/api/admin/broadcast',
+        {
+          method:'POST',
+          body:
+            JSON.stringify({
+              message
+            })
+        }
+      )
+
+    document.getElementById(
+      'broadcastResult'
+    ).innerHTML = `
+      <div class="broadcast-stat-row">
+        <div class="broadcast-stat">
+          <span>وصلت</span>
+          <strong class="green">${formatNumber(data.sent)}</strong>
+        </div>
+        <div class="broadcast-stat">
+          <span>محظور البوت</span>
+          <strong class="red">${formatNumber(data.blocked)}</strong>
+        </div>
+        <div class="broadcast-stat">
+          <span>فشلت</span>
+          <strong>${formatNumber(data.failed)}</strong>
+        </div>
+      </div>
+    `
+
+    textarea.value = ''
+
+    document.getElementById(
+      'broadcastLength'
+    ).textContent =
+      '0 / 3500'
+
+    toast(
+      `تم الإرسال — وصلت لـ${data.sent} مستخدم`
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر إرسال الرسالة'
+    )
+  } finally {
+    button.disabled = false
+    button.textContent =
+      '📢 إرسال للجميع'
+  }
+}
+
+
+async function loadRequiredChannels() {
+  const container =
+    document.getElementById(
+      'requiredChannelsList'
+    )
+
+  container.innerHTML =
+    '<div class="empty-hint">جاري التحميل...</div>'
+
+  try {
+    const data =
+      await api(
+        '/api/admin/required-channels'
+      )
+
+    const channels =
+      data.channels || []
+
+    if (channels.length === 0) {
+      container.innerHTML =
+        '<div class="empty-hint">ما في قنوات مضافة بعد.</div>'
+
+      return
+    }
+
+    container.innerHTML =
+      channels
+        .map(
+          (channel) => `
+            <div class="channel-row ${channel.is_active ? '' : 'inactive'}">
+              <div class="channel-info">
+                <strong>${channel.title}</strong>
+                <span>${channel.chat_username ? '@' + channel.chat_username : channel.chat_id}</span>
+              </div>
+              <div class="channel-actions">
+                <button
+                  class="action dark-btn"
+                  onclick="toggleRequiredChannel('${channel.id}')"
+                >
+                  ${channel.is_active ? 'إيقاف' : 'تفعيل'}
+                </button>
+                <button
+                  class="action red-btn"
+                  onclick="deleteRequiredChannel('${channel.id}')"
+                >
+                  حذف
+                </button>
+              </div>
+            </div>
+          `
+        )
+        .join('')
+  } catch (
+    error
+  ) {
+    container.innerHTML =
+      '<div class="empty-hint">تعذر تحميل القنوات.</div>'
+
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function addRequiredChannel() {
+  const identifierInput =
+    document.getElementById(
+      'channelIdentifier'
+    )
+
+  const titleInput =
+    document.getElementById(
+      'channelTitle'
+    )
+
+  const identifier =
+    identifierInput.value.trim()
+
+  if (!identifier) {
+    toast(
+      'أدخل @username أو رابط القناة'
+    )
+
+    return
+  }
+
+  try {
+    await api(
+      '/api/admin/required-channels',
+      {
+        method:'POST',
+        body:
+          JSON.stringify({
+            identifier,
+            title:
+              titleInput.value.trim()
+          })
+      }
+    )
+
+    identifierInput.value = ''
+    titleInput.value = ''
+
+    await loadRequiredChannels()
+
+    toast(
+      'تمت إضافة القناة'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر إضافة القناة'
+    )
+  }
+}
+
+
+async function toggleRequiredChannel(
+  id
+) {
+  try {
+    await api(
+      `/api/admin/required-channels/${id}/toggle`,
+      {
+        method:'POST'
+      }
+    )
+
+    await loadRequiredChannels()
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function deleteRequiredChannel(
+  id
+) {
+  if (
+    !confirm(
+      'حذف هاي القناة من الاشتراك الإجباري؟'
+    )
+  ) {
+    return
+  }
+
+  try {
+    await api(
+      `/api/admin/required-channels/${id}`,
+      {
+        method:'DELETE'
+      }
+    )
+
+    await loadRequiredChannels()
+
+    toast(
+      'تم الحذف'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر الحذف'
     )
   }
 }
