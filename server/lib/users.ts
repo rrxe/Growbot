@@ -165,6 +165,29 @@ export async function getOrCreateUser(
     .single()
 
   if (createError) {
+    // تصادم توقيت: طلب تاني بالتوازي سبقنا وأنشأ نفس المستخدم
+    // (مثلاً /api/me و /api/tasks بنفس اللحظة لأول مرة). بدل ما نفشل،
+    // منجيب الصف يلي هو أنشأه توًا.
+    if (createError.code === '23505') {
+      const {
+        data: raceWinner,
+        error: raceError
+      } = await supabase
+        .from('users')
+        .select('*')
+        .eq(
+          'telegram_id',
+          telegramUser.id
+        )
+        .single()
+
+      if (raceError) {
+        throw raceError
+      }
+
+      return raceWinner
+    }
+
     throw createError
   }
 
