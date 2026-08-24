@@ -29,7 +29,10 @@ export async function sendTelegramMessage(
       }
     )
 
-    const data = await response.json()
+    const data = await response.json() as {
+      ok: boolean
+      description?: string
+    }
 
     if (!data.ok) {
       return {
