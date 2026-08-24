@@ -5,7 +5,6 @@ import { clearSettingsCache } from '../lib/settings.js'
 
 import { supabase } from '../lib/supabase.js'
 import { broadcastToUsers } from '../lib/telegram-send.js'
-import { broadcastToUsers } from '../lib/telegram-send.js'
 
 export const adminRouter =
   Router()
