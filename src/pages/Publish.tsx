@@ -39,13 +39,23 @@ export function Publish({
     type,
     setType
   ] = useState<
-    'channel' | 'group'
+    'channel' | 'group' | 'bot'
   >('channel')
 
   const [
     chat,
     setChat
   ] = useState('')
+
+  const [
+    botLink,
+    setBotLink
+  ] = useState('')
+
+  const [
+    reward,
+    setReward
+  ] = useState(10)
 
   const [
     title,
@@ -78,13 +88,31 @@ export function Publish({
     useMemo(
       () =>
         Math.floor(
-          budget / 5
+          budget / (type === 'bot' ? reward : 5)
         ),
-      [budget]
+      [budget, type, reward]
     )
 
   async function submit() {
-    if (!chat.trim()) {
+    if (type === 'bot') {
+      if (!botLink.trim()) {
+        showAlert('أدخل رابط إحالة البوت.')
+
+        return
+      }
+
+      if (reward < 10 || reward > 20) {
+        showAlert('نقاط مهمة البوت يجب أن تكون بين 10 و20.')
+
+        return
+      }
+
+      if (budget < reward || budget % reward !== 0) {
+        showAlert(`الميزانية يجب أن تكون من مضاعفات ${reward}.`)
+
+        return
+      }
+    } else if (!chat.trim()) {
       showAlert(
         'أدخل رابط القناة أو المجموعة.'
       )
@@ -119,18 +147,25 @@ export function Publish({
         true
       )
 
-      await createTask({
-        type,
-        chat:
-          chat.trim(),
-        title:
-          title.trim() ||
-          undefined,
-        budgetPoints:
-          budget
-      })
+      await createTask(
+        type === 'bot'
+          ? {
+              type,
+              title: title.trim() || undefined,
+              budgetPoints: budget,
+              botLink: botLink.trim(),
+              rewardPoints: reward
+            }
+          : {
+              type,
+              chat: chat.trim(),
+              title: title.trim() || undefined,
+              budgetPoints: budget
+            }
+      )
 
       setChat('')
+      setBotLink('')
       setTitle('')
 
       showAlert(
@@ -245,6 +280,19 @@ export function Publish({
           >
             👥 مجموعة
           </button>
+
+          <button
+            className={
+              type === 'bot'
+                ? 'active'
+                : ''
+            }
+            onClick={() =>
+              setType('bot')
+            }
+          >
+            🤖 Join Bot
+          </button>
         </div>
       </div>
 
@@ -267,28 +315,77 @@ export function Publish({
       </div>
 
 
-      <div className="field-section">
-        <label>
-          رابط القناة أو المجموعة
-        </label>
+      {type === 'bot' ? (
+        <>
+          <div className="field-section">
+            <label>
+              رابط إحالة البوت
+            </label>
 
-        <input
-          value={chat}
-          onChange={event =>
-            setChat(
-              event.target.value
-            )
-          }
-          placeholder="https://t.me/your_channel أو @your_channel"
-          dir="ltr"
-          maxLength={200}
-        />
+            <input
+              value={botLink}
+              onChange={event =>
+                setBotLink(event.target.value)
+              }
+              placeholder="https://t.me/your_bot?start=ref_xxx"
+              dir="ltr"
+              maxLength={300}
+            />
 
-        <small className="field-help">
-          حط رابط تيليجرام أو @username،
-          وتأكد إنه StormGrow أدمن بنفس المكان.
-        </small>
-      </div>
+            <small className="field-help">
+              الرابط اللي يفتح البوت المطلوب الانضمام له. المهمة تحتاج مراجعة
+              قبل ما تظهر بالسوق.
+            </small>
+          </div>
+
+          <div className="field-section">
+            <label>
+              نقاط كل تنفيذ (10 - 20)
+            </label>
+
+            <input
+              type="number"
+              min={10}
+              max={20}
+              value={reward}
+              onChange={event =>
+                setReward(
+                  Math.max(
+                    10,
+                    Math.min(
+                      20,
+                      Number(event.target.value) || 10
+                    )
+                  )
+                )
+              }
+            />
+          </div>
+        </>
+      ) : (
+        <div className="field-section">
+          <label>
+            رابط القناة أو المجموعة
+          </label>
+
+          <input
+            value={chat}
+            onChange={event =>
+              setChat(
+                event.target.value
+              )
+            }
+            placeholder="https://t.me/your_channel أو @your_channel"
+            dir="ltr"
+            maxLength={200}
+          />
+
+          <small className="field-help">
+            حط رابط تيليجرام أو @username،
+            وتأكد إنه StormGrow أدمن بنفس المكان.
+          </small>
+        </div>
+      )}
 
 
       <div className="budget-card">
@@ -326,7 +423,8 @@ export function Publish({
             .filter(
               amount =>
                 amount <=
-                maxBudget
+                maxBudget &&
+                (type !== 'bot' || amount % reward === 0)
             )
             .map(
               amount => (
@@ -355,14 +453,14 @@ export function Publish({
         <div className="custom-budget">
           <input
             type="number"
-            min="5"
-            step="5"
+            min={type === 'bot' ? reward : 5}
+            step={type === 'bot' ? reward : 5}
             max={maxBudget}
             value={budget}
             onChange={event =>
               setBudget(
                 Math.max(
-                  5,
+                  type === 'bot' ? reward : 5,
                   Math.min(
                     maxBudget ||
                       5,
@@ -402,7 +500,7 @@ export function Publish({
             </span>
 
             <strong>
-              5
+              {type === 'bot' ? reward : 5}
             </strong>
           </div>
 

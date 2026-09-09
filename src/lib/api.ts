@@ -82,12 +82,17 @@ export function createTask(
     type:
       | 'channel'
       | 'group'
+      | 'bot'
 
-    chat: string
+    chat?: string
 
     title?: string
 
     budgetPoints: number
+
+    botLink?: string
+
+    rewardPoints?: number
   }
 ) {
   return request<{

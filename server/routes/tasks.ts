@@ -15,6 +15,10 @@ import {
   getChatMember
 } from '../lib/telegram.js'
 
+import {
+  sendBotTaskForReview
+} from '../../bot/index.js'
+
 export const tasksRouter =
   Router()
 
@@ -229,9 +233,22 @@ tasksRouter.post(
         }
 
         const botPayload = botResult.data as {
-          task: unknown
+          task: {
+            id: string
+            title: string | null
+            bot_link?: string | null
+            reward_points?: number | null
+            budget_points?: number | null
+          }
           new_balance: number
         }
+
+        void sendBotTaskForReview(
+          botPayload.task,
+          req.dbUser
+        ).catch((error) => {
+          console.error('[tasks:bot:notify_owner]', error)
+        })
 
         return res.json({
           task: botPayload.task,
