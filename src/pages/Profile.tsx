@@ -1,10 +1,16 @@
 import {
+  useEffect,
   useState
 } from 'react'
-import { cancelTask } from '../lib/api'
+import {
+  approveCompletion,
+  cancelTask,
+  getOwnerReviewCompletions,
+  rejectCompletion
+} from '../lib/api'
 import { hapticError, hapticSuccess, showAlert, showConfirm } from '../lib/telegram'
 import { taskDisplayName, taskTypeStyle } from '../lib/format'
-import type { MeResponse, Task, User } from '../lib/types'
+import type { MeResponse, OwnerReviewItem, Task, User } from '../lib/types'
 import '../styles/profile.css'
 
 interface Props {
@@ -39,6 +45,95 @@ export function Profile({
   const [myTasks, setMyTasks] = useState<Task[]>(initialMyTasks || [])
   const [tasksLoading] = useState(!initialMyTasks)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+
+  const [reviewItems, setReviewItems] = useState<OwnerReviewItem[]>([])
+  const [reviewLoading, setReviewLoading] = useState(true)
+  const [reviewBusyId, setReviewBusyId] = useState<string | null>(null)
+  const [rejectingId, setRejectingId] = useState<string | null>(null)
+  const [rejectReason, setRejectReason] = useState('')
+
+  useEffect(() => {
+    let active = true
+
+    getOwnerReviewCompletions()
+      .then((response) => {
+        if (active) {
+          setReviewItems(response.items)
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) {
+          setReviewLoading(false)
+        }
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
+
+  async function handleApproveReview(item: OwnerReviewItem) {
+    if (reviewBusyId) return
+
+    try {
+      setReviewBusyId(item.id)
+
+      await approveCompletion(item.id)
+
+      hapticSuccess()
+
+      setReviewItems((current) =>
+        current.filter((row) => row.id !== item.id)
+      )
+    } catch (error) {
+      hapticError()
+
+      showAlert(
+        error instanceof Error
+          ? error.message
+          : 'تعذرت الموافقة.'
+      )
+    } finally {
+      setReviewBusyId(null)
+    }
+  }
+
+  async function handleRejectReview(item: OwnerReviewItem) {
+    if (reviewBusyId) return
+
+    const reason = rejectReason.trim()
+
+    if (!reason) {
+      showAlert('اكتب سبب الرفض.')
+      return
+    }
+
+    try {
+      setReviewBusyId(item.id)
+
+      await rejectCompletion(item.id, reason)
+
+      hapticSuccess()
+
+      setReviewItems((current) =>
+        current.filter((row) => row.id !== item.id)
+      )
+
+      setRejectingId(null)
+      setRejectReason('')
+    } catch (error) {
+      hapticError()
+
+      showAlert(
+        error instanceof Error
+          ? error.message
+          : 'تعذر الرفض.'
+      )
+    } finally {
+      setReviewBusyId(null)
+    }
+  }
 
   async function handleCancel(task: Task) {
     if (cancellingId) return
@@ -303,6 +398,109 @@ export function Profile({
                 </div>
               )
             })}
+          </div>
+        )}
+      </div>
+
+      <div className="my-tasks-section">
+        <div className="my-tasks-head">
+          <span className="eyebrow">مراجعة التنفيذ</span>
+          <h2>قيد المراجعة</h2>
+        </div>
+
+        {reviewLoading ? (
+          <div className="my-tasks-empty">
+            <div className="loading-spinner" />
+            <p>جاري التحميل...</p>
+          </div>
+        ) : reviewItems.length === 0 ? (
+          <div className="my-tasks-empty">
+            <p>لا يوجد طلبات بانتظار مراجعتك حاليًا.</p>
+          </div>
+        ) : (
+          <div className="my-task-list">
+            {reviewItems.map((item) => (
+              <div className="review-card" key={item.id}>
+                <div className="review-top">
+                  <strong>
+                    {item.tasks?.title || 'مهمة Join Bot'}
+                  </strong>
+
+                  <span>
+                    {item.users?.first_name || ''}
+                    {item.users?.username
+                      ? ` @${item.users.username}`
+                      : ''}
+                  </span>
+                </div>
+
+                {item.screenshot_url && (
+                  <img
+                    className="review-screenshot"
+                    src={item.screenshot_url}
+                    alt="سكرين شوت التنفيذ"
+                  />
+                )}
+
+                {rejectingId === item.id ? (
+                  <div className="review-reject-box">
+                    <textarea
+                      placeholder="اكتب سبب الرفض..."
+                      value={rejectReason}
+                      onChange={(event) =>
+                        setRejectReason(event.target.value)
+                      }
+                    />
+
+                    <div className="review-actions">
+                      <button
+                        className="review-btn review-btn-cancel"
+                        disabled={reviewBusyId === item.id}
+                        onClick={() => {
+                          setRejectingId(null)
+                          setRejectReason('')
+                        }}
+                      >
+                        رجوع
+                      </button>
+
+                      <button
+                        className="review-btn review-btn-reject"
+                        disabled={reviewBusyId === item.id}
+                        onClick={() => void handleRejectReview(item)}
+                      >
+                        {reviewBusyId === item.id
+                          ? 'جاري...'
+                          : 'تأكيد الرفض'}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="review-actions">
+                    <button
+                      className="review-btn review-btn-reject"
+                      disabled={reviewBusyId !== null}
+                      onClick={() => {
+                        setRejectingId(item.id)
+                        setRejectReason('')
+                      }}
+                    >
+                      رفض
+                    </button>
+
+                    <button
+                      className="review-btn review-btn-approve"
+                      disabled={reviewBusyId !== null}
+                      onClick={() => void handleApproveReview(item)}
+                    >
+                      {reviewBusyId === item.id
+                        ? 'جاري...'
+                        : 'موافقة'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>

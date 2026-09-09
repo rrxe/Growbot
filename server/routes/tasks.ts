@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import express, { Router } from 'express'
 
 import {
   authMiddleware
@@ -16,7 +16,8 @@ import {
 } from '../lib/telegram.js'
 
 import {
-  sendBotTaskForReview
+  sendBotTaskForReview,
+  sendBotRejectionForReview
 } from '../../bot/index.js'
 
 export const tasksRouter =
@@ -64,7 +65,8 @@ tasksRouter.get(
 
       if (
         type === 'channel' ||
-        type === 'group'
+        type === 'group' ||
+        type === 'bot'
       ) {
         query =
           query.eq(
@@ -118,7 +120,9 @@ tasksRouter.get(
               'status',
               [
                 'pending',
-                'verified'
+                'verified',
+                'owner_review',
+                'rejected'
               ]
             )
 
@@ -719,6 +723,166 @@ tasksRouter.post(
 )
 
 
+tasksRouter.post(
+  '/:taskId/complete-with-screenshot',
+  express.json({
+    limit: '8mb'
+  }),
+  authMiddleware,
+  async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const taskId =
+        req.params.taskId
+
+      const {
+        screenshotBase64
+      } = req.body || {}
+
+      const match =
+        typeof screenshotBase64 === 'string'
+          ? screenshotBase64.match(
+              /^data:image\/(png|jpe?g|webp);base64,(.+)$/i
+            )
+          : null
+
+      if (!match) {
+        return res.status(400).json({
+          error: 'أرفق صورة صحيحة (سكرين شوت).'
+        })
+      }
+
+      const {
+        data: task,
+        error: taskError
+      } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('id', taskId)
+        .maybeSingle()
+
+      if (taskError) {
+        throw taskError
+      }
+
+      if (!task || task.type !== 'bot') {
+        return res.status(404).json({
+          error: 'المهمة غير موجودة.'
+        })
+      }
+
+      if (task.owner_id === req.dbUser.id) {
+        return res.status(400).json({
+          error: 'لا يمكنك تنفيذ مهمتك الخاصة.'
+        })
+      }
+
+      if (
+        task.status !== 'active' ||
+        task.remaining_points < task.reward_points
+      ) {
+        return res.status(400).json({
+          error: 'هذه المهمة غير متاحة الآن.'
+        })
+      }
+
+      const ext =
+        match[1].toLowerCase() === 'jpg'
+          ? 'jpeg'
+          : match[1].toLowerCase()
+
+      const buffer =
+        Buffer.from(match[2], 'base64')
+
+      if (buffer.length > 8 * 1024 * 1024) {
+        return res.status(400).json({
+          error: 'حجم الصورة كبير جدًا.'
+        })
+      }
+
+      const storagePath =
+        `${taskId}/${req.dbUser.id}-${Date.now()}.${ext}`
+
+      const upload =
+        await supabase.storage
+          .from('completion-screenshots')
+          .upload(
+            storagePath,
+            buffer,
+            {
+              contentType: `image/${ext}`,
+              upsert: false
+            }
+          )
+
+      if (upload.error) {
+        throw upload.error
+      }
+
+      const {
+        data: publicUrlData
+      } = supabase.storage
+        .from('completion-screenshots')
+        .getPublicUrl(storagePath)
+
+      const result =
+        await supabase.rpc(
+          'submit_bot_completion_atomic',
+          {
+            p_task_id: taskId,
+            p_user_id: req.dbUser.id,
+            p_screenshot_url: publicUrlData.publicUrl
+          }
+        )
+
+      if (result.error) {
+        const message = result.error.message
+
+        if (message.includes('ALREADY_COMPLETED')) {
+          return res.status(400).json({
+            error: 'لقد نفذت هذه المهمة مسبقًا.'
+          })
+        }
+
+        if (
+          message.includes('TASK_BUDGET_EMPTY') ||
+          message.includes('TASK_NOT_ACTIVE')
+        ) {
+          return res.status(400).json({
+            error: 'انتهت ميزانية المهمة.'
+          })
+        }
+
+        if (message.includes('OWN_TASK')) {
+          return res.status(400).json({
+            error: 'لا يمكنك تنفيذ مهمتك الخاصة.'
+          })
+        }
+
+        throw result.error
+      }
+
+      const payload =
+        result.data as {
+          completion: {
+            id: string
+            status: string
+          }
+        }
+
+      res.json({
+        completion: payload.completion
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
 tasksRouter.get(
   '/mine',
   authMiddleware,
@@ -856,6 +1020,203 @@ tasksRouter.post(
         userPoints:
           freshUser?.points ??
           req.dbUser.points
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
+tasksRouter.get(
+  '/owner-review',
+  authMiddleware,
+  async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const {
+        data,
+        error
+      } = await supabase
+        .from('task_completions')
+        .select(
+          'id, task_id, user_id, screenshot_url, created_at, ' +
+          'tasks!inner(id, title, chat_username, owner_id, reward_points), ' +
+          'users(username, first_name, last_name, telegram_id)'
+        )
+        .eq('status', 'owner_review')
+        .eq('tasks.owner_id', req.dbUser.id)
+        .order('created_at', {
+          ascending: true
+        })
+        .limit(100)
+
+      if (error) {
+        throw error
+      }
+
+      res.json({
+        items: data || []
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
+tasksRouter.post(
+  '/completions/:completionId/approve',
+  authMiddleware,
+  async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const completionId =
+        req.params.completionId
+
+      const {
+        data: completion,
+        error: fetchError
+      } = await supabase
+        .from('task_completions')
+        .select('id, status, tasks!inner(owner_id)')
+        .eq('id', completionId)
+        .maybeSingle()
+
+      if (fetchError) {
+        throw fetchError
+      }
+
+      const ownerId =
+        (completion as any)?.tasks?.owner_id
+
+      if (!completion || ownerId !== req.dbUser.id) {
+        return res.status(404).json({
+          error: 'الطلب غير موجود.'
+        })
+      }
+
+      if (completion.status !== 'owner_review') {
+        return res.status(400).json({
+          error: 'تمت معالجة هذا الطلب مسبقًا.'
+        })
+      }
+
+      const result =
+        await supabase.rpc(
+          'approve_bot_completion_atomic',
+          {
+            p_completion_id: completionId
+          }
+        )
+
+      if (result.error) {
+        throw result.error
+      }
+
+      res.json({
+        ok: true
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+
+tasksRouter.post(
+  '/completions/:completionId/reject',
+  authMiddleware,
+  async (
+    req,
+    res,
+    next
+  ) => {
+    try {
+      const completionId =
+        req.params.completionId
+
+      const reason =
+        typeof req.body?.reason === 'string'
+          ? req.body.reason.trim()
+          : ''
+
+      if (!reason) {
+        return res.status(400).json({
+          error: 'اكتب سبب الرفض.'
+        })
+      }
+
+      const {
+        data: completion,
+        error: fetchError
+      } = await supabase
+        .from('task_completions')
+        .select('id, status, tasks!inner(owner_id)')
+        .eq('id', completionId)
+        .maybeSingle()
+
+      if (fetchError) {
+        throw fetchError
+      }
+
+      const ownerId =
+        (completion as any)?.tasks?.owner_id
+
+      if (!completion || ownerId !== req.dbUser.id) {
+        return res.status(404).json({
+          error: 'الطلب غير موجود.'
+        })
+      }
+
+      if (completion.status !== 'owner_review') {
+        return res.status(400).json({
+          error: 'تمت معالجة هذا الطلب مسبقًا.'
+        })
+      }
+
+      const result =
+        await supabase.rpc(
+          'reject_bot_completion_atomic',
+          {
+            p_completion_id: completionId,
+            p_reason: reason
+          }
+        )
+
+      if (result.error) {
+        throw result.error
+      }
+
+      const payload =
+        result.data as {
+          task_owner_id: string
+          executor_user_id: string
+          task_title: string | null
+          screenshot_url: string | null
+        }
+
+      void sendBotRejectionForReview(
+        Array.isArray(completionId)
+          ? completionId[0]
+          : completionId,
+        reason,
+        payload
+      ).catch((error) => {
+        console.error(
+          '[tasks:bot:notify_owner_review]',
+          error
+        )
+      })
+
+      res.json({
+        ok: true
       })
     } catch (error) {
       next(error)

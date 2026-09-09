@@ -12,6 +12,10 @@ function isLink(
 export function taskDisplayName(
   task: Task
 ) {
+  if (task.type === 'bot') {
+    return task.title || 'مهمة Join Bot'
+  }
+
   if (task.chat_title) {
     return task.chat_title
   }
@@ -42,6 +46,14 @@ export function taskTypeStyle(
       icon: '📢',
       colorFrom: '#5aa7ff',
       colorTo: '#7ce0ff'
+    }
+  }
+
+  if (type === 'bot') {
+    return {
+      icon: '🤖',
+      colorFrom: '#b98cff',
+      colorTo: '#ff8cf0'
     }
   }
 

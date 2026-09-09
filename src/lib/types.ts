@@ -13,6 +13,8 @@ export type CompletionStatus =
   | 'verified'
   | 'reversed'
   | 'failed'
+  | 'owner_review'
+  | 'rejected'
 
 export interface User {
   id: string
@@ -54,6 +56,30 @@ export interface TaskCompletion {
   verified_at: string | null
   reversed_at: string | null
   reversal_reason: string | null
+  screenshot_url: string | null
+  owner_reviewed_at: string | null
+  owner_rejection_reason: string | null
+}
+
+export interface OwnerReviewItem {
+  id: string
+  task_id: string
+  user_id: string
+  screenshot_url: string | null
+  created_at: string
+  tasks: {
+    id: string
+    title: string | null
+    chat_username: string | null
+    owner_id: string
+    reward_points: number
+  } | null
+  users: {
+    username: string | null
+    first_name: string | null
+    last_name: string | null
+    telegram_id: number
+  } | null
 }
 
 export interface MeResponse {

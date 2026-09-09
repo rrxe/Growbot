@@ -40,10 +40,25 @@ app.use(
   })
 )
 
+// راوت رفع سكرين شوت مهام Join Bot يحتاج حد أعلى لحجم الـ body (صورة base64)،
+// فهو مستثنى هون ويُطبَّق عليه body parser بحد أعلى داخل server/routes/tasks.ts
+const SCREENSHOT_UPLOAD_PATH =
+  /^\/api\/tasks\/[^/]+\/complete-with-screenshot\/?$/
+
 app.use(
-  express.json({
-    limit: '100kb'
-  })
+  (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (SCREENSHOT_UPLOAD_PATH.test(req.path)) {
+      return next()
+    }
+
+    express.json({
+      limit: '100kb'
+    })(req, res, next)
+  }
 )
 
 app.get(

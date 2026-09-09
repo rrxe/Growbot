@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { completeTask, getTasks } from '../lib/api'
+import { completeTask, completeTaskWithScreenshot, getTasks } from '../lib/api'
+import { compressImageToBase64 } from '../lib/image'
 import {
   hapticError,
   hapticSuccess,
@@ -17,7 +18,7 @@ interface Props {
   onUserChanged: (user: User) => void
 }
 
-type Filter = 'all' | 'channel' | 'group'
+type Filter = 'all' | 'channel' | 'group' | 'bot'
 
 export function Tasks({
   user,
@@ -29,6 +30,7 @@ export function Tasks({
   const [tasks, setTasks] = useState<Task[]>(initialTasks || [])
   const [completedIds, setCompletedIds] = useState<string[]>(initialCompletedIds || [])
   const [joinedIds, setJoinedIds] = useState<string[]>([])
+  const [submittedIds, setSubmittedIds] = useState<string[]>([])
   const [loading, setLoading] = useState(!initialTasks)
   const [busyId, setBusyId] = useState<string | null>(null)
   const isMountRender = useRef(true)
@@ -71,9 +73,13 @@ export function Tasks({
   // خطوة 1: فتح القناة/المجموعة، بدون أي نافذة تأكيد مزعجة
   function handleJoin(task: Task) {
     if (task.chat_username) {
-      openTelegramLink(
-        `https://t.me/${task.chat_username.replace(/^@/, '')}`
-      )
+      const raw = task.chat_username.trim()
+
+      const link = /^https?:\/\//i.test(raw)
+        ? raw
+        : `https://t.me/${raw.replace(/^@/, '')}`
+
+      openTelegramLink(link)
     } else if (task.chat_id) {
       showAlert(
         'افتح القناة أو المجموعة من الرابط الموجود في المهمة، ثم ارجع واضغط تحقق.'
@@ -124,8 +130,48 @@ export function Tasks({
     }
   }
 
+  // خطوة 2 (لمهام bot فقط): رفع سكرين شوت بدل التحقق التلقائي —
+  // بيدخل بحالة "بانتظار مراجعة صاحب المهمة" لحد ما يوافق أو يرفض
+  async function handleScreenshotSelected(
+    task: Task,
+    file: File
+  ) {
+    if (busyId) return
+
+    try {
+      setBusyId(task.id)
+
+      const base64 = await compressImageToBase64(file)
+
+      await completeTaskWithScreenshot(task.id, base64)
+
+      hapticSuccess()
+
+      setSubmittedIds((current) => [
+        ...current,
+        task.id
+      ])
+
+      showAlert(
+        'تم إرسال السكرين شوت.\n\nبانتظار مراجعة صاحب المهمة.'
+      )
+    } catch (error) {
+      hapticError()
+
+      showAlert(
+        error instanceof Error
+          ? error.message
+          : 'تعذر رفع الصورة'
+      )
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   const visibleTasks = tasks.filter(
-    (task) => !completedIds.includes(task.id)
+    (task) =>
+      !completedIds.includes(task.id) &&
+      !submittedIds.includes(task.id)
   )
 
   return (
@@ -161,6 +207,13 @@ export function Tasks({
           onClick={() => setFilter('group')}
         >
           مجموعات
+        </button>
+
+        <button
+          className={filter === 'bot' ? 'active' : ''}
+          onClick={() => setFilter('bot')}
+        >
+          بوتات
         </button>
       </div>
 
@@ -204,8 +257,14 @@ export function Tasks({
                 </strong>
 
                 <span>
-                  {task.type === 'channel' ? 'قناة' : 'مجموعة'}
-                  {task.chat_username ? ` · ${task.chat_username}` : ''}
+                  {task.type === 'channel'
+                    ? 'قناة'
+                    : task.type === 'bot'
+                    ? 'بوت'
+                    : 'مجموعة'}
+                  {task.type !== 'bot' && task.chat_username
+                    ? ` · ${task.chat_username}`
+                    : ''}
                 </span>
 
                 <div className="task-progress-row">
@@ -226,9 +285,31 @@ export function Tasks({
               </div>
 
               <div className="task-right">
-                <b>+5</b>
+                <b>+{task.reward_points}</b>
 
-                {isJoined ? (
+                {isJoined && task.type === 'bot' ? (
+                  <label className="task-action task-action-upload">
+                    {busyId === task.id
+                      ? 'جاري الرفع...'
+                      : 'إرسال سكرين شوت'}
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      disabled={busyId !== null}
+                      onChange={(event) => {
+                        const file = event.target.files?.[0]
+
+                        if (file) {
+                          void handleScreenshotSelected(task, file)
+                        }
+
+                        event.target.value = ''
+                      }}
+                    />
+                  </label>
+                ) : isJoined ? (
                   <button
                     className="task-action task-action-verify"
                     disabled={busyId !== null}

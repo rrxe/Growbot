@@ -2,6 +2,7 @@ import { getInitData } from './telegram.js'
 
 import type {
   MeResponse,
+  OwnerReviewItem,
   Task,
   TaskListResponse
 } from './types.js'
@@ -127,6 +128,70 @@ export function completeTask(
     `/api/tasks/${taskId}/complete`,
     {
       method: 'POST'
+    }
+  )
+}
+
+
+export function completeTaskWithScreenshot(
+  taskId: string,
+  screenshotBase64: string
+) {
+  return request<{
+    completion: {
+      id: string
+      status: string
+    }
+  }>(
+    `/api/tasks/${taskId}/complete-with-screenshot`,
+    {
+      method: 'POST',
+      body:
+        JSON.stringify({
+          screenshotBase64
+        })
+    }
+  )
+}
+
+
+export function getOwnerReviewCompletions() {
+  return request<{
+    items: OwnerReviewItem[]
+  }>(
+    '/api/tasks/owner-review'
+  )
+}
+
+
+export function approveCompletion(
+  completionId: string
+) {
+  return request<{
+    ok: true
+  }>(
+    `/api/tasks/completions/${completionId}/approve`,
+    {
+      method: 'POST'
+    }
+  )
+}
+
+
+export function rejectCompletion(
+  completionId: string,
+  reason: string
+) {
+  return request<{
+    ok: true
+  }>(
+    `/api/tasks/completions/${completionId}/reject`,
+    {
+      method: 'POST',
+      body:
+        JSON.stringify({
+          reason
+        })
     }
   )
 }

@@ -157,6 +157,16 @@
   min-width: 58px;
 }
 
+.task-action-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  background: #b98cff;
+  color: #0f0e1b;
+}
+
 .task-action-verify {
   background: #d4ff3d;
   color: #0f0e1b;

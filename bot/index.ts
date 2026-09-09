@@ -112,7 +112,7 @@ async function sendHome(
   try {
     role =
       await resolveRole(
-        ctx.from.id
+        ctx.from!.id
       )
   } catch (
     error
@@ -251,6 +251,111 @@ export async function sendBotTaskForReview(
   }
 }
 
+// يعدّل نص/كابشن رسالة المراجعة بعد ما مالكة GrowBot تحسم (قبول رفض أو عقاب) —
+// الرسالة ممكن تكون نص عادي أو صورة (لو فيه سكرين شوت)، فنتعامل مع الحالتين
+async function finalizeReviewMessage(
+  ctx: any,
+  suffix: string
+) {
+  const message = ctx.callbackQuery.message
+
+  if (message?.caption !== undefined) {
+    await ctx.editMessageCaption(
+      `${message.caption || ''}${suffix}`
+    ).catch(() => {})
+
+    return
+  }
+
+  await ctx.editMessageText(
+    `${message?.text || ''}${suffix}`
+  ).catch(() => {})
+}
+
+// تصعيد لمالكة GrowBot (OWNER_TELEGRAM_ID) لما owner مهمة يرفض تنفيذ Join Bot —
+// هي تحسم: تقبل الرفض، أو تعاقب صاحب المهمة (رصيده يصفّر ومهامه تُلغى والمنفّذ يُدفع فورًا)
+export async function sendBotRejectionForReview(
+  completionId: string,
+  reason: string,
+  payload: {
+    task_owner_id: string
+    executor_user_id: string
+    task_title: string | null
+    screenshot_url: string | null
+  }
+) {
+  const targetOwnerId = ownerId()
+
+  if (!bot || targetOwnerId <= 0) {
+    console.error(
+      '[bot:reject_review] bot غير متاح أو OWNER_TELEGRAM_ID غير مضبوط.'
+    )
+
+    return
+  }
+
+  const [ownerRow, executorRow] = await Promise.all([
+    supabase
+      .from('users')
+      .select('username, first_name, telegram_id')
+      .eq('id', payload.task_owner_id)
+      .maybeSingle(),
+
+    supabase
+      .from('users')
+      .select('username, first_name, telegram_id')
+      .eq('id', payload.executor_user_id)
+      .maybeSingle()
+  ])
+
+  const ownerUser = ownerRow.data
+  const executorUser = executorRow.data
+
+  const caption = [
+    '⛔ رفض تنفيذ مهمة Join Bot — بانتظار قرارك',
+    '',
+    `المهمة: ${payload.task_title || '—'}`,
+    `صاحب المهمة: ${ownerUser?.first_name || ''} ${
+      ownerUser?.username ? '@' + ownerUser.username : ''
+    }`.trim(),
+    `المنفّذ: ${executorUser?.first_name || ''} ${
+      executorUser?.username ? '@' + executorUser.username : ''
+    }`.trim(),
+    '',
+    `سبب الرفض: ${reason}`
+  ].join('\n')
+
+  const keyboard = new InlineKeyboard()
+    .text('✅ قبول الرفض', `reject_accept:${completionId}`)
+    .text('⛔ عاقب', `reject_punish:${completionId}`)
+
+  try {
+    if (payload.screenshot_url) {
+      await bot.api.sendPhoto(
+        targetOwnerId,
+        payload.screenshot_url,
+        {
+          caption,
+          reply_markup: keyboard
+        }
+      )
+    } else {
+      await bot.api.sendMessage(
+        targetOwnerId,
+        caption,
+        {
+          reply_markup: keyboard
+        }
+      )
+    }
+  } catch (error) {
+    console.error(
+      '[bot:reject_review] فشل إرسال إشعار التصعيد:',
+      error
+    )
+  }
+}
+
 let started = false
 
 export async function startBot() {
@@ -338,7 +443,7 @@ export async function startBot() {
 
         const role =
           await resolveRole(
-            ctx.from.id
+            ctx.from!.id
           )
 
         if (!role) {
@@ -468,7 +573,7 @@ export async function startBot() {
       try {
         role =
           await resolveRole(
-            ctx.from.id
+            ctx.from!.id
           )
       } catch (
         error
@@ -539,7 +644,7 @@ export async function startBot() {
           await ctx.api.answerPreCheckoutQuery(
             ctx.update.pre_checkout_query.id,
             false,
-            'تعذر العثور على الطلب.'
+            { error_message: 'تعذر العثور على الطلب.' }
           )
 
           return
@@ -558,7 +663,7 @@ export async function startBot() {
           await ctx.api.answerPreCheckoutQuery(
             ctx.update.pre_checkout_query.id,
             false,
-            'قيمة الفاتورة غير صحيحة.'
+            { error_message: 'قيمة الفاتورة غير صحيحة.' }
           )
 
           return
@@ -577,10 +682,10 @@ export async function startBot() {
         )
 
         await ctx.api.answerPreCheckoutQuery(
-          ctx.update.pre_checkout_query.id,
-          false,
-          'حدث خطأ مؤقت. حاول مرة أخرى.'
-        )
+            ctx.update.pre_checkout_query.id,
+            false,
+            { error_message: 'حدث خطأ مؤقت. حاول مرة أخرى.' }
+          )
       }
     }
   )
@@ -603,7 +708,7 @@ export async function startBot() {
                 payment.invoice_payload,
 
               p_telegram_id:
-                ctx.from.id,
+                ctx.from!.id,
 
               p_total_stars:
                 payment.total_amount,
@@ -648,7 +753,7 @@ export async function startBot() {
             invoicePayload:
               payment.invoice_payload,
             telegramId:
-              ctx.from.id,
+              ctx.from!.id,
             error
           }
         )
@@ -668,7 +773,7 @@ export async function startBot() {
   bot.callbackQuery(
     /^task_approve:(.+)$/,
     async (ctx) => {
-      if (ctx.from.id !== ownerId()) {
+      if (ctx.from!.id !== ownerId()) {
         await ctx.answerCallbackQuery({
           text: 'غير مصرح لك.',
           show_alert: true
@@ -724,7 +829,7 @@ export async function startBot() {
   bot.callbackQuery(
     /^task_reject:(.+)$/,
     async (ctx) => {
-      if (ctx.from.id !== ownerId()) {
+      if (ctx.from!.id !== ownerId()) {
         await ctx.answerCallbackQuery({
           text: 'غير مصرح لك.',
           show_alert: true
@@ -735,7 +840,7 @@ export async function startBot() {
 
       const taskId = ctx.match[1]
 
-      pendingRejections.set(ctx.from.id, taskId)
+      pendingRejections.set(ctx.from!.id, taskId)
 
       await ctx.answerCallbackQuery()
 
@@ -746,9 +851,9 @@ export async function startBot() {
   bot.on(
     'message:text',
     async (ctx) => {
-      const taskId = pendingRejections.get(ctx.from.id)
+      const taskId = pendingRejections.get(ctx.from!.id)
 
-      if (!taskId || ctx.from.id !== ownerId()) {
+      if (!taskId || ctx.from!.id !== ownerId()) {
         return
       }
 
@@ -760,7 +865,7 @@ export async function startBot() {
         return
       }
 
-      pendingRejections.delete(ctx.from.id)
+      pendingRejections.delete(ctx.from!.id)
 
       try {
         const result = await supabase.rpc(
@@ -810,9 +915,9 @@ export async function startBot() {
   )
 
   bot.callbackQuery(
-    /^task_approve:(.+)$/,
+    /^reject_accept:(.+)$/,
     async (ctx) => {
-      if (ctx.from.id !== ownerId()) {
+      if (ctx.from!.id !== ownerId()) {
         await ctx.answerCallbackQuery({
           text: 'غير مصرح لك.',
           show_alert: true
@@ -821,46 +926,62 @@ export async function startBot() {
         return
       }
 
-      const taskId = ctx.match[1]
+      await ctx.answerCallbackQuery({
+        text: '✅ تم قبول الرفض'
+      })
+
+      await ctx.editMessageReplyMarkup({
+        reply_markup: undefined
+      }).catch(() => {})
+
+      await finalizeReviewMessage(
+        ctx,
+        '\n\n✅ تم قبول الرفض.'
+      )
+    }
+  )
+
+  bot.callbackQuery(
+    /^reject_punish:(.+)$/,
+    async (ctx) => {
+      if (ctx.from!.id !== ownerId()) {
+        await ctx.answerCallbackQuery({
+          text: 'غير مصرح لك.',
+          show_alert: true
+        })
+
+        return
+      }
+
+      const completionId = ctx.match[1]
 
       try {
-        const { data: updated, error } = await supabase
-          .from('tasks')
-          .update({
-            status: 'active'
-          })
-          .eq('id', taskId)
-          .eq('status', 'pending_review')
-          .select('id')
-          .maybeSingle()
+        const result = await supabase.rpc(
+          'punish_task_owner_atomic',
+          {
+            p_completion_id: completionId
+          }
+        )
 
-        if (error) {
-          throw error
-        }
-
-        if (!updated) {
-          await ctx.answerCallbackQuery({
-            text: 'تمت معالجة هذه المهمة مسبقًا.',
-            show_alert: true
-          })
-
-          return
+        if (result.error) {
+          throw result.error
         }
 
         await ctx.answerCallbackQuery({
-          text: '✅ تمت الموافقة'
+          text: '⛔ تم العقاب'
         })
 
         await ctx.editMessageReplyMarkup({
           reply_markup: undefined
         }).catch(() => {})
 
-        await ctx.editMessageText(
-          `${ctx.callbackQuery.message?.text || ''}\\n\\n✅ تمت الموافقة — المهمة نشطة الآن.`
-        ).catch(() => {})
+        await finalizeReviewMessage(
+          ctx,
+          '\n\n⛔ تم تصفير رصيد صاحب المهمة، إلغاء مهامه النشطة، ودفع المنفّذ فورًا.'
+        )
       } catch (error) {
         console.error(
-          '[bot:task_approve]',
+          '[bot:reject_punish]',
           error
         )
 
@@ -868,135 +989,6 @@ export async function startBot() {
           text: 'حدث خطأ، حاول مرة أخرى.',
           show_alert: true
         })
-      }
-    }
-  )
-
-  bot.callbackQuery(
-    /^task_reject:(.+)$/,
-    async (ctx) => {
-      if (ctx.from.id !== ownerId()) {
-        await ctx.answerCallbackQuery({
-          text: 'غير مصرح لك.',
-          show_alert: true
-        })
-
-        return
-      }
-
-      const taskId = ctx.match[1]
-
-      pendingRejections.set(
-        ctx.from.id,
-        taskId
-      )
-
-      await ctx.answerCallbackQuery()
-
-      await ctx.reply(
-        '✍️ اكتب سبب الرفض:'
-      )
-    }
-  )
-
-  bot.on(
-    'message:text',
-    async (ctx) => {
-      const taskId =
-        pendingRejections.get(
-          ctx.from.id
-        )
-
-      if (
-        !taskId ||
-        ctx.from.id !== ownerId()
-      ) {
-        return
-      }
-
-      const reason =
-        ctx.message.text.trim()
-
-      if (!reason) {
-        await ctx.reply(
-          'اكتب سبب الرفض كنص.'
-        )
-
-        return
-      }
-
-      pendingRejections.delete(
-        ctx.from.id
-      )
-
-      try {
-        const result =
-          await supabase.rpc(
-            'reject_bot_task_and_refund',
-            {
-              p_task_id: taskId,
-              p_reason: reason
-            }
-          )
-
-        if (result.error) {
-          throw result.error
-        }
-
-        const payload =
-          result.data as {
-            task: {
-              id: string
-              owner_id: string
-              title: string | null
-            }
-          }
-
-        await ctx.reply(
-          '❌ تم رفض المهمة وإعادة الميزانية لصاحبها.'
-        )
-
-        const {
-          data: taskOwner
-        } = await supabase
-          .from('users')
-          .select('telegram_id')
-          .eq(
-            'id',
-            payload.task.owner_id
-          )
-          .maybeSingle()
-
-        if (
-          taskOwner?.telegram_id
-        ) {
-          await bot.api.sendMessage(
-            taskOwner.telegram_id,
-            [
-              `❌ تم رفض مهمتك: ${payload.task.title || ''}`,
-              '',
-              `السبب: ${reason}`,
-              '',
-              'تمت إعادة الميزانية كاملة إلى رصيدك.'
-            ].join('\\n')
-          ).catch(
-            (error) => {
-              console.error(
-                '[bot:task_reject:notify_owner]',
-                error
-              )
-            }
-          )
-        }
-      } catch (error) {
-        console.error(
-          '[bot:task_reject]',
-          error
-        )
-
-        await ctx.reply(
-          'حدث خطأ أثناء الرفض. حاول مرة أخرى بالضغط على ❌ Reject من جديد.'
-        )
       }
     }
   )
