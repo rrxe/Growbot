@@ -1,10 +1,12 @@
-export type TaskType = 'channel' | 'group'
+export type TaskType = 'channel' | 'group' | 'bot'
 
 export type TaskStatus =
   | 'active'
   | 'paused'
   | 'completed'
   | 'cancelled'
+  | 'pending_review'
+  | 'rejected'
 
 export type CompletionStatus =
   | 'pending'

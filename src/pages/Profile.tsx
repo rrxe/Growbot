@@ -21,7 +21,9 @@ const STATUS_LABEL: Record<
   active: 'نشطة',
   paused: 'متوقفة',
   completed: 'مكتملة',
-  cancelled: 'ملغاة'
+  cancelled: 'ملغاة',
+  pending_review: 'بانتظار المراجعة',
+  rejected: 'مرفوضة'
 }
 
 export function Profile({

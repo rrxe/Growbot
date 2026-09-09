@@ -14,6 +14,10 @@ import {
   startJobs
 } from './jobs/index.js'
 
+import {
+  startBot
+} from '../bot/index.js'
+
 async function start() {
   if (
     !config.botToken
@@ -41,6 +45,8 @@ async function start() {
   }
 
   startJobs()
+
+  void startBot()
 
   app.listen(
     config.port,

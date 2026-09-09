@@ -5,6 +5,8 @@ import express, {
 } from 'express'
 
 import cors from 'cors'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import {
   meRouter
@@ -27,6 +29,9 @@ import {
 } from './jobs/verification.js'
 
 const app = express()
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const distDir = path.join(__dirname, '..', 'dist')
 
 app.use(
   cors({
@@ -117,6 +122,31 @@ app.get(
         ok: false
       })
     }
+  }
+)
+
+app.use(
+  express.static(distDir)
+)
+
+app.use(
+  (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (
+      req.method === 'GET' &&
+      !req.path.startsWith('/api/')
+    ) {
+      res.sendFile(
+        path.join(distDir, 'index.html')
+      )
+
+      return
+    }
+
+    next()
   }
 )
 

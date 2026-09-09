@@ -161,9 +161,83 @@ tasksRouter.post(
         type,
         chat,
         title,
-        budgetPoints
+        budgetPoints,
+        botLink,
+        rewardPoints
       } =
         req.body || {}
+
+      if (type === 'bot') {
+        const reward = Number(rewardPoints)
+        const budget = Number(budgetPoints)
+
+        if (
+          !Number.isInteger(reward) ||
+          reward < 10 ||
+          reward > 20
+        ) {
+          return res.status(400).json({
+            error: 'نقاط مهمة البوت يجب أن تكون بين 10 و20.'
+          })
+        }
+
+        if (
+          typeof botLink !== 'string' ||
+          !botLink.trim()
+        ) {
+          return res.status(400).json({
+            error: 'أدخل رابط إحالة البوت.'
+          })
+        }
+
+        if (
+          !Number.isInteger(budget) ||
+          budget < reward ||
+          budget % reward !== 0
+        ) {
+          return res.status(400).json({
+            error: `الميزانية يجب أن تكون من مضاعفات ${reward}.`
+          })
+        }
+
+        const botResult = await supabase.rpc(
+          'create_bot_task_atomic',
+          {
+            p_owner_id: req.dbUser.id,
+            p_title:
+              typeof title === 'string' && title.trim()
+                ? title.trim()
+                : 'مهمة Join Bot',
+            p_bot_link: botLink.trim(),
+            p_budget_points: budget,
+            p_reward_points: reward
+          }
+        )
+
+        if (botResult.error) {
+          const message = botResult.error.message
+
+          if (message.includes('INSUFFICIENT_POINTS')) {
+            return res.status(400).json({ error: 'رصيدك غير كافٍ.' })
+          }
+
+          if (message.includes('USER_BANNED')) {
+            return res.status(403).json({ error: 'حسابك محظور.' })
+          }
+
+          throw botResult.error
+        }
+
+        const botPayload = botResult.data as {
+          task: unknown
+          new_balance: number
+        }
+
+        return res.json({
+          task: botPayload.task,
+          userPoints: Number(botPayload.new_balance)
+        })
+      }
 
       if (
         type !== 'channel' &&

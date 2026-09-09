@@ -109,565 +109,227 @@ async function resolveRole(
 }
 
 
-bot.command(
-  'start',
-  async (
-    ctx
-  ) => {
-    const payload =
-      ctx.match?.trim() ||
-      ''
+interface RequiredChannel {
+  id: string
+  chat_username: string | null
+  chat_id: number | null
+  title: string
+  invite_link: string | null
+}
 
-    const lines = [
-      '⚡ أهلًا بك في StormGrow',
-      '',
-      'منصة تبادل حقيقية لنمو القنوات والمجموعات.',
-      '',
-      '💚 تنفيذ مهمة = +5 نقاط',
-      '🎁 دعوة صديق = +150 نقطة بعد 5 مهام',
-      '',
-      'افتح التطبيق من الزر بالأسفل وابدأ.'
-    ]
-
-    if (
-      payload.startsWith(
-        'ref_'
-      )
-    ) {
-      lines.push(
-        '',
-        '✅ تم حفظ رابط الإحالة لهذا الدخول.'
-      )
-    }
-
-    let role:
-      'owner' | 'admin' | null =
-      null
-
-    try {
-      role = await resolveRole(
-        ctx.from.id
-      )
-    } catch (error) {
-      console.error(
-        '[bot:role]',
-        error
-      )
-    }
-
-    const keyboard =
-      appKeyboard(ctx.from.id)
-
-    if (
-      role &&
-      adminAppUrl()
-    ) {
-      keyboard.webApp(
-        '⚙️ لوحة الإدارة',
-        adminAppUrl()
-      )
-    }
-
-    await ctx.reply(
-      lines.join('\n'),
-      {
-        reply_markup:
-          keyboard
-      }
+async function getRequiredChannels(): Promise<
+  RequiredChannel[]
+> {
+  const {
+    data,
+    error
+  } = await supabase
+    .from('required_channels')
+    .select(
+      'id, chat_username, chat_id, title, invite_link'
     )
-  }
-)
+    .eq('is_active', true)
 
-
-bot.command(
-  'app',
-  async (
-    ctx
-  ) => {
-    if (!webAppUrl) {
-      await ctx.reply(
-        '🚧 التطبيق غير مربوط بعد.'
-      )
-
-      return
-    }
-
-    await ctx.reply(
-      '🚀 افتح StormGrow:',
-      {
-        reply_markup:
-          new InlineKeyboard()
-            .webApp(
-              '🚀 فتح StormGrow',
-              webAppUrl
-            )
-      }
-    )
-  }
-)
-
-
-bot.command(
-  'admin',
-  async (
-    ctx
-  ) => {
-    try {
-      const role =
-        await resolveRole(
-          ctx.from.id
-        )
-
-      if (!role) {
-        await ctx.reply(
-          '⛔ ليس لديك صلاحية دخول لوحة الإدارة.'
-        )
-
-        return
-      }
-
-      const url =
-        adminAppUrl()
-
-      if (!url) {
-        await ctx.reply(
-          '🚧 لوحة الإدارة جاهزة، لكن WEBAPP_URL غير مضبوط بعد.'
-        )
-
-        return
-      }
-
-      await ctx.reply(
-        [
-          '🔐 لوحة الإدارة',
-          '',
-          `الصلاحية: ${
-            role === 'owner'
-              ? '👑 Owner'
-              : '🛡️ Admin'
-          }`
-        ].join('\n'),
-        {
-          reply_markup:
-            new InlineKeyboard()
-              .webApp(
-                '⚙️ فتح لوحة الإدارة',
-                url
-              )
-        }
-      )
-    } catch (error) {
-      console.error(
-        '[bot:admin]',
-        error
-      )
-
-      await ctx.reply(
-        'تعذر التحقق من صلاحياتك حاليًا.'
-      )
-    }
-  }
-)
-
-
-bot.command(
-  'id',
-  async (
-    ctx
-  ) => {
-    await ctx.reply(
-      `🆔 Telegram ID:\n\n${ctx.from.id}`
-    )
-  }
-)
-
-
-bot.command(
-  'support',
-  async (
-    ctx
-  ) => {
-    await ctx.reply(
-      'للدعم ومشاكل الطلبات:\n@ncryptix'
-    )
-  }
-)
-
-
-bot.command(
-  'paysupport',
-  async (
-    ctx
-  ) => {
-    await ctx.reply(
-      'لدعم عمليات الشراء أو مشاكل الدفع:\n@ncryptix'
-    )
-  }
-)
-
-
-bot.command(
-  'terms',
-  async (
-    ctx
-  ) => {
-    await ctx.reply(
-      [
-        '📄 شروط استخدام StormGrow',
-        '',
-        'النقاط داخل StormGrow تُستخدم لنشر وتنفيذ المهام داخل المنصة فقط.',
-        'إيقاف مهمة يعيد فقط الميزانية المتبقية منها.',
-        'نظام الإحالات يعتمد على تنفيذ مهام حقيقية، مش تسجيل دخول فقط.',
-        'عمليات الشراء عبر Telegram Stars تتم بالكامل عبر نظام Telegram.'
-      ].join('\n')
-    )
-  }
-)
-
-
-bot.command(
-  'help',
-  async (
-    ctx
-  ) => {
-    let role:
-      'owner' | 'admin' | null =
-      null
-
-    try {
-      role = await resolveRole(
-        ctx.from.id
-      )
-    } catch (error) {
-      console.error(
-        '[bot:help:role]',
-        error
-      )
-    }
-
-    const lines = [
-      'ℹ️ StormGrow',
-      '',
-      '/start — فتح البوت',
-      '/app — فتح التطبيق',
-      '/id — معرفة Telegram ID',
-      '/support — الدعم',
-      '/paysupport — مشاكل الدفع',
-      '/terms — الشروط',
-      '/help — المساعدة'
-    ]
-
-    if (role) {
-      lines.splice(
-        4,
-        0,
-        '/admin — لوحة الإدارة'
-      )
-    }
-
-    await ctx.reply(
-      lines.join('\n')
-    )
-  }
-)
-
-
-bot.on(
-  'pre_checkout_query',
-  async (
-    ctx
-  ) => {
-    try {
-      const payload =
-        ctx.update
-          .pre_checkout_query
-          .invoice_payload
-
-      const {
-        data: purchase
-      } = await supabase
-        .from(
-          'purchases'
-        )
-        .select(
-          'id,status,stars_amount'
-        )
-        .eq(
-          'invoice_payload',
-          payload
-        )
-        .maybeSingle()
-
-      if (
-        !purchase ||
-        purchase.status !==
-          'pending'
-      ) {
-        await ctx.api.answerPreCheckoutQuery(
-          ctx.update.pre_checkout_query.id,
-          false,
-          'تعذر العثور على الطلب.'
-        )
-
-        return
-      }
-
-      if (
-        Number(
-          purchase.stars_amount
-        ) !==
-        Number(
-          ctx.update
-            .pre_checkout_query
-            .total_amount
-        )
-      ) {
-        await ctx.api.answerPreCheckoutQuery(
-          ctx.update.pre_checkout_query.id,
-          false,
-          'قيمة الفاتورة غير صحيحة.'
-        )
-
-        return
-      }
-
-      await ctx.api.answerPreCheckoutQuery(
-        ctx.update.pre_checkout_query.id,
-        true
-      )
-    } catch (
-      error
-    ) {
-      console.error(
-        '[payment:precheckout]',
-        error
-      )
-
-      await ctx.api.answerPreCheckoutQuery(
-        ctx.update.pre_checkout_query.id,
-        false,
-        'حدث خطأ مؤقت. حاول مرة أخرى.'
-      )
-    }
-  }
-)
-
-
-bot.on(
-  'message:successful_payment',
-  async (
-    ctx
-  ) => {
-    const payment =
-      ctx.message
-        .successful_payment
-
-    try {
-      const result =
-        await supabase.rpc(
-          'complete_star_purchase',
-          {
-            p_invoice_payload:
-              payment.invoice_payload,
-
-            p_telegram_id:
-              ctx.from.id,
-
-            p_total_stars:
-              payment.total_amount,
-
-            p_charge_id:
-              payment.telegram_payment_charge_id
-          }
-        )
-
-      if (result.error) {
-        throw result.error
-      }
-
-      await ctx.reply(
-        [
-          '✅ تم الدفع بنجاح',
-          '',
-          `⭐ ${payment.total_amount} Stars`,
-          'تمت إضافة النقاط إلى رصيدك.',
-          '',
-          webAppUrl
-            ? 'افتح التطبيق لرؤية الرصيد الجديد.'
-            : ''
-        ]
-          .filter(Boolean)
-          .join('\n'),
-        {
-          reply_markup:
-            webAppUrl
-              ? new InlineKeyboard()
-                  .webApp(
-                    '🚀 فتح StormGrow',
-                    webAppUrl
-                  )
-              : undefined
-        }
-      )
-    } catch (
-      error
-    ) {
-      // تيليجرام سحب الستارز فعليًا هون، بس ما قدرنا نضيف النقاط.
-      // لازم نعلم المستخدم بدل ما نسكت، ونسجل charge_id عشان الدعم يقدر يرجعله يدويًا.
-      console.error(
-        '[payment:success]',
-        {
-          chargeId:
-            payment.telegram_payment_charge_id,
-          invoicePayload:
-            payment.invoice_payload,
-          telegramId:
-            ctx.from.id,
-          error
-        }
-      )
-
-      await ctx.reply(
-        [
-          '⚠️ تم خصم الـ Stars لكن حصل خطأ مؤقت بإضافة النقاط.',
-          '',
-          `رقم العملية: ${payment.telegram_payment_charge_id}`,
-          'تواصل مع @ncryptix وأرسل له هذا الرقم وسيتم إضافة نقاطك يدويًا فورًا.'
-        ].join('\n')
-      ).catch(() => {})
-    }
-  }
-)
-
-
-bot.catch(
-  error => {
+  if (error) {
     console.error(
-      '[telegram]',
+      '[bot:required-channels]',
       error
     )
+
+    return []
   }
-)
 
+  console.log(
+    '[bot:required-channels:list]',
+    JSON.stringify(data)
+  )
 
-let commandsRegistered = false
+  return data || []
+}
 
-export default async function handler(
-  req: any,
-  res: any
-) {
-  if (
-    req.method !==
-    'POST'
-  ) {
-    // bot/index.ts القديم كان يسجل الأوامر عند الإقلاع (setMyCommands).
-    // بما إنه انحذف والـ webhook هو الوحيد المتبقي، نسجلها هون
-    // (مرة واحدة لكل cold start، الاستدعاء آمن ومكرر بدون ضرر لو صار أكتر من مرة)
-    if (!commandsRegistered) {
-      commandsRegistered = true
+async function getMissingChannels(
+  userId: number
+): Promise<RequiredChannel[]> {
+  const channels =
+    await getRequiredChannels()
 
-      const publicCommands = [
-        {
-          command: 'start',
-          description: 'فتح البوت'
-        },
-        {
-          command: 'app',
-          description: 'فتح التطبيق'
-        },
-        {
-          command: 'id',
-          description: 'معرفة Telegram ID'
-        },
-        {
-          command: 'support',
-          description: 'الدعم'
-        },
-        {
-          command: 'paysupport',
-          description: 'مشاكل الدفع'
-        },
-        {
-          command: 'terms',
-          description: 'الشروط'
-        },
-        {
-          command: 'help',
-          description: 'المساعدة'
-        }
-      ]
+  if (channels.length === 0) {
+    console.log(
+      '[bot:required-channels] no active channels configured'
+    )
 
-      // القائمة العامة: بدون /admin، حتى ما يشوفها أي مستخدم عادي.
-      // الأدمن أصلًا بياخد زر لوحة الإدارة تلقائيًا من /start،
-      // ومحتاج ما يشوف الأمر بالقائمة أساسًا.
-      await bot.api
-        .setMyCommands(
-          publicCommands
-        )
-        .catch(error => {
-          console.error(
-            '[telegram:setMyCommands]',
-            error
-          )
-        })
+    return []
+  }
 
-      // قائمة خاصة بالمالك بس (owner) فيها /admin إضافيًا —
-      // ما بتأثر على أي مستخدم تاني إطلاقًا.
-      if (ownerId > 0) {
-        await bot.api
-          .setMyCommands(
-            [
-              ...publicCommands,
-              {
-                command: 'admin',
-                description: 'لوحة الإدارة'
-              }
-            ],
-            {
-              scope: {
-                type: 'chat',
-                chat_id: ownerId
-              }
-            }
-          )
-          .catch(error => {
-            console.error(
-              '[telegram:setMyCommands:owner]',
-              error
-            )
-          })
-      }
+  const missing: RequiredChannel[] = []
+
+  for (const channel of channels) {
+    const identifier =
+      channel.chat_id ??
+      (channel.chat_username
+        ? `@${channel.chat_username}`
+        : null)
+
+    if (!identifier) {
+      console.log(
+        '[bot:required-channels] skip — no identifier',
+        channel.title
+      )
+
+      continue
     }
 
-    res.status(200).json({
-      ok: true,
-      bot:
-        username || null
-    })
+    try {
+      const member =
+        await getChatMember(
+          identifier,
+          userId
+        )
 
-    return
+      console.log(
+        '[bot:required-channels:check]',
+        channel.title,
+        'user',
+        userId,
+        'status',
+        member.status
+      )
+
+      const isMember =
+        member.status === 'member' ||
+        member.status === 'administrator' ||
+        member.status === 'creator' ||
+        member.status === 'restricted'
+
+      if (!isMember) {
+        missing.push(channel)
+      }
+    } catch (error) {
+      // إذا فشل الفحص (البوت مو أدمن بالقناة مثلًا)، ما منوقف تجربة
+      // المستخدم بالكامل بسبب خطأ إعداد — بس منسجل الخطأ ونتجاوز.
+      console.error(
+        '[bot:required-channels:check:error]',
+        channel.title,
+        error
+      )
+    }
   }
+
+  console.log(
+    '[bot:required-channels] missing count:',
+    missing.length
+  )
+
+  return missing
+}
+
+function requiredChannelsKeyboard(
+  missing: RequiredChannel[]
+) {
+  const keyboard =
+    new InlineKeyboard()
+
+  for (const channel of missing) {
+    const url =
+      channel.invite_link ||
+      (channel.chat_username
+        ? `https://t.me/${channel.chat_username}`
+        : null)
+
+    if (url) {
+      keyboard
+        .url(
+          `🔗 ${channel.title}`,
+          url
+        )
+        .row()
+    }
+  }
+
+  keyboard.text(
+    '✅ تحققت من الانضمام',
+    'check_required_channels'
+  )
+
+  return keyboard
+}
+
+async function sendRequiredChannelsGate(
+  ctx: any
+) {
+  const missing =
+    await getMissingChannels(
+      ctx.from.id
+    )
+
+  if (missing.length === 0) {
+    return true
+  }
+
+  await ctx.reply(
+    [
+      '🔒 قبل ما تكمل، لازم تنضم للقنوات/المجموعات التالية:',
+      '',
+      ...missing.map(
+        (channel) => `• ${channel.title}`
+      ),
+      '',
+      'بعد ما تنضم لكلها، اضغط "تحققت من الانضمام".'
+    ].join('\n'),
+    {
+      reply_markup:
+        requiredChannelsKeyboard(
+          missing
+        )
+    }
+  )
+
+  return false
+}
+
+
+async function replyWelcome(
+  ctx: any
+) {
+  const payload =
+    ctx.match?.trim() ||
+    ''
+
+  const lines = [
+    '⚡ أهلًا بك في StormGrow',
+    '',
+    'منصة تبادل حقيقية لنمو القنوات والمجموعات.',
+    '',
+    '💚 تنفيذ مهمة = +5 نقاط',
+    '🎁 دعوة صديق = +150 نقطة بعد 5 مهام',
+    '',
+    'افتح التطبيق من الزر بالأسفل وابدأ.'
+  ]
+
+  if (
+    payload.startsWith(
+      'ref_'
+    )
+  ) {
+    lines.push(
+      '',
+      '✅ تم حفظ رابط الإحالة لهذا الدخول.'
+    )
+  }
+
+  let role:
+    'owner' | 'admin' | null =
+    null
 
   try {
-    await bot.init()
-
-    await bot.handleUpdate(
-      req.body
+    role = await resolveRole(
+      ctx.from.id
     )
-
-    res.status(200).json({
-      ok: true
-    })
-  } catch (
-    error
-  ) {
+  } catch (error) {
     console.error(
-      '[telegram-webhook]',
+      '[bot:role]',
       error
     )
-
-    res.status(500).json({
-      ok: false
-    })
   }
-}
+
+  const keyboard =
