@@ -18,9 +18,60 @@ function makeReferralCode() {
     .toString('hex')
 }
 
+type SecuritySignals = {
+  ipHash: string | null
+  uaHash: string | null
+  fpHash: string | null
+}
+
+async function findDuplicateUser(
+  security: SecuritySignals,
+  excludeTelegramId?: number
+) {
+  if (security.fpHash) {
+    let q = supabase
+      .from('users')
+      .select('id, telegram_id')
+      .eq('security_fp_hash', security.fpHash)
+      .limit(1)
+
+    if (excludeTelegramId != null) {
+      q = q.neq('telegram_id', excludeTelegramId)
+    }
+
+    const { data, error } = await q
+    if (error) throw error
+    if (data && data.length > 0) return true
+  }
+
+  if (security.ipHash && security.uaHash) {
+    let q = supabase
+      .from('users')
+      .select('id, telegram_id')
+      .eq('security_ip_hash', security.ipHash)
+      .eq('security_ua_hash', security.uaHash)
+      .limit(1)
+
+    if (excludeTelegramId != null) {
+      q = q.neq('telegram_id', excludeTelegramId)
+    }
+
+    const { data, error } = await q
+    if (error) throw error
+    if (data && data.length > 0) return true
+  }
+
+  return false
+}
+
 export async function getOrCreateUser(
   telegramUser: TelegramUser,
-  referralCode?: string | null
+  referralCode?: string | null,
+  security: SecuritySignals = {
+    ipHash: null,
+    uaHash: null,
+    fpHash: null
+  }
 ) {
   const settings =
     await getSettings()
@@ -42,6 +93,17 @@ export async function getOrCreateUser(
   }
 
   if (existing) {
+    let isDuplicate =
+      existing.is_duplicate_device === true
+
+    if (!isDuplicate) {
+      isDuplicate =
+        await findDuplicateUser(
+          security,
+          telegramUser.id
+        )
+    }
+
     const {
       data: updated,
       error: updateError
@@ -50,12 +112,33 @@ export async function getOrCreateUser(
       .update({
         username:
           telegramUser.username ?? null,
+
         first_name:
           telegramUser.first_name ?? null,
+
         last_name:
           telegramUser.last_name ?? null,
+
         last_seen_at:
-          new Date().toISOString()
+          new Date().toISOString(),
+
+        security_ip_hash:
+          security.ipHash ||
+          existing.security_ip_hash ||
+          null,
+
+        security_ua_hash:
+          security.uaHash ||
+          existing.security_ua_hash ||
+          null,
+
+        security_fp_hash:
+          security.fpHash ||
+          existing.security_fp_hash ||
+          null,
+
+        is_duplicate_device:
+          isDuplicate
       })
       .eq(
         'id',
@@ -74,7 +157,19 @@ export async function getOrCreateUser(
   let referredBy:
     string | null = null
 
-  if (referralCode) {
+  const duplicateFound =
+    await findDuplicateUser(
+      security
+    )
+
+  if (duplicateFound) {
+    referredBy = null
+  }
+
+  if (
+    referralCode &&
+    !duplicateFound
+  ) {
     const {
       data: referrer,
       error: referrerError
@@ -159,7 +254,22 @@ export async function getOrCreateUser(
         referredBy,
 
       last_seen_at:
-        new Date().toISOString()
+        new Date().toISOString(),
+
+      security_ip_hash:
+        security.ipHash,
+
+      security_ua_hash:
+        security.uaHash,
+
+      security_fp_hash:
+        security.fpHash,
+
+      is_duplicate_device:
+        false,
+
+      duplicate_notice_seen:
+        false
     })
     .select('*')
     .single()

@@ -31,6 +31,24 @@ async function request<T>(
     )
   }
 
+  if (typeof window !== 'undefined') {
+    const n = window.navigator
+    const s = window.screen
+
+    headers.set(
+      'X-Client-Signals',
+      [
+        `screen=${s?.width || 0}x${s?.height || 0}x${s?.colorDepth || 0}`,
+        `pixelRatio=${window.devicePixelRatio || 1}`,
+        `tz=${Intl.DateTimeFormat().resolvedOptions().timeZone || ''}`,
+        `lang=${n.language || ''}`,
+        `platform=${n.platform || ''}`,
+        `cores=${n.hardwareConcurrency || 0}`,
+        `touch=${n.maxTouchPoints || 0}`
+      ].join('|')
+    )
+  }
+
   const response =
     await fetch(
       url,
