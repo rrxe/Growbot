@@ -7,7 +7,7 @@ import { getRequiredChannelsStatus } from '../lib/required-channels.js'
 export const meRouter =
   Router()
 
-const DAILY_CHECKIN_POINTS = 100
+const DAILY_CHECKIN_POINTS = config.dailyCheckinPoints
 
 meRouter.get(
   '/',

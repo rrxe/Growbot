@@ -47,7 +47,7 @@ interface Props {
   ) => void
 }
 
-const DAILY_CHECKIN_POINTS = 50
+const DAILY_CHECKIN_POINTS = Number(import.meta.env.VITE_DAILY_CHECKIN_POINTS) || 50
 
 let cachedAdsgramWatched: number | null = null
 let cachedAdsgramRemaining: number | null = null
