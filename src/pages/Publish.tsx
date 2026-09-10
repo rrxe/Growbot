@@ -101,13 +101,13 @@ export function Publish({
   async function submit() {
     if (type === 'bot') {
       if (!botLink.trim()) {
-        showAlert('أدخل رابط إحالة البوت.')
+        showAlert('أدخل رابط البوت.')
 
         return
       }
 
       if (reward < 10 || reward > 20) {
-        showAlert('نقاط مهمة البوت يجب أن تكون بين 10 و20.')
+        showAlert('مكافأة مهمة البوت يجب أن تكون بين 10 و20 نقطة.')
 
         return
       }
@@ -119,7 +119,7 @@ export function Publish({
       }
     } else if (!chat.trim()) {
       showAlert(
-        'أدخل رابط القناة أو المجموعة.'
+        'أدخل رابط القناة أو المجموعة التي تريد الترويج لها.'
       )
 
       return
@@ -130,7 +130,7 @@ export function Publish({
       5
     ) {
       showAlert(
-        'الحد الأدنى 5 نقاط.'
+        'الحد الأدنى لميزانية الحملة هو 5 نقاط.'
       )
 
       return
@@ -176,7 +176,7 @@ export function Publish({
       setDescription('')
 
       showAlert(
-        '✅ تم نشر المهمة.'
+        '✅ تم إنشاء الحملة بنجاح.'
       )
 
       await onPublished()
@@ -213,11 +213,11 @@ export function Publish({
       <div className="page-header">
         <div>
           <span className="eyebrow">
-            حملة جديدة
+            إنشاء حملة
           </span>
 
           <h1>
-            انشر مهمة
+            نشر حملة
           </h1>
         </div>
 
@@ -237,13 +237,12 @@ export function Publish({
 
         <div>
           <strong>
-            مهم قبل النشر
+            قبل إطلاق الحملة
           </strong>
 
           <p>
-            لازم تضيف بوت STORM أدمن بالقناة أو الكروب قبل ما تنشر —
-            من دون هالصلاحية ما فينا نتحقق من الأعضاء
-            والمهمة رح تنرفض.
+            تأكد من إضافة بوت STORM كمشرف في القناة أو المجموعة قبل النشر.
+            هذه الصلاحية ضرورية للتحقق من تنفيذ المهمة.
           </p>
         </div>
 
@@ -269,7 +268,7 @@ export function Publish({
               )
             }
           >
-            📢 قناة
+            قناة
           </button>
 
           <button
@@ -285,7 +284,7 @@ export function Publish({
               )
             }
           >
-            👥 مجموعة
+            مجموعة
           </button>
 
           <button
@@ -298,7 +297,7 @@ export function Publish({
               setType('bot')
             }
           >
-            🤖 Join Bot
+            بوت
           </button>
         </div>
       </div>
@@ -306,7 +305,7 @@ export function Publish({
 
       <div className="field-section">
         <label>
-          اسم المهمة
+          عنوان الحملة
         </label>
 
         <input
@@ -316,7 +315,7 @@ export function Publish({
               event.target.value
             )
           }
-          placeholder="مثلاً: قناة أخبار التقنية"
+          placeholder="مثال: قناة أخبار التقنية"
           maxLength={80}
         />
       </div>
@@ -326,7 +325,7 @@ export function Publish({
         <>
           <div className="field-section">
             <label>
-              رابط إحالة البوت
+              رابط البوت
             </label>
 
             <input
@@ -334,20 +333,20 @@ export function Publish({
               onChange={event =>
                 setBotLink(event.target.value)
               }
-              placeholder="https://t.me/your_bot?start=ref_xxx"
+              placeholder="https://t.me/example_bot"
               dir="ltr"
               maxLength={300}
             />
 
             <small className="field-help">
-              الرابط اللي يفتح البوت المطلوب الانضمام له. المهمة تحتاج مراجعة
-              قبل ما تظهر بالسوق.
+              الرابط الذي سيفتحه المستخدم لتنفيذ المهمة. 
+              مهام البوت تمر بمراجعة قبل نشرها.
             </small>
           </div>
 
           <div className="field-section">
             <label>
-              وصف المهمة
+              تعليمات التنفيذ
             </label>
 
             <textarea
@@ -355,20 +354,19 @@ export function Publish({
               onChange={event =>
                 setDescription(event.target.value)
               }
-              placeholder="مثلاً: افتح البوت واضغط Start، بدون أي اشتراك إضافي"
+              placeholder="مثال: افتح البوت واضغط Start ثم أكمل الخطوة المطلوبة."
               maxLength={500}
               rows={3}
             />
 
             <small className="field-help">
-              هاد الوصف بيبين للمستخدم بنافذة تأكيد قبل ما يروح لرابط البوت —
-              وضّح فيه بالضبط شو المطلوب منه يسوي.
+              تظهر هذه التعليمات للمستخدم قبل فتح الرابط، لذلك اجعلها مختصرة وواضحة وتحدد الإجراء المطلوب.
             </small>
           </div>
 
           <div className="field-section">
             <label>
-              نقاط كل تنفيذ (10 - 20)
+              مكافأة كل تنفيذ (10 - 20)
             </label>
 
             <input
@@ -403,14 +401,13 @@ export function Publish({
                 event.target.value
               )
             }
-            placeholder="https://t.me/your_channel أو @your_channel"
+            placeholder="https://t.me/example أو @example"
             dir="ltr"
             maxLength={200}
           />
 
           <small className="field-help">
-            حط رابط تيليجرام أو @username،
-            وتأكد إنه بوت STORM أدمن بنفس المكان.
+            أدخل رابط Telegram أو @username، وتأكد أن بوت STORM مشرف في الوجهة حتى يتم التحقق من الانضمام.
           </small>
         </div>
       )}
@@ -422,7 +419,7 @@ export function Publish({
 
           <div>
             <span>
-              ميزانية المهمة
+              ميزانية الحملة
             </span>
 
             <strong>
@@ -512,7 +509,7 @@ export function Publish({
 
           <div>
             <span>
-              التنفيذات
+              عدد التنفيذات
             </span>
 
             <strong>
@@ -524,7 +521,7 @@ export function Publish({
 
           <div>
             <span>
-              تكلفة التنفيذ
+              المكافأة لكل تنفيذ
             </span>
 
             <strong>
@@ -548,10 +545,10 @@ export function Publish({
         }
       >
         {busy
-          ? 'جاري النشر...'
+          ? 'جاري إنشاء الحملة...'
           : maxBudget < 5
             ? 'رصيد غير كافٍ'
-            : `نشر المهمة — ${budget.toLocaleString('en-US')} نقطة`}
+            : `إطلاق الحملة — ${budget.toLocaleString('en-US')} نقطة`}
       </button>
 
     </section>

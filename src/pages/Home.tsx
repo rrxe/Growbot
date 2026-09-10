@@ -47,6 +47,9 @@ interface Props {
 
 const DAILY_CHECKIN_POINTS = 100
 
+let cachedAdsgramWatched: number | null = null
+let cachedAdsgramRemaining: number | null = null
+
 const STAR_PACKAGES = [
   {
     stars: 10,
@@ -81,9 +84,16 @@ export function Home({
     setShowBuy
   ] = useState(false)
 
-  const [adsgramWatched, setAdsgramWatched] = useState(0)
-  const [adsgramRemaining, setAdsgramRemaining] = useState(20)
+  const [adsgramWatched, setAdsgramWatched] = useState(cachedAdsgramWatched ?? 0)
+  const [adsgramRemaining, setAdsgramRemaining] = useState(cachedAdsgramRemaining ?? 20)
   const [adsgramBusy, setAdsgramBusy] = useState(false)
+
+  function applyAdsgramStatus(watched: number, remaining: number) {
+    cachedAdsgramWatched = watched
+    cachedAdsgramRemaining = remaining
+    setAdsgramWatched(watched)
+    setAdsgramRemaining(remaining)
+  }
 
   async function refreshUser() {
     try {
@@ -101,8 +111,7 @@ export function Home({
   async function refreshAdsgramStatus() {
     try {
       const result = await getAdsgramWatchStatus()
-      setAdsgramWatched(result.watched)
-      setAdsgramRemaining(result.remaining)
+      applyAdsgramStatus(result.watched, result.remaining)
     } catch {
       // keep current UI if the status endpoint is temporarily unavailable
     }
@@ -141,8 +150,7 @@ export function Home({
       // إطلاقًا بوضع debug. الاعتماد عليه لحاله هو سبب توقف المكافآت.
       try {
         const result = await completeAdsgramWatch()
-        setAdsgramWatched(result.watched)
-        setAdsgramRemaining(result.remaining)
+        applyAdsgramStatus(result.watched, result.remaining)
         hapticSuccess()
         try {
           const latest = await getMe()
@@ -155,8 +163,7 @@ export function Home({
         for (let attempt = 0; attempt < 10; attempt += 1) {
           await new Promise(resolve => window.setTimeout(resolve, 500))
           const status = await getAdsgramWatchStatus()
-          setAdsgramWatched(status.watched)
-          setAdsgramRemaining(status.remaining)
+          applyAdsgramStatus(status.watched, status.remaining)
           if (status.watched > session.watched) {
             hapticSuccess()
             try {

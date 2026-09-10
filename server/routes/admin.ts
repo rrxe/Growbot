@@ -5,7 +5,7 @@ import { clearSettingsCache } from '../lib/settings.js'
 
 import { supabase } from '../lib/supabase.js'
 import { broadcastToUsers } from '../lib/telegram-send.js'
-import { getChat } from '../lib/telegram.js'
+import { getChat, getChatMember, getMe as getTelegramMe } from '../lib/telegram.js'
 
 export const adminRouter =
   Router()
@@ -1402,7 +1402,7 @@ adminRouter.delete(
 
 
 // =========================================================
-// الاشتراك الإجباري (Required Channels)
+// الاشتراك الإجباري
 // =========================================================
 
 adminRouter.get(
@@ -1410,16 +1410,10 @@ adminRouter.get(
   adminMiddleware('admin'),
   async (_req, res, next) => {
     try {
-      const {
-        data,
-        error
-      } = await supabase
+      const { data, error } = await supabase
         .from('required_channels')
         .select('*')
-        .order(
-          'created_at',
-          { ascending: false }
-        )
+        .order('created_at', { ascending: true })
 
       if (error) {
         throw error
@@ -1434,10 +1428,9 @@ adminRouter.get(
   }
 )
 
-
 adminRouter.post(
   '/required-channels',
-  adminMiddleware('admin'),
+  adminMiddleware('owner'),
   async (req, res, next) => {
     try {
       const rawInput =
@@ -1451,80 +1444,93 @@ adminRouter.post(
           : ''
 
       if (!rawInput) {
-        return res
-          .status(400)
-          .json({
-            error:
-              'أدخل @username أو رابط القناة.'
-          })
+        return res.status(400).json({
+          error: 'أدخل @username أو رابط القناة العامة.'
+        })
       }
 
-      // نقبل @username أو t.me/username أو رابط كامل
-      const username =
-        rawInput
-          .replace(/^https?:\/\/t\.me\//i, '')
-          .replace(/^@/, '')
-          .split('/')[0]
-          .trim()
+      const username = rawInput
+        .replace(/^https?:\/\/t\.me\//i, '')
+        .replace(/^@/, '')
+        .split('/')[0]
+        .split('?')[0]
+        .trim()
 
-      if (!username) {
-        return res
-          .status(400)
-          .json({
-            error:
-              'صيغة القناة غير صحيحة.'
-          })
+      if (
+        !username ||
+        !/^[A-Za-z0-9_]{5,32}$/.test(username)
+      ) {
+        return res.status(400).json({
+          error: 'رابط القناة غير صحيح. استخدم @username أو https://t.me/username.'
+        })
       }
 
-      if (username.startsWith('+')) {
-        return res
-          .status(400)
-          .json({
-            error:
-              'روابط الدعوة الخاصة (تبدأ بـ +) مو مدعومة — لازم قناة/مجموعة عامة إلها @username.'
-          })
-      }
-
-      // نتحقق فعليًا من تيليجرام قبل الحفظ — إذا القناة غلط أو البوت
-      // مو عضو/أدمن فيها، منرجع خطأ واضح بدل ما نحفظ قيمة معطوبة بصمت.
       let chatInfo
+      let telegramBot
 
       try {
-        chatInfo = await getChat(
-          `@${username}`
+        ;[chatInfo, telegramBot] = await Promise.all([
+          getChat(`@${username}`),
+          getTelegramMe()
+        ])
+
+        const botMembership = await getChatMember(
+          chatInfo.id,
+          telegramBot.id
         )
-      } catch (error) {
-        return res
-          .status(400)
-          .json({
-            error:
-              `تعذر الوصول للقناة @${username}. تأكد إنه البوت عضو أو أدمن فيها والاسم صحيح. (${
-                error instanceof Error
-                  ? error.message
-                  : 'خطأ غير معروف'
-              })`
+
+        if (
+          botMembership.status !== 'administrator' &&
+          botMembership.status !== 'creator'
+        ) {
+          return res.status(400).json({
+            error: 'البوت يجب أن يكون مشرفًا في القناة قبل إضافتها.'
           })
+        }
+      } catch (error) {
+        return res.status(400).json({
+          error:
+            `تعذر التحقق من القناة @${username}. تأكد من صحة الاسم وأن البوت مشرف فيها. ${
+              error instanceof Error ? `(${error.message})` : ''
+            }`
+        })
       }
 
-      const {
-        data,
-        error
-      } = await supabase
+      const { data: existing, error: existingError } = await supabase
+        .from('required_channels')
+        .select('id')
+        .eq('chat_id', chatInfo.id)
+        .maybeSingle()
+
+      if (existingError) {
+        throw existingError
+      }
+
+      if (existing) {
+        return res.status(409).json({
+          error: 'هذه القناة مضافة بالفعل إلى الاشتراك الإجباري.'
+        })
+      }
+
+      const { data, error } = await supabase
         .from('required_channels')
         .insert({
-          chat_username: username,
+          chat_username: chatInfo.username || username,
           chat_id: chatInfo.id,
-          title:
-            title ||
-            chatInfo.title ||
-            username,
-          invite_link: `https://t.me/${username}`,
+          title: title || chatInfo.title || username,
+          invite_link: `https://t.me/${chatInfo.username || username}`,
           is_active: true
         })
         .select('*')
         .single()
 
       if (error) {
+        if ((error as any).code === '23505') {
+          return res.status(409).json({
+            error: 'هذه القناة مضافة بالفعل إلى الاشتراك الإجباري.'
+          })
+        }
+
         throw error
       }
 
@@ -1538,16 +1544,12 @@ adminRouter.post(
   }
 )
 
-
 adminRouter.post(
   '/required-channels/:id/toggle',
-  adminMiddleware('admin'),
+  adminMiddleware('owner'),
   async (req, res, next) => {
     try {
-      const {
-        data: current,
-        error: findError
-      } = await supabase
+      const { data: current, error: findError } = await supabase
         .from('required_channels')
         .select('is_active')
         .eq('id', req.params.id)
@@ -1558,17 +1560,12 @@ adminRouter.post(
       }
 
       if (!current) {
-        return res
-          .status(404)
-          .json({
-            error: 'غير موجودة.'
-          })
+        return res.status(404).json({
+          error: 'القناة غير موجودة.'
+        })
       }
 
-      const {
-        data,
-        error
-      } = await supabase
+      const { data, error } = await supabase
         .from('required_channels')
         .update({
           is_active: !current.is_active
@@ -1591,15 +1588,12 @@ adminRouter.post(
   }
 )
 
-
 adminRouter.delete(
   '/required-channels/:id',
-  adminMiddleware('admin'),
+  adminMiddleware('owner'),
   async (req, res, next) => {
     try {
-      const {
-        error
-      } = await supabase
+      const { error } = await supabase
         .from('required_channels')
         .delete()
         .eq('id', req.params.id)
@@ -1616,7 +1610,6 @@ adminRouter.delete(
     }
   }
 )
-
 
 // =========================================================
 // رسالة جماعية (Broadcast)

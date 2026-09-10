@@ -17,6 +17,11 @@ import {
   broadcastToUsers
 } from '../server/lib/telegram-send.js'
 
+import {
+  getMissingRequiredChannels,
+  sendRequiredChannelsGate,
+} from '../server/lib/required-channels.js'
+
 function baseAppUrl() {
   return config.webAppUrl
     .replace(
@@ -105,8 +110,7 @@ async function sendHome(
   ctx: any,
   referralPayload = ''
 ) {
-  const keyboard =
-    miniAppKeyboard()
+  const keyboard = miniAppKeyboard()
 
   let role:
     | 'owner'
@@ -114,57 +118,41 @@ async function sendHome(
     | null = null
 
   try {
-    role =
-      await resolveRole(
-        ctx.from!.id
-      )
-  } catch (
-    error
-  ) {
-    console.error(
-      '[bot:role]',
-      error
-    )
+    role = await resolveRole(ctx.from!.id)
+  } catch (error) {
+    console.error('[bot:role]', error)
   }
 
-  if (
-    role &&
-    adminAppUrl()
-  ) {
+  if (role && adminAppUrl()) {
     keyboard.webApp(
-      '⚙️ لوحة الإدارة',
+      'لوحة الإدارة',
       adminAppUrl()
     )
   }
 
   const lines = [
-    '⚡️ أهلًا فيك في STORM',
+    'مرحبًا بك في STORM',
     '',
-    '🔥 منصتك لتبادل الأعضاء وتفجير نمو قناتك أو قروبك بسرعة وبثقة تامة.',
+    'منصة لتنمية القنوات والمجموعات عبر مهام واضحة ونظام نقاط مباشر.',
     '',
-    '💚 كل مهمة تنفّذها = +5 نقاط',
-    '💵 كل 1$ = 500 نقطة',
-    '🎁 كل إحالة ناجحة = +150 نقطة بعد ما صاحبك يخلّص 5 مهام',
+    `تنفيذ المهمة: +${config.pointsPerTask} نقاط`,
+    `قيمة الرصيد: ${config.pointsPerUsd} نقطة لكل 1$`,
+    `مكافأة الإحالة: +${config.referralReward} نقطة بعد ${config.referralRequiredTasks} مهام`,
     '',
-    '👇 دوس الزر تحت وابدأ فورًا'
+    'ابدأ من التطبيق وتصفح المهام أو أطلق حملتك الخاصة.'
   ]
 
-  if (
-    referralPayload.startsWith(
-      'ref_'
-    )
-  ) {
+  if (referralPayload.startsWith('ref_')) {
     lines.push(
       '',
-      '✅ تم تسجيل رابط الإحالة تبعك — أهلًا وسهلًا فيك معنا!'
+      'تم تسجيل رابط الإحالة لهذا الدخول.'
     )
   }
 
   await ctx.reply(
     lines.join('\n'),
     {
-      reply_markup:
-        keyboard
+      reply_markup: keyboard
     }
   )
 }
@@ -173,6 +161,51 @@ export const bot =
   config.botToken
     ? new Bot(config.botToken)
     : null
+
+// المستخدم العادي لا يستطيع استخدام أوامر البوت قبل إكمال الاشتراك الإجباري.
+// الإدارة مستثناة حتى لا تتعطل إجراءات Owner/Admin.
+if (bot) {
+  bot.use(async (ctx, next) => {
+    if (!ctx.from) {
+      return next()
+    }
+
+    if (ctx.message?.successful_payment) {
+      return next()
+    }
+
+    const isRequiredCheck =
+      ctx.callbackQuery?.data === 'check_required_channels'
+
+    if (isRequiredCheck) {
+      return next()
+    }
+
+    try {
+      const role = await resolveRole(ctx.from.id)
+
+      if (role) {
+        return next()
+      }
+
+      const allowed = await sendRequiredChannelsGate(ctx)
+
+      if (allowed) {
+        return next()
+      }
+
+      return
+    } catch (error) {
+      console.error('[bot:required-channels:middleware]', error)
+
+      await ctx.reply(
+        'تعذر التحقق من الاشتراك الآن. حاول مرة أخرى بعد قليل.'
+      ).catch(() => {})
+
+      return
+    }
+  })
+}
 
 // telegram_id (owner) -> task id في انتظار سبب الرفض
 const pendingRejections =
@@ -417,14 +450,14 @@ export async function startBot() {
         !config.webAppUrl
       ) {
         await ctx.reply(
-          '🚧 الـMini App لم يتم ربطه بعد.\n\nسيعمل هذا الزر تلقائيًا بعد إضافة WEBAPP_URL.'
+          'التطبيق غير متاح حاليًا. يرجى ضبط WEBAPP_URL في إعدادات الخادم.'
         )
 
         return
       }
 
       await ctx.reply(
-        '🚀 افتح تطبيق STORM من هنا:',
+        'افتح تطبيق STORM من الزر التالي:',
         {
           reply_markup:
             miniAppKeyboard()
@@ -515,7 +548,7 @@ export async function startBot() {
     ) => {
       await ctx.reply(
         [
-          '🆔 معرّف التيليجرام (Telegram ID) تبعك:',
+          'معرّف Telegram الخاص بك:',
           '',
           String(
             ctx.from?.id ||
@@ -532,7 +565,7 @@ export async function startBot() {
       ctx
     ) => {
       await ctx.reply(
-        '🛟 محتاج مساعدة أو عندك مشكلة بطلب؟\nكلمنا على طول: @SLYMintX_SUPPORT'
+        'الدعم\n\nللمساعدة أو الإبلاغ عن مشكلة، تواصل مع @SLYMintX_SUPPORT.'
       )
     }
   )
@@ -543,7 +576,7 @@ export async function startBot() {
       ctx
     ) => {
       await ctx.reply(
-        '💳 عندك مشكلة بعملية شراء أو دفع؟\nتواصل معنا فورًا: @SLYMintX_SUPPORT'
+        'الدفع والشراء\n\nلأي مشكلة مرتبطة بالدفع، تواصل مع @SLYMintX_SUPPORT.'
       )
     }
   )
@@ -555,7 +588,7 @@ export async function startBot() {
     ) => {
       await ctx.reply(
         [
-          '📄 شروط استخدام STORM',
+          'شروط استخدام STORM',
           '',
           '• النقاط داخل STORM تُستخدم فقط لنشر وتنفيذ المهام على المنصة.',
           '• إيقاف أي مهمة يرجّع لك الميزانية المتبقية منها فقط.',
@@ -591,7 +624,7 @@ export async function startBot() {
       }
 
       const lines = [
-        'ℹ️ أوامر STORM',
+        'أوامر STORM',
         '',
         '/start — فتح البوت',
         '/app — فتح التطبيق',
@@ -1150,6 +1183,42 @@ export async function startBot() {
   )
 
   bot.callbackQuery(
+    'check_required_channels',
+    async (ctx) => {
+      try {
+        const missing = await getMissingRequiredChannels(ctx.from!.id)
+
+        if (missing.length > 0) {
+          await ctx.answerCallbackQuery({
+            text: 'ما زال هناك اشتراك مطلوب.',
+            show_alert: true
+          })
+
+          await sendRequiredChannelsGate(ctx)
+          return
+        }
+
+        await ctx.answerCallbackQuery({
+          text: 'تم التحقق بنجاح.'
+        })
+
+        await ctx.editMessageReplyMarkup({
+          reply_markup: undefined
+        }).catch(() => {})
+
+        await sendHome(ctx)
+      } catch (error) {
+        console.error('[bot:required-channels:callback]', error)
+
+        await ctx.answerCallbackQuery({
+          text: 'تعذر التحقق الآن.',
+          show_alert: true
+        })
+      }
+    }
+  )
+
+  bot.callbackQuery(
     /^task_approve:(.+)$/,
     async (ctx) => {
       if (ctx.from!.id !== ownerId()) {
@@ -1371,7 +1440,7 @@ export async function startBot() {
     {
       command: 'start',
       description:
-        'فتح STORM'
+        'بدء الاستخدام'
     },
     {
       command: 'app',
@@ -1381,12 +1450,12 @@ export async function startBot() {
     {
       command: 'balance',
       description:
-        'رصيدك من النقاط'
+        'عرض الرصيد'
     },
     {
       command: 'referral',
       description:
-        'رابط الإحالة'
+        'عرض الإحالة'
     },
     {
       command: 'id',
