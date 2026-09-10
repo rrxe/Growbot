@@ -136,7 +136,7 @@ router.post(
                   `${points} نقطة`,
 
                 description:
-                  `شراء ${points} نقطة داخل GrowBot`,
+                  `شراء ${points} نقطة داخل STORM`,
 
                 payload,
 

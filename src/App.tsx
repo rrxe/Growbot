@@ -82,7 +82,7 @@ export default function App() {
           <div className="loading-glow" />
 
           <div className="loading-logo">⚡</div>
-          <div className="loading-title">StormGrow</div>
+          <div className="loading-title">STORM</div>
           <div className="loading-tagline">جاري تجهيز حسابك...</div>
           <div className="loading-spinner" />
         </div>

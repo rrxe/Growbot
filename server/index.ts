@@ -23,7 +23,7 @@ async function start() {
     !config.botToken
   ) {
     console.log(
-      '[growbot] BOT_TOKEN not configured.'
+      '[storm] BOT_TOKEN not configured.'
     )
   } else {
     try {
@@ -34,11 +34,11 @@ async function start() {
         String(bot.id)
 
       console.log(
-        `[growbot] Telegram bot @${bot.username || 'unknown'}`
+        `[storm] Telegram bot @${bot.username || 'unknown'}`
       )
     } catch (error) {
       console.error(
-        '[growbot] Telegram startup check failed:',
+        '[storm] Telegram startup check failed:',
         error
       )
     }
@@ -53,7 +53,7 @@ async function start() {
     '0.0.0.0',
     () => {
       console.log(
-        `[growbot] API running on :${config.port}`
+        `[storm] API running on :${config.port}`
       )
     }
   )

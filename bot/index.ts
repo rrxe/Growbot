@@ -33,7 +33,7 @@ function miniAppKeyboard() {
     config.webAppUrl
   ) {
     keyboard.webApp(
-      '🚀 فتح GrowBot',
+      '🚀 فتح STORM',
       config.webAppUrl
     )
   }
@@ -138,15 +138,15 @@ async function sendHome(
   }
 
   const lines = [
-    '🚀 أهلًا بك في GrowBot',
+    '⚡️ أهلًا فيك في STORM',
     '',
-    'منصة لتبادل نمو القنوات والمجموعات.',
+    '🔥 منصتك لتبادل الأعضاء وتفجير نمو قناتك أو قروبك بسرعة وبثقة تامة.',
     '',
-    '💚 تنفيذ المهمة = +5 نقاط',
-    '💵 $1 = 500 نقطة',
-    '🎁 الإحالة = +150 نقطة بعد 5 مهام',
+    '💚 كل مهمة تنفّذها = +5 نقاط',
+    '💵 كل 1$ = 500 نقطة',
+    '🎁 كل إحالة ناجحة = +150 نقطة بعد ما صاحبك يخلّص 5 مهام',
     '',
-    'افتح التطبيق من الزر بالأسفل.'
+    '👇 دوس الزر تحت وابدأ فورًا'
   ]
 
   if (
@@ -156,7 +156,7 @@ async function sendHome(
   ) {
     lines.push(
       '',
-      '✅ تم حفظ رابط الإحالة لهذا الدخول.'
+      '✅ تم تسجيل رابط الإحالة تبعك — أهلًا وسهلًا فيك معنا!'
     )
   }
 
@@ -257,7 +257,7 @@ export async function sendBotTaskForReview(
   }
 }
 
-// يعدّل نص/كابشن رسالة المراجعة بعد ما مالكة GrowBot تحسم (قبول رفض أو عقاب) —
+// يعدّل نص/كابشن رسالة المراجعة بعد ما مالكة STORM تحسم (قبول رفض أو عقاب) —
 // الرسالة ممكن تكون نص عادي أو صورة (لو فيه سكرين شوت)، فنتعامل مع الحالتين
 async function finalizeReviewMessage(
   ctx: any,
@@ -278,7 +278,7 @@ async function finalizeReviewMessage(
   ).catch(() => {})
 }
 
-// تصعيد لمالكة GrowBot (OWNER_TELEGRAM_ID) لما owner مهمة يرفض تنفيذ Join Bot —
+// تصعيد لمالكة STORM (OWNER_TELEGRAM_ID) لما owner مهمة يرفض تنفيذ Join Bot —
 // هي تحسم: تقبل الرفض، أو تعاقب صاحب المهمة (رصيده يصفّر ومهامه تُلغى والمنفّذ يُدفع فورًا)
 export async function sendBotRejectionForReview(
   completionId: string,
@@ -424,7 +424,7 @@ export async function startBot() {
       }
 
       await ctx.reply(
-        '🚀 افتح GrowBot:',
+        '🚀 افتح تطبيق STORM من هنا:',
         {
           reply_markup:
             miniAppKeyboard()
@@ -480,12 +480,12 @@ export async function startBot() {
 
         await ctx.reply(
           [
-            '🔐 لوحة الإدارة',
+            '🔐 لوحة إدارة STORM',
             '',
-            `الصلاحية: ${
+            `صلاحيتك: ${
               role === 'owner'
-                ? '👑 Owner'
-                : '🛡️ Admin'
+                ? '👑 المالك'
+                : '🛡️ أدمن'
             }`
           ].join('\n'),
           {
@@ -515,7 +515,7 @@ export async function startBot() {
     ) => {
       await ctx.reply(
         [
-          '🆔 Telegram ID الخاص بك:',
+          '🆔 معرّف التيليجرام (Telegram ID) تبعك:',
           '',
           String(
             ctx.from?.id ||
@@ -532,7 +532,7 @@ export async function startBot() {
       ctx
     ) => {
       await ctx.reply(
-        'للدعم ومشاكل الطلبات:\n@ncryptix'
+        '🛟 محتاج مساعدة أو عندك مشكلة بطلب؟\nكلمنا على طول: @SLYMintX_SUPPORT'
       )
     }
   )
@@ -543,7 +543,7 @@ export async function startBot() {
       ctx
     ) => {
       await ctx.reply(
-        'لدعم عمليات الشراء أو مشاكل الدفع:\n@ncryptix'
+        '💳 عندك مشكلة بعملية شراء أو دفع؟\nتواصل معنا فورًا: @SLYMintX_SUPPORT'
       )
     }
   )
@@ -555,12 +555,12 @@ export async function startBot() {
     ) => {
       await ctx.reply(
         [
-          '📄 شروط استخدام GrowBot',
+          '📄 شروط استخدام STORM',
           '',
-          'النقاط داخل GrowBot تُستخدم لنشر وتنفيذ المهام داخل المنصة فقط.',
-          'إيقاف مهمة يعيد فقط الميزانية المتبقية منها.',
-          'نظام الإحالات يعتمد على تنفيذ مهام حقيقية، مش تسجيل دخول فقط.',
-          'عمليات الشراء عبر Telegram Stars تتم بالكامل عبر نظام Telegram.'
+          '• النقاط داخل STORM تُستخدم فقط لنشر وتنفيذ المهام على المنصة.',
+          '• إيقاف أي مهمة يرجّع لك الميزانية المتبقية منها فقط.',
+          '• نظام الإحالات مبني على تنفيذ مهام حقيقية، مش مجرد تسجيل دخول.',
+          '• عمليات الشراء عبر Telegram Stars تتم بالكامل عبر نظام تيليجرام الرسمي.'
         ].join('\n')
       )
     }
@@ -591,17 +591,17 @@ export async function startBot() {
       }
 
       const lines = [
-        'ℹ️ GrowBot',
+        'ℹ️ أوامر STORM',
         '',
         '/start — فتح البوت',
         '/app — فتح التطبيق',
         '/balance — رصيدك من النقاط',
         '/referral — رابط وإحصائيات الإحالة',
-        '/id — معرفة Telegram ID',
-        '/support — الدعم',
-        '/paysupport — مشاكل الدفع',
-        '/terms — الشروط',
-        '/help — المساعدة'
+        '/id — معرفة Telegram ID تبعك',
+        '/support — تواصل مع الدعم',
+        '/paysupport — مشاكل الدفع والشراء',
+        '/terms — الشروط والأحكام',
+        '/help — عرض هذه القائمة'
       ]
 
       if (role) {
@@ -650,7 +650,7 @@ export async function startBot() {
 
         if (!user) {
           await ctx.reply(
-            'لسا ما فتحت التطبيق ولا مرة، افتحه أول مرة بالأمر /app عشان يتم إنشاء حسابك.'
+            '👋 لسا ما فتحت التطبيق ولا مرة!\nافتحه أول مرة بالأمر /app عشان ننشئلك حساب.'
           )
 
           return
@@ -665,8 +665,8 @@ export async function startBot() {
           [
             '💰 رصيدك الحالي',
             '',
-            `النقاط: ${user.points || 0}`,
-            `ما يعادل: $${usdValue.toFixed(2)}`
+            `🪙 النقاط: ${user.points || 0}`,
+            `💵 ما يعادل: $${usdValue.toFixed(2)}`
           ].join('\n')
         )
       } catch (error) {
@@ -676,7 +676,7 @@ export async function startBot() {
         )
 
         await ctx.reply(
-          'تعذر جلب رصيدك حاليًا، حاول لاحقًا.'
+          '⚠️ تعذر جلب رصيدك حاليًا، جرّب كمان شوي.'
         )
       }
     }
@@ -707,7 +707,7 @@ export async function startBot() {
 
         if (!user) {
           await ctx.reply(
-            'لسا ما فتحت التطبيق ولا مرة، افتحه أول مرة بالأمر /app عشان يتم إنشاء حسابك.'
+            '👋 لسا ما فتحت التطبيق ولا مرة!\nافتحه أول مرة بالأمر /app عشان ننشئلك حساب.'
           )
 
           return
@@ -768,11 +768,13 @@ export async function startBot() {
           [
             '🎁 رابط الإحالة الخاص فيك',
             '',
-            link || 'رابط الإحالة غير متاح حاليًا (BOT_USERNAME غير مضبوط).',
+            link || '⚠️ رابط الإحالة غير متاح حاليًا (BOT_USERNAME غير مضبوط).',
             '',
-            `عدد من دخلوا برابطك: ${referredCount || 0}`,
-            `عدد المكافآت المستلمة: ${rewardedCount || 0}`,
-            `كل إحالة مكتملة = +${config.referralReward} نقطة بعد ${config.referralRequiredTasks} مهام`
+            `👥 عدد من دخلوا برابطك: ${referredCount || 0}`,
+            `✅ عدد المكافآت المستلمة: ${rewardedCount || 0}`,
+            `💡 كل إحالة مكتملة = +${config.referralReward} نقطة بعد ${config.referralRequiredTasks} مهام`,
+            '',
+            'شارك رابطك مع أصحابك وحوّل كل دعوة لنقاط 🚀'
           ].join('\n')
         )
       } catch (error) {
@@ -782,7 +784,7 @@ export async function startBot() {
         )
 
         await ctx.reply(
-          'تعذر جلب بيانات الإحالة حاليًا، حاول لاحقًا.'
+          '⚠️ تعذر جلب بيانات الإحالة حاليًا، جرّب كمان شوي.'
         )
       }
     }
@@ -886,7 +888,7 @@ export async function startBot() {
 
         await ctx.reply(
           [
-            '📊 إحصائيات GrowBot',
+            '📊 إحصائيات STORM',
             '',
             `👥 المستخدمين: ${users.count || 0}`,
             `🟢 نشيطين (آخر 5 دقائق): ${activeUsers.count || 0}`,
@@ -903,7 +905,7 @@ export async function startBot() {
         )
 
         await ctx.reply(
-          'تعذر جلب الإحصائيات حاليًا.'
+          '⚠️ تعذر جلب الإحصائيات حاليًا.'
         )
       }
     }
@@ -928,14 +930,14 @@ export async function startBot() {
 
       if (!text) {
         await ctx.reply(
-          'استخدم الأمر بهاد الشكل:\n/broadcast رسالتك هنا'
+          '✍️ استخدم الأمر بهاد الشكل:\n/broadcast رسالتك هنا'
         )
 
         return
       }
 
       await ctx.reply(
-        '⏳ جاري الإرسال لكل المستخدمين، رح يوصلك تقرير لما يخلص...'
+        '⏳ جاري إرسال الرسالة لكل المستخدمين، بيوصلك تقرير فور ما يخلص...'
       )
 
       try {
@@ -1101,13 +1103,13 @@ export async function startBot() {
 
         await ctx.reply(
           [
-            '✅ تم الدفع بنجاح',
+            '✅ تم الدفع بنجاح!',
             '',
             `⭐ ${payment.total_amount} Stars`,
-            'تمت إضافة النقاط إلى رصيدك.',
+            '🪙 تمت إضافة النقاط لرصيدك فورًا.',
             '',
             config.webAppUrl
-              ? 'افتح التطبيق لرؤية الرصيد الجديد.'
+              ? '👇 افتح التطبيق وشوف رصيدك الجديد.'
               : ''
           ]
             .filter(Boolean)
@@ -1137,10 +1139,10 @@ export async function startBot() {
 
         await ctx.reply(
           [
-            '⚠️ تم خصم الـ Stars لكن حصل خطأ مؤقت بإضافة النقاط.',
+            '⚠️ تم خصم الـ Stars منك، بس صار خطأ مؤقت بإضافة النقاط.',
             '',
-            `رقم العملية: ${payment.telegram_payment_charge_id}`,
-            'تواصل مع @ncryptix وأرسل له هذا الرقم وسيتم إضافة نقاطك يدويًا فورًا.'
+            `🔢 رقم العملية: ${payment.telegram_payment_charge_id}`,
+            'كلّم @SLYMintX_SUPPORT وابعتله الرقم هاد، ونضيفلك نقاطك يدويًا على طول.'
           ].join('\n')
         ).catch(() => {})
       }
@@ -1383,7 +1385,7 @@ export async function startBot() {
     {
       command: 'start',
       description:
-        'فتح GrowBot'
+        'فتح STORM'
     },
     {
       command: 'app',
@@ -1428,7 +1430,7 @@ export async function startBot() {
   ])
 
   console.log(
-    '[bot] Starting GrowBot polling...'
+    '[bot] Starting STORM polling...'
   )
 
   bot.start().catch(

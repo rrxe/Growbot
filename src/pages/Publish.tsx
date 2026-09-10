@@ -241,7 +241,7 @@ export function Publish({
           </strong>
 
           <p>
-            لازم تضيف StormGrow أدمن بالقناة أو الكروب قبل ما تنشر —
+            لازم تضيف بوت STORM أدمن بالقناة أو الكروب قبل ما تنشر —
             من دون هالصلاحية ما فينا نتحقق من الأعضاء
             والمهمة رح تنرفض.
           </p>
@@ -410,7 +410,7 @@ export function Publish({
 
           <small className="field-help">
             حط رابط تيليجرام أو @username،
-            وتأكد إنه StormGrow أدمن بنفس المكان.
+            وتأكد إنه بوت STORM أدمن بنفس المكان.
           </small>
         </div>
       )}

@@ -506,7 +506,7 @@ export function Profile({
       </div>
 
       <div className="rules-card">
-        <h3>قواعد StormGrow</h3>
+        <h3>قواعد STORM</h3>
 
         <p>
           • تنفيذ المهمة يعطيك 5 نقاط.

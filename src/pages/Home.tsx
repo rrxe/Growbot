@@ -151,7 +151,7 @@ export function Home({
           </div>
 
           <div>
-            <strong>StormGrow</strong>
+            <strong>STORM</strong>
             <span>نقاط ونمو</span>
           </div>
         </div>
@@ -320,7 +320,7 @@ export function Home({
         className="support-card"
         onClick={() =>
           openTelegramLink(
-            'https://t.me/ncryptix'
+            'https://t.me/SLYMintX_SUPPORT'
           )
         }
       >
@@ -330,7 +330,7 @@ export function Home({
           </strong>
 
           <span>
-            تواصل مع @ncryptix
+            تواصل مع @SLYMintX_SUPPORT
           </span>
         </div>
 

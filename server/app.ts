@@ -69,7 +69,7 @@ app.get(
   ) => {
     res.status(200).json({
       ok: true,
-      service: 'growbot-api'
+      service: 'storm-api'
     })
   }
 )
@@ -184,7 +184,7 @@ app.use(
     _next: NextFunction
   ) => {
     console.error(
-      '[growbot-api]',
+      '[storm-api]',
       error
     )
 
