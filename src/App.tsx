@@ -233,7 +233,7 @@ export default function App() {
       }, delay)
     }
 
-    schedule(2000)
+    schedule(4000)
 
     return () => {
       cancelled = true
@@ -303,14 +303,16 @@ export default function App() {
           />
         )}
 
-        {screen === 'tasks' && (
+        {/* Tasks تضل مركّبة بالـ DOM دايمًا (حتى إذا التبويب مو مفعّل)
+            عشان مهمة AdsGram الأصلية تبلش تتحمل من أول ما التطبيق يفتح. */}
+        <div style={{ display: screen === 'tasks' ? 'contents' : 'none' }}>
           <Tasks
             user={user}
             initialTasks={browseTasks}
             initialCompletedIds={completedTaskIds}
             onUserChanged={setUser}
           />
-        )}
+        </div>
 
         {screen === 'publish' && (
           <Publish

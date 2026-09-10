@@ -266,16 +266,23 @@
 
 .adsgram-native-task-host {
   grid-column: 1 / -1;
-  min-height: 54px;
+  min-height: 72px;
   border-radius: 13px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .adsgram-native-task-host adsgram-task {
   display: block;
   width: 100%;
-  --adsgram-task-font-size: 12px;
-  --adsgram-task-icon-size: 30px;
-  --adsgram-task-icon-title-gap: 8px;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 13px;
+  background: #0b131f;
+  color: #e6ecf5;
+  font-family: inherit;
+  --adsgram-task-font-size: 14px;
+  --adsgram-task-icon-size: 36px;
+  --adsgram-task-icon-title-gap: 12px;
   --adsgram-task-icon-border-radius: 8px;
+  --adsgram-task-button-width: 76px;
 }
