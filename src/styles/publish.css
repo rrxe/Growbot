@@ -6,7 +6,7 @@
 }
 
 .eyebrow {
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 10px;
   font-weight: 800;
 }
@@ -19,9 +19,9 @@
 .points-badge {
   padding: 7px 10px;
   border-radius: 10px;
-  background: rgba(212,255,61,.1);
-  border: 1px solid rgba(212,255,61,.17);
-  color: #d4ff3d;
+  background: rgba(117,169,255,.1);
+  border: 1px solid rgba(117,169,255,.17);
+  color: #75a9ff;
   font-family: ui-monospace, monospace;
   font-size: 10px;
   font-weight: 800;
@@ -33,8 +33,8 @@
   margin-top: 17px;
   padding: 14px;
   border-radius: 15px;
-  background: rgba(255,107,74,.06);
-  border: 1px solid rgba(255,107,74,.16);
+  background: rgba(117,169,255,.06);
+  border: 1px solid rgba(117,169,255,.16);
 }
 
 .warning-icon {
@@ -44,8 +44,8 @@
   display: grid;
   place-items: center;
   border-radius: 10px;
-  color: #ff8d75;
-  background: rgba(255,107,74,.1);
+  color: #8db9ff;
+  background: rgba(117,169,255,.1);
   font-weight: 900;
 }
 
@@ -54,7 +54,7 @@
 }
 
 .publish-warning p {
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 9.5px;
   line-height: 1.8;
   margin: 4px 0 0;
@@ -66,7 +66,7 @@
 
 .field-section > label {
   display: block;
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 11px;
   font-weight: 800;
   margin-bottom: 7px;
@@ -74,9 +74,9 @@
 
 .field-section input {
   width: 100%;
-  border: 1px solid #2a2745;
-  background: #17152a;
-  color: #f5f3ff;
+  border: 1px solid #24334a;
+  background: #0f1724;
+  color: #f5f9ff;
   border-radius: 13px;
   padding: 12px 13px;
   outline: none;
@@ -89,9 +89,9 @@
 
 .field-section textarea {
   width: 100%;
-  border: 1px solid #2a2745;
-  background: #17152a;
-  color: #f5f3ff;
+  border: 1px solid #24334a;
+  background: #0f1724;
+  color: #f5f9ff;
   border-radius: 13px;
   padding: 12px 13px;
   outline: none;
@@ -107,7 +107,7 @@
 .field-help {
   display: block;
   margin-top: 5px;
-  color: #6f6a89;
+  color: #718096;
   font-size: 8px;
   line-height: 1.6;
 }
@@ -116,8 +116,8 @@
   display: flex;
   gap: 4px;
   padding: 4px;
-  background: #17152a;
-  border: 1px solid #2a2745;
+  background: #0f1724;
+  border: 1px solid #24334a;
   border-radius: 14px;
 }
 
@@ -126,23 +126,23 @@
   border: 0;
   border-radius: 10px;
   background: transparent;
-  color: #8b87a8;
+  color: #94a3b8;
   padding: 9px;
   font-size: 11px;
   font-weight: 800;
 }
 
 .segmented button.active {
-  background: #201d38;
-  color: #f5f3ff;
+  background: #152033;
+  color: #f5f9ff;
 }
 
 .budget-card {
   margin-top: 18px;
   padding: 17px;
   border-radius: 18px;
-  background: #17152a;
-  border: 1px solid #2a2745;
+  background: #0f1724;
+  border: 1px solid #24334a;
 }
 
 .budget-head {
@@ -159,7 +159,7 @@
 }
 
 .budget-head span {
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 10px;
 }
 
@@ -170,9 +170,9 @@
 
 .max-button {
   min-width: 58px;
-  border: 1px solid rgba(212,255,61,.18);
-  background: rgba(212,255,61,.1);
-  color: #d4ff3d;
+  border: 1px solid rgba(117,169,255,.18);
+  background: rgba(117,169,255,.1);
+  color: #75a9ff;
   border-radius: 11px;
   padding: 9px 13px;
   font-size: 10px;
@@ -187,9 +187,9 @@
 }
 
 .preset-row button {
-  border: 1px solid #2a2745;
-  background: #201d38;
-  color: #8b87a8;
+  border: 1px solid #24334a;
+  background: #152033;
+  color: #94a3b8;
   border-radius: 10px;
   padding: 8px 10px;
   font-size: 9px;
@@ -197,9 +197,9 @@
 }
 
 .preset-row button.active {
-  border-color: rgba(212,255,61,.24);
-  background: rgba(212,255,61,.08);
-  color: #d4ff3d;
+  border-color: rgba(117,169,255,.24);
+  background: rgba(117,169,255,.08);
+  color: #75a9ff;
 }
 
 .custom-budget {
@@ -215,7 +215,7 @@
 }
 
 .custom-budget span {
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 10px;
 }
 
@@ -229,8 +229,8 @@
 .budget-result > div {
   padding: 10px;
   border-radius: 11px;
-  background: #201d38;
-  border: 1px solid #2a2745;
+  background: #152033;
+  border: 1px solid #24334a;
 }
 
 .budget-result span,
@@ -239,7 +239,7 @@
 }
 
 .budget-result span {
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 8px;
 }
 
@@ -253,7 +253,7 @@
   width: 100%;
   margin-top: 16px;
   border: 0;
-  background: #ff6b4a;
+  background: #75a9ff;
   color: #1a0a05;
   border-radius: 14px;
   padding: 14px;

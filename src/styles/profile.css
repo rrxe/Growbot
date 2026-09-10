@@ -4,8 +4,8 @@
   border-radius: 15px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #d4ff3d, #7ce0ff);
-  color: #0f0e1b;
+  background: linear-gradient(135deg, #75a9ff, #8ac8ff);
+  color: #07101d;
   font-weight: 900;
 }
 
@@ -19,8 +19,8 @@
 .stats-grid > div {
   padding: 13px 8px;
   border-radius: 14px;
-  background: #17152a;
-  border: 1px solid #2a2745;
+  background: #0f1724;
+  border: 1px solid #24334a;
   text-align: center;
 }
 
@@ -36,7 +36,7 @@
 
 .stats-grid span {
   margin-top: 5px;
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 9px;
 }
 
@@ -47,10 +47,10 @@
   background:
     linear-gradient(
       135deg,
-      #201d38,
-      #17152a
+      #152033,
+      #0f1724
     );
-  border: 1px solid #2a2745;
+  border: 1px solid #24334a;
 }
 
 .referral-card h2 {
@@ -59,7 +59,7 @@
 }
 
 .referral-card > p {
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 10.5px;
   line-height: 1.8;
   margin: 7px 0 13px;
@@ -69,12 +69,12 @@
   height: 7px;
   border-radius: 5px;
   overflow: hidden;
-  background: #2a2745;
+  background: #24334a;
 }
 
 .referral-progress > div {
   height: 100%;
-  background: #d4ff3d;
+  background: #75a9ff;
   border-radius: inherit;
 }
 
@@ -82,12 +82,12 @@
   display: flex;
   justify-content: space-between;
   margin-top: 7px;
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 9px;
 }
 
 .referral-meta strong {
-  color: #d4ff3d;
+  color: #75a9ff;
   font-family: ui-monospace, monospace;
 }
 
@@ -96,8 +96,8 @@
   gap: 7px;
   align-items: center;
   margin-top: 13px;
-  background: #201d38;
-  border: 1px solid #2a2745;
+  background: #152033;
+  border: 1px solid #24334a;
   border-radius: 12px;
   padding: 8px 9px;
 }
@@ -105,7 +105,7 @@
 .referral-link span {
   flex: 1;
   min-width: 0;
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 9px;
   white-space: nowrap;
   overflow: hidden;
@@ -114,8 +114,8 @@
 
 .referral-link button {
   border: 0;
-  background: #d4ff3d;
-  color: #0f0e1b;
+  background: #75a9ff;
+  color: #07101d;
   padding: 6px 10px;
   border-radius: 8px;
   font-size: 9px;
@@ -140,10 +140,10 @@
 .my-tasks-empty {
   padding: 22px 12px;
   border-radius: 16px;
-  background: #17152a;
-  border: 1px solid #2a2745;
+  background: #0f1724;
+  border: 1px solid #24334a;
   text-align: center;
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 11px;
 }
 
@@ -156,8 +156,8 @@
 .my-task-card {
   padding: 13px;
   border-radius: 16px;
-  background: #17152a;
-  border: 1px solid #2a2745;
+  background: #0f1724;
+  border: 1px solid #24334a;
 }
 
 .my-task-top {
@@ -181,7 +181,7 @@
   border-radius: 8px;
   display: grid;
   place-items: center;
-  color: #0f0e1b;
+  color: #07101d;
   font-weight: 900;
   font-size: 11px;
 }
@@ -204,29 +204,29 @@
 }
 
 .status-active {
-  color: #d4ff3d;
-  background: rgba(212, 255, 61, .12);
+  color: #75a9ff;
+  background: rgba(117, 169, 255, .12);
 }
 
 .status-paused {
-  color: #ffcf5c;
-  background: rgba(255, 207, 92, .12);
+  color: #8eb6db;
+  background: rgba(117, 169, 255, .12);
 }
 
 .status-completed {
-  color: #5aa7ff;
-  background: rgba(90, 167, 255, .12);
+  color: #75a9ff;
+  background: rgba(117, 169, 255, .12);
 }
 
 .status-cancelled {
-  color: #8b87a8;
-  background: rgba(139, 135, 168, .12);
+  color: #94a3b8;
+  background: rgba(148, 163, 184, .12);
 }
 
 .my-task-sub {
   display: block;
   margin-top: 3px;
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -244,19 +244,19 @@
   flex: 1;
   height: 5px;
   border-radius: 4px;
-  background: #252238;
+  background: #1c2a3d;
   overflow: hidden;
 }
 
 .task-progress-bar > div {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #5aa7ff, #d4ff3d);
+  background: linear-gradient(90deg, #75a9ff, #75a9ff);
 }
 
 .my-task-progress-row small {
   flex: 0 0 auto;
-  color: #6e6a88;
+  color: #718096;
   font-size: 9px;
   white-space: nowrap;
 }
@@ -270,20 +270,20 @@
 }
 
 .my-task-bottom span {
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 9.5px;
 }
 
 .my-task-bottom b {
-  color: #f5f3ff;
+  color: #f5f9ff;
   font-family: ui-monospace, monospace;
 }
 
 .my-task-cancel {
   flex: 0 0 auto;
-  border: 1px solid rgba(255, 107, 74, .3);
-  background: rgba(255, 107, 74, .1);
-  color: #ff8a6f;
+  border: 1px solid rgba(117, 169, 255, .3);
+  background: rgba(117, 169, 255, .1);
+  color: #8db9ff;
   padding: 7px 11px;
   border-radius: 9px;
   font-size: 9.5px;
@@ -298,8 +298,8 @@
 .review-card {
   padding: 13px;
   border-radius: 16px;
-  background: #17152a;
-  border: 1px solid #2a2745;
+  background: #0f1724;
+  border: 1px solid #24334a;
   display: flex;
   flex-direction: column;
   gap: 9px;
@@ -316,7 +316,7 @@
 }
 
 .review-top span {
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 10px;
 }
 
@@ -325,7 +325,7 @@
   max-height: 220px;
   object-fit: cover;
   border-radius: 12px;
-  border: 1px solid #2a2745;
+  border: 1px solid #24334a;
 }
 
 .review-actions {
@@ -347,20 +347,20 @@
 }
 
 .review-btn-approve {
-  background: #d4ff3d;
-  color: #0f0e1b;
+  background: #75a9ff;
+  color: #07101d;
 }
 
 .review-btn-reject {
-  background: rgba(255, 107, 74, .12);
-  color: #ff8a6f;
-  border: 1px solid rgba(255, 107, 74, .3);
+  background: rgba(117, 169, 255, .12);
+  color: #8db9ff;
+  border: 1px solid rgba(117, 169, 255, .3);
 }
 
 .review-btn-cancel {
-  background: #201d38;
-  color: #8b87a8;
-  border: 1px solid #2a2745;
+  background: #152033;
+  color: #94a3b8;
+  border: 1px solid #24334a;
 }
 
 .review-reject-box {
@@ -372,9 +372,9 @@
 .review-reject-box textarea {
   min-height: 70px;
   border-radius: 10px;
-  border: 1px solid #2a2745;
-  background: #201d38;
-  color: #f5f3ff;
+  border: 1px solid #24334a;
+  background: #152033;
+  color: #f5f9ff;
   padding: 9px 10px;
   font-size: 11px;
   font-family: inherit;
@@ -385,8 +385,8 @@
   margin-top: 13px;
   padding: 15px;
   border-radius: 16px;
-  background: #17152a;
-  border: 1px solid #2a2745;
+  background: #0f1724;
+  border: 1px solid #24334a;
 }
 
 .rules-card h3 {
@@ -396,7 +396,7 @@
 
 .rules-card p {
   margin: 5px 0;
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 10px;
   line-height: 1.7;
 }

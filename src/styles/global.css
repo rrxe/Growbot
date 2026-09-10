@@ -7,8 +7,8 @@
     "Segoe UI",
     sans-serif;
 
-  color: #f5f3ff;
-  background: #050509;
+  color: #f5f9ff;
+  background: #070b12;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -26,7 +26,7 @@ body,
 
 body {
   min-width: 320px;
-  background: #050509;
+  background: #070b12;
 }
 
 button,
@@ -45,4 +45,38 @@ button:disabled {
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+
+/* ============================================================
+   STORM UNIFIED PALETTE
+   ============================================================ */
+
+:root {
+  --storm-bg: #070b12;
+  --storm-surface: #0f1724;
+  --storm-surface-2: #152033;
+  --storm-border: #24334a;
+  --storm-blue: #75a9ff;
+  --storm-blue-soft: rgba(117, 169, 255, .12);
+  --storm-text: #f5f9ff;
+  --storm-muted: #94a3b8;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--storm-bg);
+  color: var(--storm-text);
+}
+
+button,
+input {
+  font-family: inherit;
 }

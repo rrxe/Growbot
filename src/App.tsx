@@ -40,6 +40,7 @@ export default function App() {
   const [membershipVerified, setMembershipVerified] = useState(true)
   const [requiredChannels, setRequiredChannels] = useState<MeResponse['requiredChannels']>([])
   const [membershipChecking, setMembershipChecking] = useState(false)
+  const [membershipStatusReady, setMembershipStatusReady] = useState(false)
   const [checkedInToday, setCheckedInToday] = useState(false)
   const [referral, setReferral] = useState<MeResponse['referral'] | null>(null)
   const [browseTasks, setBrowseTasks] = useState<Task[]>([])
@@ -62,6 +63,7 @@ export default function App() {
 
       setMembershipRequired(meResponse.membershipRequired === true)
       setMembershipVerified(meResponse.membershipVerified === true)
+      setMembershipStatusReady(true)
       setRequiredChannels(Array.isArray(meResponse.requiredChannels) ? meResponse.requiredChannels : [])
       setUser(meResponse.user)
       setCheckedInToday(meResponse.dailyCheckin.claimedToday)
@@ -111,6 +113,7 @@ export default function App() {
       const meResponse = await getMe()
       setMembershipRequired(meResponse.membershipRequired === true)
       setMembershipVerified(meResponse.membershipVerified === true)
+      setMembershipStatusReady(true)
       setRequiredChannels(Array.isArray(meResponse.requiredChannels) ? meResponse.requiredChannels : [])
       setUser(meResponse.user)
 
@@ -136,6 +139,10 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    // Auto Ads are completely disabled while the mandatory
+    // subscription page is active.
+    if (!membershipStatusReady) return
+    if (membershipRequired && !membershipVerified) return
     if (typeof window === 'undefined') return
 
     const initAdsgram = () => {
@@ -186,13 +193,22 @@ export default function App() {
       script.onload = null
       script.onerror = null
     }
-  }, [])
+  }, [membershipStatusReady, membershipRequired, membershipVerified])
 
   useEffect(() => {
+    // NEVER schedule automatic ads before mandatory subscription is cleared.
+    if (!membershipStatusReady) return
+    if (membershipRequired && !membershipVerified) return
+
     let cancelled = false
     let timer: number | null = null
 
     const showAutoAd = async () => {
+      // Hard safety guard: never show an automatic ad on the
+      // mandatory subscription screen.
+      if (!membershipStatusReady) return
+      if (membershipRequired && !membershipVerified) return
+
       const controller = adsgramAutoRef.current
       if (!controller || cancelled || autoInFlightRef.current) return
       if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return
@@ -223,7 +239,7 @@ export default function App() {
       cancelled = true
       if (timer !== null) window.clearTimeout(timer)
     }
-  }, [])
+  }, [membershipStatusReady, membershipRequired, membershipVerified])
 
   if (!loading && !error && membershipRequired && !membershipVerified) {
     return (

@@ -3,8 +3,8 @@
   max-width: 430px;
   min-height: 100vh;
   margin: 0 auto;
-  background: #0f0e1b;
-  color: #f5f3ff;
+  background: #07101d;
+  color: #f5f9ff;
   position: relative;
   overflow-x: hidden;
 }
@@ -38,7 +38,7 @@
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(212, 255, 61, .12),
+    rgba(117, 169, 255, .12),
     transparent 70%
   );
   animation: pulse-glow 2.4s ease-in-out infinite;
@@ -62,10 +62,10 @@
   border-radius: 19px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #d4ff3d, #7cff9c);
-  color: #0f0e1b;
+  background: linear-gradient(135deg, #75a9ff, #9bc8ff);
+  color: #07101d;
   font-size: 27px;
-  box-shadow: 0 10px 30px rgba(212, 255, 61, .18);
+  box-shadow: 0 10px 30px rgba(117, 169, 255, .18);
 }
 
 .loading-title {
@@ -79,7 +79,7 @@
 .loading-tagline {
   position: relative;
   margin-top: 6px;
-  color: #8b87a8;
+  color: #94a3b8;
   font-size: 11px;
 }
 
@@ -87,8 +87,8 @@
   position: relative;
   width: 24px;
   height: 24px;
-  border: 3px solid #2a2745;
-  border-top-color: #d4ff3d;
+  border: 3px solid #24334a;
+  border-top-color: #75a9ff;
   border-radius: 50%;
   animation: spin .8s linear infinite;
   margin-top: 22px;
@@ -106,8 +106,8 @@
   border-radius: 18px;
   display: grid;
   place-items: center;
-  background: rgba(255, 107, 74, .12);
-  color: #ff6b4a;
+  background: rgba(117, 169, 255, .12);
+  color: #75a9ff;
   font-size: 25px;
   font-weight: 900;
 }
@@ -117,7 +117,7 @@
 }
 
 .error-screen p {
-  color: #8b87a8;
+  color: #94a3b8;
   line-height: 1.8;
   margin: 0 0 18px;
   max-width: 320px;
@@ -125,8 +125,8 @@
 
 .primary-button {
   border: 0;
-  background: #d4ff3d;
-  color: #0f0e1b;
+  background: #75a9ff;
+  color: #07101d;
   border-radius: 13px;
   padding: 12px 18px;
   font-weight: 900;
@@ -145,13 +145,13 @@
   padding: 10px 12px 17px;
   background: rgba(15, 14, 27, .92);
   backdrop-filter: blur(14px);
-  border-top: 1px solid #2a2745;
+  border-top: 1px solid #24334a;
 }
 
 .nav-item {
   border: 0;
   background: transparent;
-  color: #8b87a8;
+  color: #94a3b8;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -170,5 +170,25 @@
 }
 
 .nav-item.active {
-  color: #d4ff3d;
+  color: #75a9ff;
+}
+
+
+/* ============================================================
+   STORM MOBILE SHELL FIX
+   ============================================================ */
+
+.app-shell {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+.screen-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
