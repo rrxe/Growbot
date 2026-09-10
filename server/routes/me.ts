@@ -95,34 +95,35 @@ meRouter.get(
         console.error('[checkin:auto]', checkinError)
       }
 
-      // إشعار الحساب المتعدد
-      // يعتمد فقط على نظام الكشف الموجود مسبقاً.
+      // إشعار الحساب المتعدد — يظهر مرة واحدة فقط طوال عمر الحساب.
+      // الشرط .eq('duplicate_notice_seen', false) يخلي التحديث ذري (atomic):
+      // لو وصل أكثر من طلب /api/me بنفس اللحظة (فتح مزدوج للتطبيق)،
+      // بس أول طلب يلاقي صف يتحدث ويرجع النتيجة، والبقية ما بترجع شي
+      // لأنها صارت already true. هيك ما ينعاد ظهور الإشعار أبداً حتى
+      // بحالات التزامن.
       let showDuplicateNotice = false
 
-      if (
-        user.is_duplicate_device === true &&
-        user.duplicate_notice_seen !== true
-      ) {
-        showDuplicateNotice = true
-
+      if (user.is_duplicate_device === true) {
         const {
+          data: duplicateNoticeRow,
           error: duplicateNoticeError
         } = await supabase
           .from('users')
           .update({
             duplicate_notice_seen: true
           })
-          .eq(
-            'id',
-            user.id
-          )
+          .eq('id', user.id)
+          .eq('duplicate_notice_seen', false)
+          .select('id')
+          .maybeSingle()
 
         if (duplicateNoticeError) {
           console.error(
             '[duplicate-notice]',
             duplicateNoticeError
           )
-        } else {
+        } else if (duplicateNoticeRow) {
+          showDuplicateNotice = true
           user.duplicate_notice_seen = true
         }
       }

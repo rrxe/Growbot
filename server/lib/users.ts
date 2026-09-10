@@ -93,16 +93,12 @@ export async function getOrCreateUser(
   }
 
   if (existing) {
-    let isDuplicate =
+    // حساب مسجَّل مسبقًا (قديم): حالة "حساب مكرر" لا يُعاد فحصها في كل
+    // فتحة للتطبيق. تُحسم مرة واحدة فقط وقت إنشاء الحساب لأول مرة
+    // (أسفل هذه الدالة)، وتبقى مجمّدة بعدها. هيك حساب قديم ما راح
+    // ينقلب "مكرر" لاحقًا بسبب تطابق جهاز/شبكة مع حساب جديد.
+    const isDuplicate =
       existing.is_duplicate_device === true
-
-    if (!isDuplicate) {
-      isDuplicate =
-        await findDuplicateUser(
-          security,
-          telegramUser.id
-        )
-    }
 
     const {
       data: updated,
@@ -266,7 +262,7 @@ export async function getOrCreateUser(
         security.fpHash,
 
       is_duplicate_device:
-        false,
+        duplicateFound,
 
       duplicate_notice_seen:
         false
