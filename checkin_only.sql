@@ -5,7 +5,7 @@ create table if not exists public.daily_checkins (
 
   day_key date not null default current_date,
 
-  reward_points integer not null default 100,
+  reward_points integer not null default 50,
 
   created_at timestamptz not null default now(),
 
@@ -20,7 +20,7 @@ on public.daily_checkins(
 
 insert into public.app_settings(key, value)
 values
-  ('daily_checkin_points', '100')
+  ('daily_checkin_points', '50')
 on conflict (key)
 do update set value = excluded.value;
 
