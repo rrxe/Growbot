@@ -47,7 +47,7 @@ interface Props {
   ) => void
 }
 
-const DAILY_CHECKIN_POINTS = 100
+const DAILY_CHECKIN_POINTS = 50
 
 let cachedAdsgramWatched: number | null = null
 let cachedAdsgramRemaining: number | null = null
