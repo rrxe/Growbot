@@ -307,7 +307,6 @@ export function Tasks({
             <span>نفّذ الإعلان واربح +1 نقطة</span>
           </div>
           <div className="adsgram-native-task-host">
-            {/* @ts-expect-error AdsGram web component */}
             <adsgram-task ref={nativeTaskElRef} data-block-id={ADSGRAM_NATIVE_TASK_BLOCK_ID} data-debug="false">
               <span slot="reward">+1</span>
               <span slot="button">{nativeTaskBusy ? 'جاري التحقق...' : 'فتح الإعلان'}</span>
