@@ -91,7 +91,19 @@ set search_path = public
 as $$
 declare
   v_ref public.referrals%rowtype;
+  v_is_duplicate boolean;
 begin
+  -- لا تحتسب الإحالة ولا تمنح صاحبها مكافأة
+  -- إذا كان الحساب المُحال مكررًا
+  select coalesce(is_duplicate_device, false)
+  into v_is_duplicate
+  from public.users
+  where id = p_referred_user_id;
+
+  if v_is_duplicate then
+    return;
+  end if;
+
   select *
   into v_ref
   from public.referrals
@@ -109,7 +121,6 @@ begin
   returning * into v_ref;
 
   if v_ref.completed_tasks >= v_ref.required_tasks then
-
     update public.referrals
     set rewarded = true
     where id = v_ref.id;
@@ -121,7 +132,6 @@ begin
       v_ref.id,
       'مكافأة إحالة صديق بعد إكمال المهام المطلوبة'
     );
-
   end if;
 end;
 $$;
