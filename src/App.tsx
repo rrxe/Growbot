@@ -4,7 +4,8 @@ import { Home } from './pages/Home'
 import { Tasks } from './pages/Tasks'
 import { Publish } from './pages/Publish'
 import { Profile } from './pages/Profile'
-import { initTelegram, hapticSuccess, showAlert } from './lib/telegram'
+import { initTelegram, hapticSuccess, showAlert, openTelegramLink } from './lib/telegram'
+import RequiredSubscription from './components/RequiredSubscription'
 import { getMe, getTasks, getMyTasks } from './lib/api'
 import type { MeResponse, Task, User } from './lib/types'
 import './styles/app.css'
@@ -35,6 +36,10 @@ export type Screen =
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home')
   const [user, setUser] = useState<User | null>(null)
+  const [membershipRequired, setMembershipRequired] = useState(false)
+  const [membershipVerified, setMembershipVerified] = useState(true)
+  const [requiredChannels, setRequiredChannels] = useState<MeResponse['requiredChannels']>([])
+  const [membershipChecking, setMembershipChecking] = useState(false)
   const [checkedInToday, setCheckedInToday] = useState(false)
   const [referral, setReferral] = useState<MeResponse['referral'] | null>(null)
   const [browseTasks, setBrowseTasks] = useState<Task[]>([])
@@ -53,19 +58,27 @@ export default function App() {
       setLoading(true)
       setError('')
 
-      const [
-        meResponse,
-        tasksResponse,
-        myTasksResponse
-      ] = await Promise.all([
-        getMe(),
+      const meResponse = await getMe()
+
+      setMembershipRequired(meResponse.membershipRequired === true)
+      setMembershipVerified(meResponse.membershipVerified === true)
+      setRequiredChannels(Array.isArray(meResponse.requiredChannels) ? meResponse.requiredChannels : [])
+      setUser(meResponse.user)
+      setCheckedInToday(meResponse.dailyCheckin.claimedToday)
+      setReferral(meResponse.referral)
+
+      if (meResponse.membershipRequired && !meResponse.membershipVerified) {
+        setBrowseTasks([])
+        setCompletedTaskIds([])
+        setMyTasks([])
+        return
+      }
+
+      const [tasksResponse, myTasksResponse] = await Promise.all([
         getTasks(),
         getMyTasks()
       ])
 
-      setUser(meResponse.user)
-      setCheckedInToday(meResponse.dailyCheckin.claimedToday)
-      setReferral(meResponse.referral)
       setBrowseTasks(tasksResponse.tasks)
       setCompletedTaskIds(tasksResponse.completedTaskIds)
       setMyTasks(myTasksResponse.tasks)
@@ -87,6 +100,33 @@ export default function App() {
       )
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function verifyMembership() {
+    if (membershipChecking) return
+
+    setMembershipChecking(true)
+    try {
+      const meResponse = await getMe()
+      setMembershipRequired(meResponse.membershipRequired === true)
+      setMembershipVerified(meResponse.membershipVerified === true)
+      setRequiredChannels(Array.isArray(meResponse.requiredChannels) ? meResponse.requiredChannels : [])
+      setUser(meResponse.user)
+
+      if (meResponse.membershipVerified) {
+        const [tasksResponse, myTasksResponse] = await Promise.all([
+          getTasks(),
+          getMyTasks()
+        ])
+        setBrowseTasks(tasksResponse.tasks)
+        setCompletedTaskIds(tasksResponse.completedTaskIds)
+        setMyTasks(myTasksResponse.tasks)
+      }
+    } catch (err) {
+      console.error('[membership]', err)
+    } finally {
+      setMembershipChecking(false)
     }
   }
 
@@ -184,6 +224,19 @@ export default function App() {
       if (timer !== null) window.clearTimeout(timer)
     }
   }, [])
+
+  if (!loading && !error && membershipRequired && !membershipVerified) {
+    return (
+      <div className="app-shell">
+        <RequiredSubscription
+          channels={requiredChannels}
+          loading={membershipChecking}
+          onVerify={verifyMembership}
+          onOpen={openTelegramLink}
+        />
+      </div>
+    )
+  }
 
   if (loading) {
     return (

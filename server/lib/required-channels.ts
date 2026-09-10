@@ -31,6 +31,47 @@ export async function getRequiredChannels(): Promise<RequiredChannel[]> {
   return (data || []) as RequiredChannel[]
 }
 
+
+export interface RequiredChannelStatus extends RequiredChannel {
+  joined: boolean
+}
+
+export async function getRequiredChannelsStatus(
+  telegramUserId: number
+): Promise<RequiredChannelStatus[]> {
+  const channels = await getRequiredChannels()
+  const results: RequiredChannelStatus[] = []
+
+  for (const channel of channels) {
+    const identifier =
+      channel.chat_id ??
+      (channel.chat_username ? `@${channel.chat_username}` : null)
+
+    if (!identifier) {
+      results.push({ ...channel, joined: false })
+      continue
+    }
+
+    let joined = false
+
+    try {
+      const member = await getChatMember(identifier, telegramUserId)
+      joined =
+        member.status === 'member' ||
+        member.status === 'administrator' ||
+        member.status === 'creator' ||
+        (member.status === 'restricted' && member.is_member === true)
+    } catch (error) {
+      console.error('[required-channels:status]', channel.title, error)
+      joined = false
+    }
+
+    results.push({ ...channel, joined })
+  }
+
+  return results
+}
+
 export async function getMissingRequiredChannels(
   telegramUserId: number
 ): Promise<RequiredChannel[]> {

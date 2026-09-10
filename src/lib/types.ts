@@ -84,7 +84,18 @@ export interface OwnerReviewItem {
   } | null
 }
 
+export interface RequiredChannel {
+  id: string
+  title: string
+  url: string
+  joined: boolean
+}
+
 export interface MeResponse {
+  membershipRequired: boolean
+  membershipVerified: boolean
+  requiredChannels: RequiredChannel[]
+  missingChannels: RequiredChannel[]
   user: User
   dailyCheckin: {
     claimedToday: boolean

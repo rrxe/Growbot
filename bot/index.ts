@@ -17,10 +17,6 @@ import {
   broadcastToUsers
 } from '../server/lib/telegram-send.js'
 
-import {
-  getMissingRequiredChannels,
-  sendRequiredChannelsGate,
-} from '../server/lib/required-channels.js'
 
 function baseAppUrl() {
   return config.webAppUrl
@@ -162,50 +158,7 @@ export const bot =
     ? new Bot(config.botToken)
     : null
 
-// المستخدم العادي لا يستطيع استخدام أوامر البوت قبل إكمال الاشتراك الإجباري.
-// الإدارة مستثناة حتى لا تتعطل إجراءات Owner/Admin.
-if (bot) {
-  bot.use(async (ctx, next) => {
-    if (!ctx.from) {
-      return next()
-    }
-
-    if (ctx.message?.successful_payment) {
-      return next()
-    }
-
-    const isRequiredCheck =
-      ctx.callbackQuery?.data === 'check_required_channels'
-
-    if (isRequiredCheck) {
-      return next()
-    }
-
-    try {
-      const role = await resolveRole(ctx.from.id)
-
-      if (role) {
-        return next()
-      }
-
-      const allowed = await sendRequiredChannelsGate(ctx)
-
-      if (allowed) {
-        return next()
-      }
-
-      return
-    } catch (error) {
-      console.error('[bot:required-channels:middleware]', error)
-
-      await ctx.reply(
-        'تعذر التحقق من الاشتراك الآن. حاول مرة أخرى بعد قليل.'
-      ).catch(() => {})
-
-      return
-    }
-  })
-}
+// الاشتراك الإلزامي يُفحص داخل الـMini App عند كل فتح، وليس داخل محادثة البوت.
 
 // telegram_id (owner) -> task id في انتظار سبب الرفض
 const pendingRejections =
@@ -1182,43 +1135,7 @@ export async function startBot() {
     }
   )
 
-  bot.callbackQuery(
-    'check_required_channels',
-    async (ctx) => {
-      try {
-        const missing = await getMissingRequiredChannels(ctx.from!.id)
-
-        if (missing.length > 0) {
-          await ctx.answerCallbackQuery({
-            text: 'ما زال هناك اشتراك مطلوب.',
-            show_alert: true
-          })
-
-          await sendRequiredChannelsGate(ctx)
-          return
-        }
-
-        await ctx.answerCallbackQuery({
-          text: 'تم التحقق بنجاح.'
-        })
-
-        await ctx.editMessageReplyMarkup({
-          reply_markup: undefined
-        }).catch(() => {})
-
-        await sendHome(ctx)
-      } catch (error) {
-        console.error('[bot:required-channels:callback]', error)
-
-        await ctx.answerCallbackQuery({
-          text: 'تعذر التحقق الآن.',
-          show_alert: true
-        })
-      }
-    }
-  )
-
-  bot.callbackQuery(
+bot.callbackQuery(
     /^task_approve:(.+)$/,
     async (ctx) => {
       if (ctx.from!.id !== ownerId()) {

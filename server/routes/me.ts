@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { config } from '../lib/config.js'
 import { supabase } from '../lib/supabase.js'
 import { authMiddleware } from '../lib/auth.js'
+import { getRequiredChannelsStatus } from '../lib/required-channels.js'
 
 export const meRouter =
   Router()
@@ -14,6 +15,16 @@ meRouter.get(
   async (req, res, next) => {
     try {
       const user = req.dbUser
+      const requiredChannelStatus = await getRequiredChannelsStatus(user.telegram_id)
+      const requiredChannels = requiredChannelStatus.map((channel) => ({
+        id: channel.id,
+        title: channel.title,
+        url: channel.invite_link || (channel.chat_username ? `https://t.me/${channel.chat_username}` : ''),
+        joined: channel.joined
+      }))
+      const missingChannels = requiredChannels.filter((channel) => !channel.joined)
+      const membershipRequired = requiredChannels.length > 0
+      const membershipVerified = missingChannels.length === 0
 
       const { data: referral } =
         await supabase
@@ -73,6 +84,10 @@ meRouter.get(
       }
 
       res.json({
+        membershipRequired,
+        membershipVerified,
+        requiredChannels,
+        missingChannels,
         user,
         dailyCheckin,
         referral: {
