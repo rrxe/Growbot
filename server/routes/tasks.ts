@@ -171,9 +171,15 @@ tasksRouter.post(
         title,
         budgetPoints,
         botLink,
-        rewardPoints
+        rewardPoints,
+        description
       } =
         req.body || {}
+
+      const cleanDescription =
+        typeof description === 'string' && description.trim()
+          ? description.trim().slice(0, 500)
+          : null
 
       if (type === 'bot') {
         const reward = Number(rewardPoints)
@@ -218,7 +224,8 @@ tasksRouter.post(
                 : 'مهمة Join Bot',
             p_bot_link: botLink.trim(),
             p_budget_points: budget,
-            p_reward_points: reward
+            p_reward_points: reward,
+            p_description: cleanDescription
           }
         )
 
@@ -241,6 +248,7 @@ tasksRouter.post(
             id: string
             title: string | null
             bot_link?: string | null
+            description?: string | null
             reward_points?: number | null
             budget_points?: number | null
           }

@@ -5,7 +5,8 @@ import {
   hapticError,
   hapticSuccess,
   openTelegramLink,
-  showAlert
+  showAlert,
+  showConfirm
 } from '../lib/telegram'
 import { taskDisplayName, taskTypeStyle } from '../lib/format'
 import type { Task, User } from '../lib/types'
@@ -70,8 +71,37 @@ export function Tasks({
     void loadTasks()
   }, [filter])
 
+  // خطوة 1 (بوت): يعرض وصف المهمة بنافذة تأكيد تيليجرام الأصلية، وبعد
+  // ما المستخدم يضغط "تأكيد" فقط يفتح رابط البوت.
+  async function handleJoinBot(task: Task) {
+    const confirmed = await showConfirm(
+      task.description?.trim()
+        ? task.description.trim()
+        : 'بتنتقل الآن لبوت خارجي، افتحه واضغط Start فيه ثم ارجع هنا وأرسل سكرين شوت.'
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    if (task.bot_link) {
+      openTelegramLink(task.bot_link)
+    }
+
+    setJoinedIds((current) => [
+      ...current,
+      task.id
+    ])
+  }
+
   // خطوة 1: فتح القناة/المجموعة، بدون أي نافذة تأكيد مزعجة
   function handleJoin(task: Task) {
+    if (task.type === 'bot') {
+      void handleJoinBot(task)
+
+      return
+    }
+
     if (task.chat_username) {
       const raw = task.chat_username.trim()
 
@@ -266,6 +296,12 @@ export function Tasks({
                     ? ` · ${task.chat_username}`
                     : ''}
                 </span>
+
+                {task.description ? (
+                  <p className="task-desc">
+                    {task.description}
+                  </p>
+                ) : null}
 
                 <div className="task-progress-row">
                   <div className="task-progress-bar">

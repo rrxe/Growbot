@@ -191,6 +191,7 @@ export async function sendBotTaskForReview(
     title?: string | null
     bot_link?: string | null
     botLink?: string | null
+    description?: string | null
     reward_points?: number | null
     rewardPoints?: number | null
     budget_points?: number | null
@@ -227,6 +228,7 @@ export async function sendBotTaskForReview(
     '',
     `العنوان: ${task.title || '—'}`,
     `رابط البوت: ${link || '—'}`,
+    ...(task.description ? [`الوصف: ${task.description}`] : []),
     `النقاط لكل تنفيذ: ${reward}`,
     `الميزانية الكلية: ${budget}`,
     `صاحب المهمة: ${owner.first_name || ''} ${

@@ -87,6 +87,23 @@
   border-color: #67617e;
 }
 
+.field-section textarea {
+  width: 100%;
+  border: 1px solid #2a2745;
+  background: #17152a;
+  color: #f5f3ff;
+  border-radius: 13px;
+  padding: 12px 13px;
+  outline: none;
+  font-size: 12px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.field-section textarea:focus {
+  border-color: #67617e;
+}
+
 .field-help {
   display: block;
   margin-top: 5px;

@@ -33,9 +33,11 @@ export interface Task {
   owner_id: string
   type: TaskType
   title: string
+  description: string | null
   chat_id: number | null
   chat_username: string | null
   chat_title: string | null
+  bot_link: string | null
   budget_points: number
   remaining_points: number
   reward_points: number

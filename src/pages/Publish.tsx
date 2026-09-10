@@ -53,6 +53,11 @@ export function Publish({
   ] = useState('')
 
   const [
+    description,
+    setDescription
+  ] = useState('')
+
+  const [
     reward,
     setReward
   ] = useState(10)
@@ -154,7 +159,8 @@ export function Publish({
               title: title.trim() || undefined,
               budgetPoints: budget,
               botLink: botLink.trim(),
-              rewardPoints: reward
+              rewardPoints: reward,
+              description: description.trim() || undefined
             }
           : {
               type,
@@ -167,6 +173,7 @@ export function Publish({
       setChat('')
       setBotLink('')
       setTitle('')
+      setDescription('')
 
       showAlert(
         '✅ تم نشر المهمة.'
@@ -335,6 +342,27 @@ export function Publish({
             <small className="field-help">
               الرابط اللي يفتح البوت المطلوب الانضمام له. المهمة تحتاج مراجعة
               قبل ما تظهر بالسوق.
+            </small>
+          </div>
+
+          <div className="field-section">
+            <label>
+              وصف المهمة
+            </label>
+
+            <textarea
+              value={description}
+              onChange={event =>
+                setDescription(event.target.value)
+              }
+              placeholder="مثلاً: افتح البوت واضغط Start، بدون أي اشتراك إضافي"
+              maxLength={500}
+              rows={3}
+            />
+
+            <small className="field-help">
+              هاد الوصف بيبين للمستخدم بنافذة تأكيد قبل ما يروح لرابط البوت —
+              وضّح فيه بالضبط شو المطلوب منه يسوي.
             </small>
           </div>
 

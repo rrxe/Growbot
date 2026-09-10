@@ -94,6 +94,8 @@ export function createTask(
     botLink?: string
 
     rewardPoints?: number
+
+    description?: string
   }
 ) {
   return request<{

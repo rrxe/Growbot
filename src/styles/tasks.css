@@ -206,3 +206,14 @@
   line-height: 1.7;
   max-width: 280px;
 }
+
+.task-desc {
+  color: #8b87a8;
+  font-size: 10px;
+  line-height: 1.5;
+  margin: 4px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
