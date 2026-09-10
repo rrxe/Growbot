@@ -37,6 +37,8 @@ import '../styles/home.css'
 interface Props {
   user: User
   checkedInToday: boolean
+  initialAdsgramWatched?: number
+  initialAdsgramRemaining?: number
   onNavigate: (
     screen: Screen
   ) => void
@@ -76,6 +78,8 @@ const STAR_PACKAGES = [
 export function Home({
   user,
   checkedInToday,
+  initialAdsgramWatched,
+  initialAdsgramRemaining,
   onNavigate,
   onUserChanged
 }: Props) {
@@ -84,8 +88,16 @@ export function Home({
     setShowBuy
   ] = useState(false)
 
-  const [adsgramWatched, setAdsgramWatched] = useState(cachedAdsgramWatched ?? 0)
-  const [adsgramRemaining, setAdsgramRemaining] = useState(cachedAdsgramRemaining ?? 20)
+  const [adsgramWatched, setAdsgramWatched] = useState(
+    cachedAdsgramWatched ?? initialAdsgramWatched ?? 0
+  )
+  const [adsgramRemaining, setAdsgramRemaining] = useState(
+    cachedAdsgramRemaining ?? initialAdsgramRemaining ?? 20
+  )
+  const [adsgramReady, setAdsgramReady] = useState(
+    cachedAdsgramWatched !== null ||
+    (initialAdsgramWatched !== undefined && initialAdsgramRemaining !== undefined)
+  )
   const [adsgramBusy, setAdsgramBusy] = useState(false)
 
   function applyAdsgramStatus(watched: number, remaining: number) {
@@ -93,6 +105,7 @@ export function Home({
     cachedAdsgramRemaining = remaining
     setAdsgramWatched(watched)
     setAdsgramRemaining(remaining)
+    setAdsgramReady(true)
   }
 
   async function refreshUser() {
@@ -118,7 +131,21 @@ export function Home({
   }
 
   useEffect(() => {
-    void refreshAdsgramStatus()
+    // لو التطبيق جاب حالة إعلانات اليوم مسبقًا وإحنا لسا لأول مرة عالشاشة
+    // الرئيسية (الكاش لسا فاضي)، منطبّقها مباشرة بدون طلب شبكة جديد —
+    // هيك ما يصير "ومضة" الرقم يبدأ 0 وبعدين يتحدث للرقم الصحيح.
+    // إذا التطبيق ما قدر يجيبها هو الآخر (initial* غير موجودة)، منرجع
+    // لسلوكنا القديم ونجيبها هون.
+    if (cachedAdsgramWatched === null) {
+      if (
+        initialAdsgramWatched !== undefined &&
+        initialAdsgramRemaining !== undefined
+      ) {
+        applyAdsgramStatus(initialAdsgramWatched, initialAdsgramRemaining)
+      } else {
+        void refreshAdsgramStatus()
+      }
+    }
   }, [])
 
   async function watchAdsgramReward() {
@@ -363,24 +390,32 @@ export function Home({
             <span>+6 نقاط لكل إعلان · 20 إعلان يوميًا</span>
           </div>
           <div className="adsgram-reward-count">
-            {adsgramWatched}/20
+            {adsgramReady ? `${adsgramWatched}/20` : '···'}
           </div>
         </div>
 
         <div className="adsgram-reward-progress">
-          <div style={{ width: `${Math.min(100, Math.round((adsgramWatched / 20) * 100))}%` }} />
+          <div
+            style={{
+              width: adsgramReady
+                ? `${Math.min(100, Math.round((adsgramWatched / 20) * 100))}%`
+                : '0%'
+            }}
+          />
         </div>
 
         <button
           className="adsgram-reward-button"
-          disabled={adsgramBusy || adsgramRemaining <= 0}
+          disabled={!adsgramReady || adsgramBusy || adsgramRemaining <= 0}
           onClick={() => void watchAdsgramReward()}
         >
-          {adsgramBusy
-            ? 'جاري التحقق...'
-            : adsgramRemaining <= 0
-              ? 'اكتملت إعلانات اليوم ✓'
-              : `مشاهدة الإعلان · +6 (${adsgramRemaining} متبقي)`}
+          {!adsgramReady
+            ? 'جاري التحميل...'
+            : adsgramBusy
+              ? 'جاري التحقق...'
+              : adsgramRemaining <= 0
+                ? 'اكتملت إعلانات اليوم ✓'
+                : `مشاهدة الإعلان · +6 (${adsgramRemaining} متبقي)`}
         </button>
 
         <small>يتجدد العداد تلقائيًا كل يوم عند 00:00 بتوقيت بغداد.</small>

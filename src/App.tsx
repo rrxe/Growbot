@@ -6,7 +6,7 @@ import { Publish } from './pages/Publish'
 import { Profile } from './pages/Profile'
 import { initTelegram, hapticSuccess, showAlert, openTelegramLink } from './lib/telegram'
 import RequiredSubscription from './components/RequiredSubscription'
-import { getMe, getTasks, getMyTasks } from './lib/api'
+import { getMe, getTasks, getMyTasks, getAdsgramWatchStatus } from './lib/api'
 import type { MeResponse, Task, User } from './lib/types'
 import './styles/app.css'
 
@@ -46,6 +46,7 @@ export default function App() {
   const [browseTasks, setBrowseTasks] = useState<Task[]>([])
   const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([])
   const [myTasks, setMyTasks] = useState<Task[]>([])
+  const [adsgramStatus, setAdsgramStatus] = useState<{ watched: number; remaining: number } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const adsgramAutoRef = useRef<AdsgramController | null>(null)
@@ -76,14 +77,25 @@ export default function App() {
         return
       }
 
-      const [tasksResponse, myTasksResponse] = await Promise.all([
+      const [tasksResponse, myTasksResponse, adsgramStatusResult] = await Promise.all([
         getTasks(),
-        getMyTasks()
+        getMyTasks(),
+        // بنجيبها هون كمان (مع بقية بيانات التحميل الأولي) حتى ما تظهر
+        // "0/20" لحظيًا بشاشة الرئيسية وبعدين تتحدث للرقم الصح — منخليها
+        // تتحمّل مع شاشة loading زي باقي البيانات.
+        getAdsgramWatchStatus().catch(() => null)
       ])
 
       setBrowseTasks(tasksResponse.tasks)
       setCompletedTaskIds(tasksResponse.completedTaskIds)
       setMyTasks(myTasksResponse.tasks)
+
+      if (adsgramStatusResult) {
+        setAdsgramStatus({
+          watched: adsgramStatusResult.watched,
+          remaining: adsgramStatusResult.remaining
+        })
+      }
 
       // أول فتحة لليوم: المكافأة انضافت تلقائيًا على السيرفر،
       // هون بس منعلم المستخدم إنها انضافت.
@@ -298,6 +310,8 @@ export default function App() {
           <Home
             user={user}
             checkedInToday={checkedInToday}
+            initialAdsgramWatched={adsgramStatus?.watched}
+            initialAdsgramRemaining={adsgramStatus?.remaining}
             onNavigate={setScreen}
             onUserChanged={setUser}
           />
