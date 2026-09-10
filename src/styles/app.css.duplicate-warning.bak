@@ -1,0 +1,194 @@
+.app-shell {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #07101d;
+  color: #f5f9ff;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.screen-container {
+  min-height: 100vh;
+  padding-bottom: 90px;
+}
+
+.page {
+  padding: 18px 20px 24px;
+}
+
+.loading-screen,
+.error-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-glow {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(117, 169, 255, .12),
+    transparent 70%
+  );
+  animation: pulse-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: .6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+.loading-logo {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  border-radius: 19px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #75a9ff, #9bc8ff);
+  color: #07101d;
+  font-size: 27px;
+  box-shadow: 0 10px 30px rgba(117, 169, 255, .18);
+}
+
+.loading-title {
+  position: relative;
+  margin-top: 16px;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+
+.loading-tagline {
+  position: relative;
+  margin-top: 6px;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.loading-spinner {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #24334a;
+  border-top-color: #75a9ff;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin-top: 22px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(117, 169, 255, .12);
+  color: #75a9ff;
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.error-screen h2 {
+  margin: 18px 0 7px;
+}
+
+.error-screen p {
+  color: #94a3b8;
+  line-height: 1.8;
+  margin: 0 0 18px;
+  max-width: 320px;
+}
+
+.primary-button {
+  border: 0;
+  background: #75a9ff;
+  color: #07101d;
+  border-radius: 13px;
+  padding: 12px 18px;
+  font-weight: 900;
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 20;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 10px 12px 17px;
+  background: rgba(15, 14, 27, .92);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid #24334a;
+}
+
+.nav-item {
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+}
+
+.nav-item span {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.nav-item small {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.nav-item.active {
+  color: #75a9ff;
+}
+
+
+/* ============================================================
+   STORM MOBILE SHELL FIX
+   ============================================================ */
+
+.app-shell {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+.screen-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}

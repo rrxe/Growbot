@@ -95,7 +95,42 @@ meRouter.get(
         console.error('[checkin:auto]', checkinError)
       }
 
+      // إشعار الحساب المتعدد
+      // يعتمد فقط على نظام الكشف الموجود مسبقاً.
+      let showDuplicateNotice = false
+
+      if (
+        user.is_duplicate_device === true &&
+        user.duplicate_notice_seen !== true
+      ) {
+        showDuplicateNotice = true
+
+        const {
+          error: duplicateNoticeError
+        } = await supabase
+          .from('users')
+          .update({
+            duplicate_notice_seen: true
+          })
+          .eq(
+            'id',
+            user.id
+          )
+
+        if (duplicateNoticeError) {
+          console.error(
+            '[duplicate-notice]',
+            duplicateNoticeError
+          )
+        } else {
+          user.duplicate_notice_seen = true
+        }
+      }
+
       res.json({
+        isDuplicateDevice:
+          showDuplicateNotice,
+
         membershipRequired,
         membershipVerified,
         requiredChannels,

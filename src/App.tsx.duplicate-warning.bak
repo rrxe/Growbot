@@ -70,17 +70,6 @@ export default function App() {
       setCheckedInToday(meResponse.dailyCheckin.claimedToday)
       setReferral(meResponse.referral)
 
-      // الحساب المتعدد:
-      // هذا الحساب نفسه لن يُحتسب كإحالة،
-      // وصاحب رابط الإحالة لن يحصل على مكافأة بسببه.
-      if (meResponse.isDuplicateDevice === true) {
-        hapticSuccess()
-
-        showAlert(
-          '⚠️ تم اكتشاف استخدام أكثر من حساب. هذا الحساب لن يُحتسب كإحالة، ولن يحصل صاحب رابط الإحالة على مكافأة مقابل هذا الحساب.'
-        )
-      }
-
       if (meResponse.membershipRequired && !meResponse.membershipVerified) {
         setBrowseTasks([])
         setCompletedTaskIds([])

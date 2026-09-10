@@ -92,6 +92,7 @@ export interface RequiredChannel {
 }
 
 export interface MeResponse {
+  isDuplicateDevice: boolean
   membershipRequired: boolean
   membershipVerified: boolean
   requiredChannels: RequiredChannel[]
