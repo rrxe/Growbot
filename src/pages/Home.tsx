@@ -7,7 +7,8 @@ import {
   getMe,
   createStarsInvoice,
   getAdsgramWatchStatus,
-  startAdsgramWatch
+  startAdsgramWatch,
+  completeAdsgramWatch
 } from '../lib/api.js'
 
 import {
@@ -133,24 +134,40 @@ export function Home({
       const controller = window.Adsgram.init({ blockId: session.blockId })
       await controller.show()
 
-      // Reward URL هو مصدر المكافأة الحقيقي. نراقب السيرفر حتى يصل webhook.
-      const previousWatched = session.watched
-      for (let attempt = 0; attempt < 900; attempt += 1) {
-        await new Promise(resolve => window.setTimeout(resolve, 200))
-        const status = await getAdsgramWatchStatus()
-        setAdsgramWatched(status.watched)
-        setAdsgramRemaining(status.remaining)
-        if (status.watched > previousWatched || status.watched === session.watched + 1) {
-          hapticSuccess()
-          try {
-            const latest = await getMe()
-            onUserChanged(latest.user)
-          } catch {}
-          return
+      // نمنح المكافأة فورًا من هون بعد ما show() نجح -- هاد هو مصدر
+      // المكافأة الأساسي. AdsGram Reward URL (السيرفر-تو-السيرفر) مذكور
+      // بتوثيقهم إنه "بالإضافة إلى" الـ client callback مو بديل عنه،
+      // وهو أصلاً مخصص للتطبيقات فوق 50 ألف مستخدم يوميًا وما بينبعث
+      // إطلاقًا بوضع debug. الاعتماد عليه لحاله هو سبب توقف المكافآت.
+      try {
+        const result = await completeAdsgramWatch()
+        setAdsgramWatched(result.watched)
+        setAdsgramRemaining(result.remaining)
+        hapticSuccess()
+        try {
+          const latest = await getMe()
+          onUserChanged(latest.user)
+        } catch {}
+        return
+      } catch (completeError) {
+        // fallback: لو صار تعارض شبكة لحظي، نجرب نسحب الحالة من
+        // السيرفر كم مرة بدل ما نضل عالقين لحد الأبد
+        for (let attempt = 0; attempt < 10; attempt += 1) {
+          await new Promise(resolve => window.setTimeout(resolve, 500))
+          const status = await getAdsgramWatchStatus()
+          setAdsgramWatched(status.watched)
+          setAdsgramRemaining(status.remaining)
+          if (status.watched > session.watched) {
+            hapticSuccess()
+            try {
+              const latest = await getMe()
+              onUserChanged(latest.user)
+            } catch {}
+            return
+          }
         }
+        throw completeError
       }
-
-      showAlert('تم عرض الإعلان، لكن تأكيد المكافأة ما وصل بعد. لا تعيد المشاهدة الآن؛ سيتحدث العداد عند وصول التأكيد.')
     } catch (error) {
       showAlert(error instanceof Error ? error.message : 'تعذر تشغيل الإعلان.')
     } finally {

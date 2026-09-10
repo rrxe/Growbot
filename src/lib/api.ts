@@ -257,6 +257,20 @@ export function startAdsgramWatch() {
   })
 }
 
+export function completeAdsgramWatch() {
+  return request<{
+    success: boolean
+    reward: number
+    balance: number
+    watched: number
+    remaining: number
+    error?: string
+    code?: string
+  }>('/api/adsgram/watch/complete', {
+    method: 'POST'
+  })
+}
+
 export function getAdsgramWatchStatus() {
   return request<{
     success: boolean

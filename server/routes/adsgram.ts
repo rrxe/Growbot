@@ -69,6 +69,63 @@ adsgramRouter.post(
   },
 )
 
+/**
+ * Primary reward path (client-triggered, authenticated).
+ * AdsGram's own docs say the server-side Reward URL postback is only
+ * meaningful for publishers with 50k+ daily users and is sent
+ * "in addition to" the client-side show() callback -- it is NOT a
+ * replacement for it, and it never fires at all in debug/test mode.
+ * So we must not depend solely on the external webhook: grant the
+ * reward here, right after controller.show() resolves on the client.
+ * This reuses the exact same RPC as the webhook, so whichever path
+ * arrives first wins and the other becomes a harmless no-op
+ * (NO_PENDING_AD) -- no double reward is possible.
+ */
+adsgramRouter.post(
+  '/watch/complete',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const user = req.dbUser
+      const { data, error } = await supabase.rpc('reward_adsgram_watch_session', {
+        p_telegram_id: user.telegram_id,
+        p_block_id: ADSGRAM_REWARD_BLOCK_ID,
+        p_daily_limit: ADSGRAM_REWARD_DAILY_LIMIT,
+      })
+
+      if (error) {
+        const message = String(error.message || error)
+        if (message.includes('NO_PENDING_AD')) {
+          return res.status(409).json({
+            success: false,
+            error: 'NO_PENDING_AD',
+            code: 'NO_PENDING_AD',
+          })
+        }
+        if (message.includes('AD_DAILY_LIMIT')) {
+          return res.status(429).json({
+            success: false,
+            error: 'وصلت للحد اليومي: 20 إعلان.',
+            code: 'AD_DAILY_LIMIT',
+          })
+        }
+        throw error
+      }
+
+      res.json({
+        success: true,
+        type: 'watch_ad',
+        reward: ADSGRAM_REWARD_POINTS,
+        blockId: ADSGRAM_REWARD_BLOCK_ID,
+        dailyLimit: ADSGRAM_REWARD_DAILY_LIMIT,
+        ...data,
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
+)
+
 adsgramRouter.get(
   '/watch/status',
   authMiddleware,
