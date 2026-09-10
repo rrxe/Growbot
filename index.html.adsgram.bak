@@ -15,11 +15,6 @@
 
     <title>STORM</title>
 
-    <!-- AdsGram SDK: auto int + Reward 46262 + native task-46724 -->
-    <link rel="preconnect" href="https://sad.adsgram.ai" crossorigin>
-    <link rel="dns-prefetch" href="https://sad.adsgram.ai">
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
   </head>
 

@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
-import { tryAcquireGlobalAdLock, releaseGlobalAdLock } from './lib/adLock'
+import { useEffect, useState } from 'react'
 import { Home } from './pages/Home'
 import { Tasks } from './pages/Tasks'
 import { Publish } from './pages/Publish'
@@ -8,23 +7,6 @@ import { initTelegram, hapticSuccess, showAlert } from './lib/telegram'
 import { getMe, getTasks, getMyTasks } from './lib/api'
 import type { MeResponse, Task, User } from './lib/types'
 import './styles/app.css'
-
-const ADSGRAM_AUTO_BLOCK_ID = 'int-46084'
-const ADSGRAM_SCRIPT_SRC = 'https://sad.adsgram.ai/js/sad.min.js'
-
-type AdsgramController = {
-  show: () => Promise<any>
-  addEventListener?: (event: string, callback: () => void) => void
-}
-
-declare global {
-  interface Window {
-    Adsgram?: {
-      init: (opts: { blockId: string }) => AdsgramController
-    }
-  }
-}
-
 
 export type Screen =
   | 'home'
@@ -42,8 +24,6 @@ export default function App() {
   const [myTasks, setMyTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const adsgramAutoRef = useRef<AdsgramController | null>(null)
-  const autoInFlightRef = useRef(false)
 
   // بنجهّز كل شي (الحساب + المهام + مهامي) مرة وحدة وبالتوازي
   // وإحنا لسا على شاشة التحميل، حتى ما يحتاج المستخدم يشوف
@@ -93,96 +73,6 @@ export default function App() {
   useEffect(() => {
     initTelegram()
     void loadAll()
-  }, [])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-
-    const initAdsgram = () => {
-      if (!window.Adsgram) return
-      if (!adsgramAutoRef.current) {
-        adsgramAutoRef.current = window.Adsgram.init({ blockId: ADSGRAM_AUTO_BLOCK_ID })
-        adsgramAutoRef.current.addEventListener?.('onError', () => {
-          console.warn('[AdsGram:auto] onError')
-        })
-        adsgramAutoRef.current.addEventListener?.('onBannerNotFound', () => {
-          console.warn('[AdsGram:auto] onBannerNotFound')
-        })
-      }
-    }
-
-    if (window.Adsgram) {
-      initAdsgram()
-      return
-    }
-
-    const existing = document.querySelector<HTMLScriptElement>(
-      `script[src="${ADSGRAM_SCRIPT_SRC}"]`
-    )
-    if (existing) {
-      existing.addEventListener('load', initAdsgram, { once: true })
-      const poll = window.setInterval(() => {
-        if (window.Adsgram) {
-          window.clearInterval(poll)
-          initAdsgram()
-        }
-      }, 200)
-      const stop = window.setTimeout(() => window.clearInterval(poll), 15000)
-      return () => {
-        existing.removeEventListener('load', initAdsgram)
-        window.clearInterval(poll)
-        window.clearTimeout(stop)
-      }
-    }
-
-    const script = document.createElement('script')
-    script.src = ADSGRAM_SCRIPT_SRC
-    script.async = true
-    script.onload = initAdsgram
-    script.onerror = () => console.warn('[AdsGram] SDK load failed')
-    document.head.appendChild(script)
-
-    return () => {
-      script.onload = null
-      script.onerror = null
-    }
-  }, [])
-
-  useEffect(() => {
-    let cancelled = false
-    let timer: number | null = null
-
-    const showAutoAd = async () => {
-      const controller = adsgramAutoRef.current
-      if (!controller || cancelled || autoInFlightRef.current) return
-      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return
-      if (!tryAcquireGlobalAdLock(true)) return
-
-      autoInFlightRef.current = true
-      try {
-        await controller.show()
-      } catch (error) {
-        console.warn('[AdsGram:auto] skipped', error)
-      } finally {
-        autoInFlightRef.current = false
-        releaseGlobalAdLock(true)
-      }
-    }
-
-    const schedule = (delay: number) => {
-      timer = window.setTimeout(async () => {
-        if (cancelled) return
-        await showAutoAd()
-        schedule(30000)
-      }, delay)
-    }
-
-    schedule(2000)
-
-    return () => {
-      cancelled = true
-      if (timer !== null) window.clearTimeout(timer)
-    }
   }, [])
 
   if (loading) {

@@ -16,7 +16,6 @@ import {
 } from '../lib/telegram.js'
 
 import {
-  sendBotTaskForReview,
   sendBotRejectionForReview
 } from '../../bot/index.js'
 
@@ -254,13 +253,6 @@ tasksRouter.post(
           }
           new_balance: number
         }
-
-        void sendBotTaskForReview(
-          botPayload.task,
-          req.dbUser
-        ).catch((error) => {
-          console.error('[tasks:bot:notify_owner]', error)
-        })
 
         return res.json({
           task: botPayload.task,

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { tryAcquireGlobalAdLock, releaseGlobalAdLock, getAdLockWaitSeconds } from '../lib/adLock.js'
-import { completeTask, completeTaskWithScreenshot, getTasks, getMe, getAdsgramNativeStatus } from '../lib/api.js'
+import { completeTask, completeTaskWithScreenshot, getTasks } from '../lib/api'
 import { compressImageToBase64 } from '../lib/image'
 import {
   hapticError,
@@ -22,10 +21,6 @@ interface Props {
 
 type Filter = 'all' | 'channel' | 'group' | 'bot'
 
-const ADSGRAM_NATIVE_TASK_BLOCK_ID = 'task-46724'
-const ADSGRAM_NATIVE_TASK_REWARD = 1
-
-
 export function Tasks({
   user,
   initialTasks,
@@ -40,12 +35,6 @@ export function Tasks({
   const [loading, setLoading] = useState(!initialTasks)
   const [busyId, setBusyId] = useState<string | null>(null)
   const isMountRender = useRef(true)
-  const nativeTaskElRef = useRef<HTMLElement | null>(null)
-  const nativeRewardCountRef = useRef(0)
-  const nativePollTimerRef = useRef<number | null>(null)
-  const [nativeTaskAvailable, setNativeTaskAvailable] = useState(true)
-  const [nativeTaskReady, setNativeTaskReady] = useState(false)
-  const [nativeTaskBusy, setNativeTaskBusy] = useState(false)
 
   async function loadTasks() {
     try {
@@ -81,77 +70,6 @@ export function Tasks({
 
     void loadTasks()
   }, [filter])
-
-  useEffect(() => {
-    let cancelled = false
-
-    const loadNativeCount = async () => {
-      try {
-        const result = await getAdsgramNativeStatus()
-        nativeRewardCountRef.current = result.count
-        setNativeTaskReady(true)
-      } catch {
-        setNativeTaskReady(true)
-        // keep zero as fallback; the webhook confirmation can still arrive later
-      }
-    }
-
-    void loadNativeCount()
-
-    const el = nativeTaskElRef.current
-    if (!el) return
-
-    const onReward = async () => {
-      if (nativeTaskBusy || cancelled) return
-      const before = nativeRewardCountRef.current
-      setNativeTaskBusy(true)
-
-      if (!tryAcquireGlobalAdLock()) {
-        setNativeTaskBusy(false)
-        showAlert(`انتظر ${getAdLockWaitSeconds()} ثانية قبل تشغيل إعلان آخر.`)
-        return
-      }
-
-      try {
-        // الحدث من الويب كومبوننت مجرد trigger. المكافأة الحقيقية تأتي من Reward URL.
-        for (let attempt = 0; attempt < 900; attempt += 1) {
-          await new Promise(resolve => window.setTimeout(resolve, 200))
-          const result = await getAdsgramNativeStatus()
-          nativeRewardCountRef.current = result.count
-
-          if (result.count > before) {
-            try {
-              const latest = await getMe()
-              onUserChanged(latest.user)
-            } catch {}
-            hapticSuccess()
-            showAlert(`+${ADSGRAM_NATIVE_TASK_REWARD} نقطة ✅`)
-            return
-          }
-        }
-
-        showAlert('تم إنهاء المهمة، لكن تأكيد المكافأة ما وصل بعد. لا تضغط مرة ثانية؛ سيتحدث الرصيد عند وصول التأكيد.')
-      } catch (error) {
-        showAlert(error instanceof Error ? error.message : 'تعذر تأكيد مكافأة الإعلان.')
-      } finally {
-        releaseGlobalAdLock()
-        setNativeTaskBusy(false)
-      }
-    }
-
-    const onNotFound = () => setNativeTaskAvailable(false)
-    el.addEventListener('reward', onReward)
-    el.addEventListener('onBannerNotFound', onNotFound)
-
-    return () => {
-      cancelled = true
-      el.removeEventListener('reward', onReward)
-      el.removeEventListener('onBannerNotFound', onNotFound)
-      if (nativePollTimerRef.current !== null) {
-        window.clearTimeout(nativePollTimerRef.current)
-      }
-    }
-  }, [nativeTaskBusy, nativeTaskReady, onUserChanged])
 
   // خطوة 1 (بوت): يعرض وصف المهمة بنافذة تأكيد تيليجرام الأصلية، وبعد
   // ما المستخدم يضغط "تأكيد" فقط يفتح رابط البوت.
@@ -298,25 +216,6 @@ export function Tasks({
           {user.points.toLocaleString('en-US')} نقطة
         </div>
       </div>
-
-      {nativeTaskAvailable && nativeTaskReady && (
-        <article className="adsgram-native-task-card">
-          <div className="adsgram-native-task-badge">AD</div>
-          <div className="adsgram-native-task-copy">
-            <strong>مهمة AdsGram</strong>
-            <span>نفّذ الإعلان واربح +1 نقطة</span>
-          </div>
-          <div className="adsgram-native-task-host">
-            {/* @ts-expect-error AdsGram web component */}
-            <adsgram-task ref={nativeTaskElRef} data-block-id={ADSGRAM_NATIVE_TASK_BLOCK_ID} data-debug="false">
-              <span slot="reward">+1</span>
-              <span slot="button">{nativeTaskBusy ? 'جاري التحقق...' : 'فتح الإعلان'}</span>
-              <span slot="claim">استلام +1</span>
-              <span slot="done">تمت المهمة ✓</span>
-            </adsgram-task>
-          </div>
-        </article>
-      )}
 
       <div className="filter-tabs">
         <button
@@ -474,5 +373,3 @@ export function Tasks({
     </section>
   )
 }
-
-

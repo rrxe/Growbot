@@ -234,7 +234,7 @@ export async function sendBotTaskForReview(
     `صاحب المهمة: ${owner.first_name || ''} ${
       owner.username ? '@' + owner.username : ''
     }`.trim()
-  ].join('\\n')
+  ].join('\n')
 
   const keyboard =
     new InlineKeyboard()
@@ -1309,14 +1309,7 @@ export async function startBot() {
         text: '✅ تم قبول الرفض'
       })
 
-      await ctx.editMessageReplyMarkup({
-        reply_markup: undefined
-      }).catch(() => {})
-
-      await finalizeReviewMessage(
-        ctx,
-        '\n\n✅ تم قبول الرفض.'
-      )
+      await ctx.deleteMessage().catch(() => {})
     }
   )
 
@@ -1350,14 +1343,7 @@ export async function startBot() {
           text: '⛔ تم العقاب'
         })
 
-        await ctx.editMessageReplyMarkup({
-          reply_markup: undefined
-        }).catch(() => {})
-
-        await finalizeReviewMessage(
-          ctx,
-          '\n\n⛔ تم تصفير رصيد صاحب المهمة، إلغاء مهامه النشطة، ودفع المنفّذ فورًا.'
-        )
+        await ctx.deleteMessage().catch(() => {})
       } catch (error) {
         console.error(
           '[bot:reject_punish]',

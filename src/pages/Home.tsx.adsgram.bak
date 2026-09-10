@@ -1,13 +1,10 @@
 import {
-  useEffect,
   useState
 } from 'react'
 
 import {
   getMe,
-  createStarsInvoice,
-  getAdsgramWatchStatus,
-  startAdsgramWatch
+  createStarsInvoice
 } from '../lib/api.js'
 
 import {
@@ -20,12 +17,6 @@ import {
 import type {
   Screen
 } from '../App.js'
-
-import {
-  tryAcquireGlobalAdLock,
-  releaseGlobalAdLock,
-  getAdLockWaitSeconds
-} from '../lib/adLock.js'
 
 import type {
   User
@@ -80,10 +71,6 @@ export function Home({
     setShowBuy
   ] = useState(false)
 
-  const [adsgramWatched, setAdsgramWatched] = useState(0)
-  const [adsgramRemaining, setAdsgramRemaining] = useState(20)
-  const [adsgramBusy, setAdsgramBusy] = useState(false)
-
   async function refreshUser() {
     try {
       const result =
@@ -94,69 +81,6 @@ export function Home({
       )
     } catch {
       // إذا فشل التحديث بنسيب رصيد المستخدم متل ما هو، رح يتحدث لاحقًا
-    }
-  }
-
-  async function refreshAdsgramStatus() {
-    try {
-      const result = await getAdsgramWatchStatus()
-      setAdsgramWatched(result.watched)
-      setAdsgramRemaining(result.remaining)
-    } catch {
-      // keep current UI if the status endpoint is temporarily unavailable
-    }
-  }
-
-  useEffect(() => {
-    void refreshAdsgramStatus()
-  }, [])
-
-  async function watchAdsgramReward() {
-    if (adsgramBusy) return
-    if (adsgramRemaining <= 0) {
-      showAlert('وصلت للحد اليومي. يرجع العداد تلقائيًا عند منتصف الليل بتوقيت بغداد.')
-      return
-    }
-    if (!window.Adsgram) {
-      showAlert('إعلان AdsGram غير جاهز بعد. جرّب مرة ثانية.')
-      return
-    }
-
-    if (!tryAcquireGlobalAdLock()) {
-      showAlert(`انتظر ${getAdLockWaitSeconds()} ثانية قبل تشغيل إعلان آخر.`)
-      return
-    }
-
-    setAdsgramBusy(true)
-    try {
-      const session = await startAdsgramWatch()
-      const controller = window.Adsgram.init({ blockId: session.blockId })
-      await controller.show()
-
-      // Reward URL هو مصدر المكافأة الحقيقي. نراقب السيرفر حتى يصل webhook.
-      const previousWatched = session.watched
-      for (let attempt = 0; attempt < 900; attempt += 1) {
-        await new Promise(resolve => window.setTimeout(resolve, 200))
-        const status = await getAdsgramWatchStatus()
-        setAdsgramWatched(status.watched)
-        setAdsgramRemaining(status.remaining)
-        if (status.watched > previousWatched || status.watched === session.watched + 1) {
-          hapticSuccess()
-          try {
-            const latest = await getMe()
-            onUserChanged(latest.user)
-          } catch {}
-          return
-        }
-      }
-
-      showAlert('تم عرض الإعلان، لكن تأكيد المكافأة ما وصل بعد. لا تعيد المشاهدة الآن؛ سيتحدث العداد عند وصول التأكيد.')
-    } catch (error) {
-      showAlert(error instanceof Error ? error.message : 'تعذر تشغيل الإعلان.')
-    } finally {
-      releaseGlobalAdLock()
-      setAdsgramBusy(false)
-      void refreshAdsgramStatus()
     }
   }
 
@@ -331,36 +255,6 @@ export function Home({
 
       </div>
 
-      <section className="adsgram-reward-card">
-        <div className="adsgram-reward-head">
-          <div className="adsgram-reward-icon">AD</div>
-          <div>
-            <strong>شاهد إعلان واربح نقاط</strong>
-            <span>+6 نقاط لكل إعلان · 20 إعلان يوميًا</span>
-          </div>
-          <div className="adsgram-reward-count">
-            {adsgramWatched}/20
-          </div>
-        </div>
-
-        <div className="adsgram-reward-progress">
-          <div style={{ width: `${Math.min(100, Math.round((adsgramWatched / 20) * 100))}%` }} />
-        </div>
-
-        <button
-          className="adsgram-reward-button"
-          disabled={adsgramBusy || adsgramRemaining <= 0}
-          onClick={() => void watchAdsgramReward()}
-        >
-          {adsgramBusy
-            ? 'جاري التحقق...'
-            : adsgramRemaining <= 0
-              ? 'اكتملت إعلانات اليوم ✓'
-              : `مشاهدة الإعلان · +6 (${adsgramRemaining} متبقي)`}
-        </button>
-
-        <small>يتجدد العداد تلقائيًا كل يوم عند 00:00 بتوقيت بغداد.</small>
-      </section>
 
       <section className="checkin-card">
 

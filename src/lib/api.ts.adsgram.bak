@@ -242,38 +242,3 @@ export function createStarsInvoice(
     }
   )
 }
-
-export function startAdsgramWatch() {
-  return request<{
-    success: boolean
-    id: string
-    watched: number
-    remaining: number
-    blockId: string
-    dailyLimit: number
-    rewardPoints: number
-  }>('/api/adsgram/watch/start', {
-    method: 'POST'
-  })
-}
-
-export function getAdsgramWatchStatus() {
-  return request<{
-    success: boolean
-    watched: number
-    remaining: number
-    pending: boolean
-    blockId: string
-    dailyLimit: number
-    rewardPoints: number
-  }>('/api/adsgram/watch/status')
-}
-
-export function getAdsgramNativeStatus() {
-  return request<{
-    success: boolean
-    count: number
-    rewardPoints: number
-    blockId: string
-  }>('/api/adsgram/native/status')
-}
