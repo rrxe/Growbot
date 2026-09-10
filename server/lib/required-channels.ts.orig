@@ -60,7 +60,7 @@ export async function getRequiredChannelsStatus(
         member.status === 'member' ||
         member.status === 'administrator' ||
         member.status === 'creator' ||
-        (member.status === 'restricted' && (member as { is_member?: boolean }).is_member === true)
+        (member.status === 'restricted' && member.is_member === true)
     } catch (error) {
       console.error('[required-channels:status]', channel.title, error)
       joined = false
