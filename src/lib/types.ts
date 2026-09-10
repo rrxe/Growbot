@@ -109,6 +109,8 @@ export interface MeResponse {
     required_tasks: number
     reward_points: number
     rewarded: boolean
+    total_invited: number
+    successful_referrals: number
   }
 }
 

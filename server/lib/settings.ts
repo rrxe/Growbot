@@ -11,7 +11,7 @@ export interface AppSettings {
 const defaults: AppSettings = {
   pointsPerTask: 5,
   pointsPerUsd: 500,
-  referralReward: 150,
+  referralReward: 50,
   referralRequiredTasks: 5,
   verificationDelayHours: 10
 }

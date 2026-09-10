@@ -180,16 +180,20 @@ export function Profile({
     }
   }
 
-  const progress = referral
-    ? Math.min(
-        100,
-        Math.round(
-          (referral.completed_tasks /
-            referral.required_tasks) *
-          100
+  const totalInvited = referral?.total_invited ?? 0
+  const successfulReferrals = referral?.successful_referrals ?? 0
+  const referralPrice = referral?.reward_points ?? 50
+
+  const referralSuccessRate =
+    totalInvited > 0
+      ? Math.min(
+          100,
+          Math.round(
+            (successfulReferrals / totalInvited) *
+            100
+          )
         )
-      )
-    : 0
+      : 0
 
   async function copyReferral() {
     if (!referral?.link) return
@@ -249,32 +253,47 @@ export function Profile({
         </span>
 
         <h2>
-          ادعُ صديقًا واربح 150 نقطة
+          ادعُ صديقًا واربح {referralPrice} نقطة
         </h2>
 
         <p>
-          بعد دخول صديقك من رابطك وتنفيذه 5 مهام،
-          تحصل أنت على 150 نقطة إضافية.
+          بعد دخول صديقك من رابطك وتنفيذه {referral?.required_tasks ?? 5} مهام،
+          تحصل أنت على {referralPrice} نقطة إضافية.
         </p>
+
+        <div className="referral-stats-row">
+          <div className="referral-stat-box">
+            <strong>{totalInvited.toLocaleString('en-US')}</strong>
+            <span>إحالات</span>
+          </div>
+
+          <div className="referral-stat-box">
+            <strong>{successfulReferrals.toLocaleString('en-US')}</strong>
+            <span>أكملوا 5 مهام</span>
+          </div>
+
+          <div className="referral-stat-box referral-stat-price">
+            <strong>+{referralPrice}</strong>
+            <span>نقطة لكل إحالة</span>
+          </div>
+        </div>
 
         <div className="referral-progress">
           <div
             style={{
-              width: `${progress}%`
+              width: `${referralSuccessRate}%`
             }}
           />
         </div>
 
         <div className="referral-meta">
           <span>
-            {referral?.completed_tasks ?? 0}
-            {' / '}
-            {referral?.required_tasks ?? 5}
-            {' مهام'}
+            {successfulReferrals} من {totalInvited}
+            {' إحالة أكملت المطلوب'}
           </span>
 
           <strong>
-            +{referral?.reward_points ?? 150}
+            {referralSuccessRate}%
           </strong>
         </div>
 

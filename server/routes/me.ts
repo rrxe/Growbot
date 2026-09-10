@@ -38,6 +38,18 @@ meRouter.get(
           )
           .maybeSingle()
 
+      // إحصائية "إحالاتي": كم شخص دخل من رابط هذا المستخدم (بغض النظر عن
+      // إتمام المهام)، مقابل successful_referrals يلي بيمثل كم منهم أكمل
+      // العدد المطلوب من المهام واستحق المكافأة.
+      const { count: totalInvited } =
+        await supabase
+          .from('referrals')
+          .select('id', { count: 'exact', head: true })
+          .eq(
+            'referrer_id',
+            user.id
+          )
+
       let referralLink: string | null =
         null
 
@@ -106,7 +118,11 @@ meRouter.get(
             config.referralReward,
           rewarded:
             referral?.rewarded ??
-            false
+            false,
+          total_invited:
+            totalInvited ?? 0,
+          successful_referrals:
+            user.successful_referrals ?? 0
         }
       })
     } catch (error) {

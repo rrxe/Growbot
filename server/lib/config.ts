@@ -37,7 +37,7 @@ export const config = {
     numberEnv('POINTS_PER_USD', 500),
 
   referralReward:
-    numberEnv('REFERRAL_REWARD', 150),
+    numberEnv('REFERRAL_REWARD', 50),
 
   referralRequiredTasks:
     numberEnv(

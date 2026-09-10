@@ -310,9 +310,13 @@ export function Tasks({
             {/* @ts-expect-error AdsGram web component */}
             <adsgram-task ref={nativeTaskElRef} data-block-id={ADSGRAM_NATIVE_TASK_BLOCK_ID} data-debug="false">
               <span slot="reward">+1</span>
-              <span slot="button">{nativeTaskBusy ? 'جاري التحقق...' : 'فتح الإعلان'}</span>
-              <span slot="claim">استلام +1</span>
-              <span slot="done">تمت المهمة ✓</span>
+              <button type="button" slot="button" className="adsgram-open-btn" disabled={nativeTaskBusy}>
+                {nativeTaskBusy ? '⏳ جاري التحقق...' : '▶ فتح الإعلان'}
+              </button>
+              <button type="button" slot="claim" className="adsgram-open-btn adsgram-open-btn-claim">
+                🎁 استلام +1
+              </button>
+              <span slot="done" className="adsgram-done-badge">تمت المهمة ✓</span>
             {/* @ts-expect-error AdsGram web component */}
             </adsgram-task>
           </div>

@@ -65,6 +65,44 @@
   margin: 7px 0 13px;
 }
 
+.referral-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.referral-stat-box {
+  padding: 10px 6px;
+  border-radius: 12px;
+  background: #0f1724;
+  border: 1px solid #24334a;
+  text-align: center;
+}
+
+.referral-stat-box strong {
+  display: block;
+  font-size: 15px;
+  font-family: ui-monospace, monospace;
+  color: #e6ecf5;
+}
+
+.referral-stat-box span {
+  display: block;
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 8.5px;
+}
+
+.referral-stat-price {
+  background: rgba(117, 169, 255, .1);
+  border-color: rgba(117, 169, 255, .28);
+}
+
+.referral-stat-price strong {
+  color: #75a9ff;
+}
+
 .referral-progress {
   height: 7px;
   border-radius: 5px;
