@@ -1132,7 +1132,9 @@ tasksRouter.post(
       }
 
       void notifyCompletionDecision(
-        completionId,
+        Array.isArray(completionId)
+          ? completionId[0]
+          : completionId,
         'approved'
       ).catch((error) => {
         console.error(
@@ -1224,7 +1226,9 @@ tasksRouter.post(
         }
 
       void notifyCompletionDecision(
-        completionId,
+        Array.isArray(completionId)
+          ? completionId[0]
+          : completionId,
         'rejected',
         { reason }
       ).catch((error) => {
