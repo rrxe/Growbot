@@ -701,7 +701,7 @@ export async function startBot() {
 
         const link =
           config.botUsername
-            ? `https://t.me/${config.botUsername}/${config.botAppShortName}?startapp=ref_${user.referral_code}`
+            ? `https://t.me/${config.botUsername}/${config.botAppShortName}?startapp=ref_${ctx.from!.id}`
             : ''
 
         const {

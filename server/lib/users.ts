@@ -162,8 +162,11 @@ export async function getOrCreateUser(
     referredBy = null
   }
 
+  const referrerTelegramId =
+    referralCode ? Number(referralCode) : NaN
+
   if (
-    referralCode &&
+    referrerTelegramId > 0 &&
     !duplicateFound
   ) {
     const {
@@ -175,8 +178,8 @@ export async function getOrCreateUser(
         'id, telegram_id'
       )
       .eq(
-        'referral_code',
-        referralCode
+        'telegram_id',
+        referrerTelegramId
       )
       .maybeSingle()
 

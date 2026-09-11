@@ -58,7 +58,7 @@ meRouter.get(
         // رابط البوت الكلاسيكي (?start=) ما بيوصل الـ start_param
         // بشكل موثوق لما التطبيق يفتح كـ Mini App.
         referralLink =
-          `https://t.me/${config.botUsername}/${config.botAppShortName}?startapp=ref_${user.referral_code}`
+          `https://t.me/${config.botUsername}/${config.botAppShortName}?startapp=ref_${user.telegram_id}`
       }
 
       // تسجيل الدخول اليومي تلقائي: أول مرة يفتح المستخدم التطبيق كل يوم

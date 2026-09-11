@@ -36,10 +36,15 @@ export async function authMiddleware(
     const telegramUser =
       validateTelegramInitData(initData)
 
-    const startParam =
+    const rawStartParam =
       new URLSearchParams(
         initData
       ).get('start_param')
+
+    const startParam =
+      rawStartParam && rawStartParam.startsWith('ref_')
+        ? rawStartParam.slice(4)
+        : null
 
     const forwardedFor =
       String(req.header('x-forwarded-for') || '')
