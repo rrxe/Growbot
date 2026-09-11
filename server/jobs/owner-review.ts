@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase.js'
+import { notifyCompletionDecision } from '../../bot/index.js'
 
 let running = false
 
@@ -55,7 +56,21 @@ export async function runOwnerReviewAutoApproveJob() {
           completion.id,
           result.error
         )
+
+        continue
       }
+
+      await notifyCompletionDecision(
+        completion.id,
+        'approved',
+        { auto: true }
+      ).catch((notifyError) => {
+        console.error(
+          '[owner-review-auto-approve:notify]',
+          completion.id,
+          notifyError
+        )
+      })
     }
   } finally {
     running = false

@@ -164,6 +164,10 @@ export const bot =
 const pendingRejections =
   new Map<number, string>()
 
+// telegram_id (صاحب مهمة) -> completion id في انتظار سبب رفض تنفيذ
+const pendingCompletionRejections =
+  new Map<number, string>()
+
 function ownerId() {
   return Number(
     process.env.OWNER_TELEGRAM_ID || 0
@@ -344,6 +348,233 @@ export async function sendBotRejectionForReview(
     console.error(
       '[bot:reject_review] فشل إرسال إشعار التصعيد:',
       error
+    )
+  }
+}
+
+// يجيب بيانات تنفيذ (completion) + المهمة + المنفّذ في استعلام واحد،
+// بما فيها chat_id/message_id لرسالة المراجعة المرسلة لصاحب المهمة (إن وُجدت)
+async function loadCompletionForReview(completionId: string) {
+  const { data, error } = await supabase
+    .from('task_completions')
+    .select(
+      'id, task_id, user_id, screenshot_url, status, ' +
+      'owner_notify_chat_id, owner_notify_message_id, ' +
+      'tasks!inner(id, title, owner_id, reward_points), ' +
+      'users(username, first_name, telegram_id)'
+    )
+    .eq('id', completionId)
+    .maybeSingle()
+
+  if (error || !data) {
+    if (error) {
+      console.error('[bot:completion_review:load]', error)
+    }
+
+    return null
+  }
+
+  return data as unknown as {
+    id: string
+    task_id: string
+    user_id: string
+    screenshot_url: string | null
+    status: string
+    owner_notify_chat_id: number | null
+    owner_notify_message_id: number | null
+    tasks: {
+      id: string
+      title: string | null
+      owner_id: string
+      reward_points: number | null
+    }
+    users: {
+      username: string | null
+      first_name: string | null
+      telegram_id: number | null
+    } | null
+  }
+}
+
+// يرسل لصاحب المهمة رسالة (نص أو صورة) فيها تفاصيل تنفيذ Join Bot وزري قبول/رفض،
+// ويخزّن chat_id/message_id في task_completions عشان نقدر نعدّل نفس الرسالة لاحقًا
+// (مثلاً لما تتم الموافقة تلقائيًا بعد 15 دقيقة بدون رد)
+export async function sendCompletionReviewToOwner(
+  completionId: string
+) {
+  if (!bot) {
+    return
+  }
+
+  const completion = await loadCompletionForReview(completionId)
+
+  if (!completion) {
+    console.error(
+      '[bot:completion_review:send] completion غير موجود:',
+      completionId
+    )
+
+    return
+  }
+
+  const { data: owner } = await supabase
+    .from('users')
+    .select('telegram_id')
+    .eq('id', completion.tasks.owner_id)
+    .maybeSingle()
+
+  if (!owner?.telegram_id) {
+    return
+  }
+
+  const executor = completion.users
+
+  const caption = [
+    '📩 طلب مراجعة تنفيذ مهمتك',
+    '',
+    `المهمة: ${completion.tasks.title || '—'}`,
+    `المنفّذ: ${executor?.first_name || ''} ${
+      executor?.username ? '@' + executor.username : ''
+    }`.trim(),
+    `النقاط: ${completion.tasks.reward_points ?? 0}`,
+    '',
+    '⏳ إذا ما رديت خلال 15 دقيقة، بتتم الموافقة تلقائيًا.'
+  ].join('\n')
+
+  const keyboard = new InlineKeyboard()
+    .text('✅ قبول', `completion_approve:${completion.id}`)
+    .text('❌ رفض', `completion_reject:${completion.id}`)
+
+  try {
+    const sent = completion.screenshot_url
+      ? await bot.api.sendPhoto(
+          owner.telegram_id,
+          completion.screenshot_url,
+          {
+            caption,
+            reply_markup: keyboard
+          }
+        )
+      : await bot.api.sendMessage(
+          owner.telegram_id,
+          caption,
+          {
+            reply_markup: keyboard
+          }
+        )
+
+    await supabase
+      .from('task_completions')
+      .update({
+        owner_notify_chat_id: sent.chat.id,
+        owner_notify_message_id: sent.message_id
+      })
+      .eq('id', completion.id)
+  } catch (error) {
+    console.error('[bot:completion_review:send]', error)
+  }
+}
+
+// يعدّل رسالة المراجعة عند صاحب المهمة (نص أو كابشن صورة) لتوضّح القرار النهائي
+async function finalizeCompletionOwnerMessage(
+  chatId: number | null | undefined,
+  messageId: number | null | undefined,
+  suffixText: string
+) {
+  if (!bot || !chatId || !messageId) {
+    return
+  }
+
+  await bot.api
+    .editMessageReplyMarkup(chatId, messageId, {
+      reply_markup: undefined
+    })
+    .catch(() => {})
+
+  const captionEdited = await bot.api
+    .editMessageCaption(chatId, messageId, {
+      caption: suffixText
+    })
+    .catch(() => null)
+
+  if (!captionEdited) {
+    await bot.api
+      .editMessageText(chatId, messageId, suffixText)
+      .catch(() => {})
+  }
+}
+
+// يشعر المنفّذ بقرار المراجعة (قبول/رفض) عبر شات البوت، ويعدّل رسالة صاحب المهمة
+// لو كانت موجودة — تُستخدم من: أزرار البوت، مسار الموافقة/الرفض من التطبيق،
+// وجوب الموافقة التلقائية بعد 15 دقيقة
+export async function notifyCompletionDecision(
+  completionId: string,
+  decision: 'approved' | 'rejected',
+  opts: { reason?: string; auto?: boolean } = {}
+) {
+  if (!bot) {
+    return
+  }
+
+  const completion = await loadCompletionForReview(completionId)
+
+  if (!completion) {
+    return
+  }
+
+  const executorTelegramId = completion.users?.telegram_id
+  const reward = completion.tasks.reward_points ?? 0
+  const title = completion.tasks.title || '—'
+
+  if (decision === 'approved') {
+    if (executorTelegramId) {
+      const intro = opts.auto
+        ? '⏰ تمت الموافقة تلقائيًا بعد مرور 15 دقيقة بدون رد صاحب المهمة.'
+        : '🎉 مبروك! تم قبول تنفيذك للمهمة.'
+
+      await bot.api
+        .sendMessage(
+          executorTelegramId,
+          [
+            intro,
+            '',
+            `المهمة: ${title}`,
+            `✅ تم إضافة ${reward} نقطة لرصيدك.`
+          ].join('\n')
+        )
+        .catch((error) => {
+          console.error('[bot:notify_executor:approved]', error)
+        })
+    }
+
+    await finalizeCompletionOwnerMessage(
+      completion.owner_notify_chat_id,
+      completion.owner_notify_message_id,
+      opts.auto
+        ? `\n\n⏰ تمت الموافقة تلقائيًا بعد 15 دقيقة — المهمة: ${title}`
+        : `\n\n✅ تمت الموافقة — المهمة: ${title}`
+    )
+  } else {
+    if (executorTelegramId) {
+      await bot.api
+        .sendMessage(
+          executorTelegramId,
+          [
+            '❌ تم رفض تنفيذك للمهمة.',
+            '',
+            `المهمة: ${title}`,
+            ...(opts.reason ? [`السبب: ${opts.reason}`] : [])
+          ].join('\n')
+        )
+        .catch((error) => {
+          console.error('[bot:notify_executor:rejected]', error)
+        })
+    }
+
+    await finalizeCompletionOwnerMessage(
+      completion.owner_notify_chat_id,
+      completion.owner_notify_message_id,
+      `\n\n❌ تم الرفض — المهمة: ${title}`
     )
   }
 }
@@ -1217,8 +1448,9 @@ bot.callbackQuery(
     'message:text',
     async (ctx) => {
       const taskId = pendingRejections.get(ctx.from!.id)
+      const completionId = pendingCompletionRejections.get(ctx.from!.id)
 
-      if (!taskId || ctx.from!.id !== ownerId()) {
+      if (!taskId && !completionId) {
         return
       }
 
@@ -1227,6 +1459,59 @@ bot.callbackQuery(
       if (!reason) {
         await ctx.reply('اكتب سبب الرفض كنص.')
 
+        return
+      }
+
+      if (completionId) {
+        pendingCompletionRejections.delete(ctx.from!.id)
+
+        try {
+          const result = await supabase.rpc(
+            'reject_bot_completion_atomic',
+            {
+              p_completion_id: completionId,
+              p_reason: reason
+            }
+          )
+
+          if (result.error) {
+            throw result.error
+          }
+
+          await ctx.reply('❌ تم رفض التنفيذ وإشعار المنفّذ.')
+
+          await notifyCompletionDecision(
+            completionId,
+            'rejected',
+            { reason }
+          )
+
+          const payload = result.data as {
+            task_owner_id: string
+            executor_user_id: string
+            task_title: string | null
+            screenshot_url: string | null
+          }
+
+          await sendBotRejectionForReview(
+            completionId,
+            reason,
+            payload
+          ).catch((error) => {
+            console.error('[bot:completion_reject:escalate]', error)
+          })
+        } catch (error) {
+          console.error('[bot:completion_reject]', error)
+
+          await ctx.reply(
+            'حدث خطأ أثناء الرفض. حاول مرة أخرى بالضغط على ❌ رفض من جديد.'
+          )
+        }
+
+        return
+      }
+
+      if (!taskId || ctx.from!.id !== ownerId()) {
         return
       }
 
@@ -1341,6 +1626,120 @@ bot.callbackQuery(
           show_alert: true
         })
       }
+    }
+  )
+
+  // صاحب المهمة يوافق على تنفيذ Join Bot من داخل شات البوت مباشرة
+  bot.callbackQuery(
+    /^completion_approve:(.+)$/,
+    async (ctx) => {
+      const completionId = ctx.match[1]
+
+      const completion = await loadCompletionForReview(completionId)
+
+      if (!completion) {
+        await ctx.answerCallbackQuery({
+          text: 'الطلب غير موجود.',
+          show_alert: true
+        })
+
+        return
+      }
+
+      const { data: owner } = await supabase
+        .from('users')
+        .select('telegram_id')
+        .eq('id', completion.tasks.owner_id)
+        .maybeSingle()
+
+      if (!owner?.telegram_id || ctx.from!.id !== owner.telegram_id) {
+        await ctx.answerCallbackQuery({
+          text: 'غير مصرح لك.',
+          show_alert: true
+        })
+
+        return
+      }
+
+      if (completion.status !== 'owner_review') {
+        await ctx.answerCallbackQuery({
+          text: 'تمت معالجة هذا الطلب مسبقًا.',
+          show_alert: true
+        })
+
+        return
+      }
+
+      try {
+        const result = await supabase.rpc(
+          'approve_bot_completion_atomic',
+          { p_completion_id: completionId }
+        )
+
+        if (result.error) {
+          throw result.error
+        }
+
+        await ctx.answerCallbackQuery({ text: '✅ تمت الموافقة' })
+
+        await notifyCompletionDecision(completionId, 'approved')
+      } catch (error) {
+        console.error('[bot:completion_approve]', error)
+
+        await ctx.answerCallbackQuery({
+          text: 'حدث خطأ، حاول مرة أخرى.',
+          show_alert: true
+        })
+      }
+    }
+  )
+
+  // صاحب المهمة يرفض تنفيذ Join Bot من داخل شات البوت — نطلب منه سبب الرفض أولًا
+  bot.callbackQuery(
+    /^completion_reject:(.+)$/,
+    async (ctx) => {
+      const completionId = ctx.match[1]
+
+      const completion = await loadCompletionForReview(completionId)
+
+      if (!completion) {
+        await ctx.answerCallbackQuery({
+          text: 'الطلب غير موجود.',
+          show_alert: true
+        })
+
+        return
+      }
+
+      const { data: owner } = await supabase
+        .from('users')
+        .select('telegram_id')
+        .eq('id', completion.tasks.owner_id)
+        .maybeSingle()
+
+      if (!owner?.telegram_id || ctx.from!.id !== owner.telegram_id) {
+        await ctx.answerCallbackQuery({
+          text: 'غير مصرح لك.',
+          show_alert: true
+        })
+
+        return
+      }
+
+      if (completion.status !== 'owner_review') {
+        await ctx.answerCallbackQuery({
+          text: 'تمت معالجة هذا الطلب مسبقًا.',
+          show_alert: true
+        })
+
+        return
+      }
+
+      pendingCompletionRejections.set(ctx.from!.id, completionId)
+
+      await ctx.answerCallbackQuery()
+
+      await ctx.reply('✍️ اكتب سبب رفض هذا التنفيذ:')
     }
   )
 

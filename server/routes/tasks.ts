@@ -16,7 +16,9 @@ import {
 } from '../lib/telegram.js'
 
 import {
-  sendBotRejectionForReview
+  sendBotRejectionForReview,
+  sendCompletionReviewToOwner,
+  notifyCompletionDecision
 } from '../../bot/index.js'
 
 export const tasksRouter =
@@ -873,6 +875,15 @@ tasksRouter.post(
           }
         }
 
+      void sendCompletionReviewToOwner(
+        payload.completion.id
+      ).catch((error) => {
+        console.error(
+          '[tasks:bot:notify_owner_completion]',
+          error
+        )
+      })
+
       res.json({
         completion: payload.completion
       })
@@ -1120,6 +1131,16 @@ tasksRouter.post(
         throw result.error
       }
 
+      void notifyCompletionDecision(
+        completionId,
+        'approved'
+      ).catch((error) => {
+        console.error(
+          '[tasks:bot:notify_completion_approved]',
+          error
+        )
+      })
+
       res.json({
         ok: true
       })
@@ -1201,6 +1222,17 @@ tasksRouter.post(
           task_title: string | null
           screenshot_url: string | null
         }
+
+      void notifyCompletionDecision(
+        completionId,
+        'rejected',
+        { reason }
+      ).catch((error) => {
+        console.error(
+          '[tasks:bot:notify_completion_rejected]',
+          error
+        )
+      })
 
       void sendBotRejectionForReview(
         Array.isArray(completionId)
