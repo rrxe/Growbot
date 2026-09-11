@@ -33,6 +33,10 @@ import {
   runVerificationJob
 } from './jobs/verification.js'
 
+import {
+  runOwnerReviewAutoApproveJob
+} from './jobs/owner-review.js'
+
 const app = express()
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -152,6 +156,51 @@ app.get(
     } catch (error) {
       console.error(
         '[cron:verify]',
+        error
+      )
+
+      res.status(500).json({
+        ok: false
+      })
+    }
+  }
+)
+
+// الموافقة تلقائيًا على مهام Join Bot
+// إذا لم يوافق أو يرفض صاحب المهمة خلال 20 دقيقة.
+app.get(
+  '/api/cron/owner-review-auto-approve',
+  async (
+    req: Request,
+    res: Response
+  ) => {
+    const secret =
+      process.env.CRON_SECRET || ''
+
+    const given =
+      req.header('authorization') ||
+      ''
+
+    if (
+      !secret ||
+      given !== `Bearer ${secret}`
+    ) {
+      return res
+        .status(401)
+        .json({
+          error: 'Unauthorized'
+        })
+    }
+
+    try {
+      await runOwnerReviewAutoApproveJob()
+
+      res.status(200).json({
+        ok: true
+      })
+    } catch (error) {
+      console.error(
+        '[cron:owner-review-auto-approve]',
         error
       )
 
