@@ -40,7 +40,7 @@ export const config = {
     numberEnv('REFERRAL_REWARD', 50),
 
   dailyCheckinPoints:
-    numberEnv('DAILY_CHECKIN_POINTS', 50),
+    numberEnv('DAILY_CHECKIN_POINTS', 20),
 
   referralRequiredTasks:
     numberEnv(
