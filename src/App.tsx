@@ -6,6 +6,7 @@ import { Publish } from './pages/Publish'
 import { Profile } from './pages/Profile'
 import { initTelegram, hapticSuccess, showAlert, openTelegramLink } from './lib/telegram'
 import RequiredSubscription from './components/RequiredSubscription'
+import SplashScreen from './components/SplashScreen'
 import { getMe, getTasks, getMyTasks, getAdsgramWatchStatus } from './lib/api'
 import type { MeResponse, Task, User } from './lib/types'
 import './styles/app.css'
@@ -51,6 +52,32 @@ export default function App() {
   const [error, setError] = useState('')
   const adsgramAutoRef = useRef<AdsgramController | null>(null)
   const autoInFlightRef = useRef(false)
+
+  // شاشة تحميل STORMX (خلفية + شريط تقدّم) — تبقى ظاهرة لحد ما يخلص
+  // loadAll (نجاح أو فشل)، بعدين تختفي بتلاشي بسيط بدل ما تختفي فجأة.
+  const [splashVisible, setSplashVisible] = useState(true)
+  const [splashFading, setSplashFading] = useState(false)
+  const [splashProgress, setSplashProgress] = useState(6)
+
+  useEffect(() => {
+    if (!splashVisible || !loading) return
+    const id = window.setInterval(() => {
+      setSplashProgress((prev) => (prev >= 90 ? prev : prev + (90 - prev) * 0.08 + 0.4))
+    }, 120)
+    return () => window.clearInterval(id)
+  }, [splashVisible, loading])
+
+  useEffect(() => {
+    if (!loading && splashVisible) {
+      setSplashProgress(100)
+      const fadeTimer = window.setTimeout(() => setSplashFading(true), 250)
+      const hideTimer = window.setTimeout(() => setSplashVisible(false), 700)
+      return () => {
+        window.clearTimeout(fadeTimer)
+        window.clearTimeout(hideTimer)
+      }
+    }
+  }, [loading, splashVisible])
 
   // بنجهّز كل شي (الحساب + المهام + مهامي) مرة وحدة وبالتوازي
   // وإحنا لسا على شاشة التحميل، حتى ما يحتاج المستخدم يشوف
@@ -264,6 +291,15 @@ export default function App() {
     }
   }, [membershipStatusReady, membershipRequired, membershipVerified])
 
+  if (splashVisible) {
+    return (
+      <SplashScreen
+        progress={splashProgress}
+        fading={splashFading}
+      />
+    )
+  }
+
   if (!loading && !error && membershipRequired && !membershipVerified) {
     return (
       <div className="app-shell">
@@ -273,21 +309,6 @@ export default function App() {
           onVerify={verifyMembership}
           onOpen={openTelegramLink}
         />
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="app-shell">
-        <div className="loading-screen">
-          <div className="loading-glow" />
-
-          <div className="loading-logo">⚡</div>
-          <div className="loading-title">STORM</div>
-          <div className="loading-tagline">جاري تجهيز حسابك...</div>
-          <div className="loading-spinner" />
-        </div>
       </div>
     )
   }

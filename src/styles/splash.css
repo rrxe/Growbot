@@ -1,0 +1,71 @@
+.storm-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #04070f;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+
+.storm-splash--fading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.storm-splash__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  user-select: none;
+}
+
+/* الموضع محسوب على صورة STORMX نفسها (الإطار الفارغ تحت "بوت تبادل قنوات · إحالات") */
+.storm-splash__bar-track {
+  position: absolute;
+  top: 66.6vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 39vh;
+  max-width: 80vw;
+  height: 4.6vh;
+  border-radius: 999px;
+  padding: 0.6vh 1.4vh;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.storm-splash__bar-fill {
+  position: relative;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #0b2f66, #4fa3ff 45%, #d6efff 60%, #4fa3ff 75%, #0b2f66);
+  box-shadow:
+    0 0 8px rgba(120, 190, 255, 0.9),
+    0 0 20px rgba(60, 140, 255, 0.6);
+  transition: width 0.25s ease-out;
+  overflow: hidden;
+}
+
+.storm-splash__bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 80%
+  );
+  background-size: 200% 100%;
+  animation: storm-splash-shimmer 1.3s linear infinite;
+}
+
+@keyframes storm-splash-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
