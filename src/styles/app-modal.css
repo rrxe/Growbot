@@ -1,0 +1,104 @@
+.storm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(4, 7, 15, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: storm-modal-fade-in 0.18s ease;
+}
+
+.storm-modal {
+  width: 100%;
+  max-width: 340px;
+  background: linear-gradient(180deg, var(--storm-surface-2), var(--storm-surface));
+  border: 1px solid var(--storm-border);
+  border-radius: 20px;
+  padding: 22px 20px 18px;
+  box-shadow:
+    0 0 0 1px rgba(117, 169, 255, 0.08),
+    0 20px 45px rgba(0, 0, 0, 0.55),
+    0 0 30px rgba(75, 130, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: storm-modal-scale-in 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.storm-modal-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 20px;
+  color: #ffce6b;
+  background: rgba(255, 206, 107, 0.12);
+  border: 1px solid rgba(255, 206, 107, 0.35);
+  margin-bottom: 14px;
+}
+
+.storm-modal-icon--confirm {
+  color: var(--storm-blue);
+  background: var(--storm-blue-soft);
+  border-color: rgba(117, 169, 255, 0.35);
+}
+
+.storm-modal-message {
+  margin: 0 0 18px;
+  color: var(--storm-text);
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.storm-modal-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.storm-modal-btn {
+  flex: 1;
+  border: none;
+  border-radius: 13px;
+  padding: 12px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+}
+
+.storm-modal-btn-primary {
+  background: linear-gradient(90deg, #2f6fff, #75a9ff);
+  color: #04070f;
+  box-shadow: 0 8px 20px rgba(75, 130, 255, 0.35);
+}
+
+.storm-modal-btn-secondary {
+  background: var(--storm-surface);
+  color: var(--storm-muted);
+  border: 1px solid var(--storm-border);
+}
+
+@keyframes storm-modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes storm-modal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

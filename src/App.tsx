@@ -7,6 +7,7 @@ import { Profile } from './pages/Profile'
 import { initTelegram, hapticSuccess, showAlert, openTelegramLink } from './lib/telegram'
 import RequiredSubscription from './components/RequiredSubscription'
 import SplashScreen from './components/SplashScreen'
+import AppModal from './components/AppModal'
 import { getMe, getTasks, getMyTasks, getAdsgramWatchStatus } from './lib/api'
 import type { MeResponse, Task, User } from './lib/types'
 import './styles/app.css'
@@ -410,6 +411,8 @@ export default function App() {
           <small>حسابي</small>
         </button>
       </nav>
+
+      <AppModal />
     </div>
   )
 }

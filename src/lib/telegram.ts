@@ -1,3 +1,8 @@
+import {
+  requestAlert,
+  requestConfirm
+} from './modal'
+
 export function getTelegramWebApp() {
   return (
     window.Telegram?.WebApp ||
@@ -88,56 +93,20 @@ export function hapticError() {
     )
 }
 
+// نافذة تنبيه بستايل STORM الخاص بدل نافذة تيليجرام الافتراضية الرمادية
 export function showAlert(
   message: string
 ) {
-  const webApp =
-    getTelegramWebApp()
-
-  if (webApp) {
-    webApp.showAlert(
-      message
-    )
-
-    return
-  }
-
-  window.alert(
+  void requestAlert(
     message
   )
 }
 
-// تأكيد بستايل تيليجرام الأصلي بدل نافذة المتصفح القبيحة (window.confirm)
+// تأكيد بستايل STORM الخاص بدل نافذة تيليجرام الافتراضية (showPopup) أو نافذة المتصفح
 export function showConfirm(
   message: string
 ): Promise<boolean> {
-  const webApp =
-    getTelegramWebApp()
-
-  if (!webApp) {
-    return Promise.resolve(
-      window.confirm(message)
-    )
-  }
-
-  return new Promise((resolve) => {
-    webApp.showPopup(
-      {
-        message,
-        buttons: [
-          {
-            id: 'cancel',
-            type: 'cancel',
-            text: 'إلغاء'
-          },
-          {
-            id: 'ok',
-            type: 'default',
-            text: 'تأكيد'
-          }
-        ]
-      },
-      (id) => resolve(id === 'ok')
-    )
-  })
+  return requestConfirm(
+    message
+  )
 }

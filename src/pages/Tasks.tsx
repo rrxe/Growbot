@@ -427,7 +427,7 @@ export function Tasks({
               </div>
 
               <div className="task-right">
-                <b>+{task.reward_points}</b>
+                <b>+{task.type === 'bot' ? Math.floor(task.reward_points / 2) : task.reward_points}</b>
 
                 {isJoined && task.type === 'bot' ? (
                   <label className="task-action task-action-upload">
