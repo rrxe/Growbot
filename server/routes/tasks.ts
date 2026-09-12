@@ -166,13 +166,23 @@ tasksRouter.post(
     try {
       const settings = await getSettings()
 
+      const MIN_REFERRALS_TO_PUBLISH = 3
+
+      const successfulReferrals =
+        Number(req.dbUser.successful_referrals || 0)
+
+      if (successfulReferrals < MIN_REFERRALS_TO_PUBLISH) {
+        return res.status(403).json({
+          error: `يجب إتمام ${MIN_REFERRALS_TO_PUBLISH} إحالات ناجحة على الأقل قبل نشر أي حملة.`
+        })
+      }
+
       const {
         type,
         chat,
         title,
         budgetPoints,
         botLink,
-        rewardPoints,
         description
       } =
         req.body || {}
@@ -183,18 +193,9 @@ tasksRouter.post(
           : null
 
       if (type === 'bot') {
-        const reward = Number(rewardPoints)
+        // مكافأة مهمة البوت أصبحت ثابتة (20 نقطة) — لا نثق بقيمة يرسلها العميل
+        const reward = 20
         const budget = Number(budgetPoints)
-
-        if (
-          !Number.isInteger(reward) ||
-          reward < 10 ||
-          reward > 20
-        ) {
-          return res.status(400).json({
-            error: 'نقاط مهمة البوت يجب أن تكون بين 10 و20.'
-          })
-        }
 
         if (
           typeof botLink !== 'string' ||

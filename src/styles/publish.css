@@ -83,6 +83,18 @@
   font-size: 12px;
 }
 
+.field-static-value {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #24334a;
+  background: #0f1724;
+  color: #9fe870;
+  border-radius: 13px;
+  padding: 12px 13px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .field-section input:focus {
   border-color: #67617e;
 }

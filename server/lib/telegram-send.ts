@@ -4,7 +4,8 @@ import { config } from './config.js'
 // بروتة الإدارة — كافي لرسالة واحدة أو broadcast متسلسل.
 export async function sendTelegramMessage(
   chatId: number,
-  text: string
+  text: string,
+  replyMarkup?: unknown
 ): Promise<{ ok: boolean; error?: string }> {
   if (!config.botToken) {
     return {
@@ -24,7 +25,8 @@ export async function sendTelegramMessage(
         body: JSON.stringify({
           chat_id: chatId,
           text,
-          disable_web_page_preview: true
+          disable_web_page_preview: true,
+          ...(replyMarkup ? { reply_markup: replyMarkup } : {})
         })
       }
     )
@@ -69,7 +71,8 @@ export interface BroadcastResult {
 export async function broadcastToUsers(
   telegramIds: number[],
   text: string,
-  delayMs = 40
+  delayMs = 40,
+  replyMarkup?: unknown
 ): Promise<BroadcastResult> {
   const result: BroadcastResult = {
     total: telegramIds.length,
@@ -81,7 +84,8 @@ export async function broadcastToUsers(
   for (const telegramId of telegramIds) {
     const outcome = await sendTelegramMessage(
       telegramId,
-      text
+      text,
+      replyMarkup
     )
 
     if (outcome.ok) {

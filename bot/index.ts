@@ -52,6 +52,61 @@ function adminAppUrl() {
   return `${baseAppUrl()}/admin.html`
 }
 
+// تذكير دوري (كل ساعة) لكل أعضاء البوت غير المحظورين بوجود مهام متاحة،
+// مع زر يفتح تطبيق STORM مباشرة. يُستدعى من server/jobs فقط إذا فيه
+// مهام نشطة فعلًا، حتى ما نزعج الناس لما ما يكون في شي يسوّونه.
+export async function broadcastTaskReminder(
+  activeTasksCount: number
+) {
+  if (!config.botToken) {
+    return
+  }
+
+  const { data: users, error } = await supabase
+    .from('users')
+    .select('telegram_id')
+    .eq('is_banned', false)
+
+  if (error) {
+    console.error('[bot:task_reminder:users]', error)
+
+    return
+  }
+
+  const telegramIds = (users || [])
+    .map((user) => user.telegram_id)
+    .filter((id): id is number => typeof id === 'number')
+
+  if (telegramIds.length === 0) {
+    return
+  }
+
+  const text = [
+    '⏰ فيه مهام تنتظرك الحين في STORM!',
+    '',
+    `🎯 ${activeTasksCount} مهمة نشطة متاحة تقدر تسويها وتكسب نقاط فورًا.`,
+    '',
+    '🎮 لا تخلي النقاط تفوتك — افتح التطبيق وسوّي مهمة على طول.'
+  ].join('\n')
+
+  const keyboard = new InlineKeyboard()
+
+  if (config.webAppUrl) {
+    keyboard.webApp('🎮 افتح المهام الحين', config.webAppUrl)
+  }
+
+  const result = await broadcastToUsers(
+    telegramIds,
+    text,
+    40,
+    keyboard
+  )
+
+  console.log(
+    `[bot:task_reminder] sent=${result.sent} blocked=${result.blocked} failed=${result.failed} total=${result.total}`
+  )
+}
+
 async function resolveRole(
   telegramId: number
 ) {

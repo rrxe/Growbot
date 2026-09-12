@@ -31,6 +31,8 @@ const PRESETS = [
   2500
 ]
 
+const MIN_REFERRALS_TO_PUBLISH = 3
+
 export function Publish({
   user,
   onPublished
@@ -57,10 +59,8 @@ export function Publish({
     setDescription
   ] = useState('')
 
-  const [
-    reward,
-    setReward
-  ] = useState(10)
+  // مكافأة مهمة البوت أصبحت ثابتة (20 نقطة لكل تنفيذ) وما عادت قابلة للتعديل
+  const reward = 20
 
   const [
     title,
@@ -99,6 +99,14 @@ export function Publish({
     )
 
   async function submit() {
+    if (user.successful_referrals < MIN_REFERRALS_TO_PUBLISH) {
+      showAlert(
+        `يجب إتمام ${MIN_REFERRALS_TO_PUBLISH} إحالات ناجحة على الأقل قبل نشر أي حملة. رصيدك الحالي: ${user.successful_referrals}.`
+      )
+
+      return
+    }
+
     if (type === 'bot') {
       if (!botLink.trim()) {
         showAlert('أدخل رابط البوت.')
@@ -106,8 +114,8 @@ export function Publish({
         return
       }
 
-      if (reward < 10 || reward > 20) {
-        showAlert('مكافأة مهمة البوت يجب أن تكون بين 10 و20 نقطة.')
+      if (reward !== 20) {
+        showAlert('مكافأة مهمة البوت ثابتة عند 20 نقطة.')
 
         return
       }
@@ -249,6 +257,28 @@ export function Publish({
       </div>
 
 
+      {user.successful_referrals < MIN_REFERRALS_TO_PUBLISH && (
+        <div className="publish-warning">
+
+          <div className="warning-icon">
+            !
+          </div>
+
+          <div>
+            <strong>
+              النشر غير متاح بعد
+            </strong>
+
+            <p>
+              يجب إتمام {MIN_REFERRALS_TO_PUBLISH} إحالات ناجحة على الأقل قبل ما تقدر تنشر أي حملة.
+              رصيدك الحالي: {user.successful_referrals} من {MIN_REFERRALS_TO_PUBLISH}.
+            </p>
+          </div>
+
+        </div>
+      )}
+
+
       <div className="field-section">
         <label>
           النوع
@@ -366,26 +396,16 @@ export function Publish({
 
           <div className="field-section">
             <label>
-              مكافأة كل تنفيذ (10 - 20)
+              مكافأة كل تنفيذ
             </label>
 
-            <input
-              type="number"
-              min={10}
-              max={20}
-              value={reward}
-              onChange={event =>
-                setReward(
-                  Math.max(
-                    10,
-                    Math.min(
-                      20,
-                      Number(event.target.value) || 10
-                    )
-                  )
-                )
-              }
-            />
+            <div className="field-static-value">
+              20 نقطة (ثابتة)
+            </div>
+
+            <small className="field-help">
+              تكلفة تنفيذ مهمة البوت أصبحت ثابتة عند 20 نقطة لكل مُنفّذ.
+            </small>
           </div>
         </>
       ) : (
@@ -538,7 +558,8 @@ export function Publish({
         className="publish-submit"
         disabled={
           busy ||
-          maxBudget < 5
+          maxBudget < 5 ||
+          user.successful_referrals < MIN_REFERRALS_TO_PUBLISH
         }
         onClick={() =>
           void submit()
@@ -546,9 +567,11 @@ export function Publish({
       >
         {busy
           ? 'جاري إنشاء الحملة...'
-          : maxBudget < 5
-            ? 'رصيد غير كافٍ'
-            : `إطلاق الحملة — ${budget.toLocaleString('en-US')} نقطة`}
+          : user.successful_referrals < MIN_REFERRALS_TO_PUBLISH
+            ? `يلزم ${MIN_REFERRALS_TO_PUBLISH} إحالات ناجحة للنشر`
+            : maxBudget < 5
+              ? 'رصيد غير كافٍ'
+              : `إطلاق الحملة — ${budget.toLocaleString('en-US')} نقطة`}
       </button>
 
     </section>

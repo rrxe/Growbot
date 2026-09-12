@@ -1,7 +1,10 @@
 import { runVerificationJob } from './verification.js'
 import { runOwnerReviewAutoApproveJob } from './owner-review.js'
+import { runTaskReminderJob } from './task-reminder.js'
 
 let started = false
+
+const ONE_HOUR_MS = 60 * 60 * 1000
 
 export function startJobs() {
   if (started) {
@@ -25,5 +28,13 @@ export function startJobs() {
       void runOwnerReviewAutoApproveJob()
     },
     60 * 1000
+  )
+
+  // تذكير دوري كل ساعة لكل الأعضاء بوجود مهام متاحة (ما يرسل شي إذا ما في مهام نشطة)
+  setInterval(
+    () => {
+      void runTaskReminderJob()
+    },
+    ONE_HOUR_MS
   )
 }
