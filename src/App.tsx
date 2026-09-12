@@ -284,7 +284,7 @@ export default function App() {
       }, delay)
     }
 
-    schedule(4000)
+    schedule(10000)
 
     return () => {
       cancelled = true
