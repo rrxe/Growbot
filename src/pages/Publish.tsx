@@ -100,6 +100,10 @@ export function Publish({
       ? MIN_BOT_BUDGET
       : MIN_CHAT_BUDGET
 
+  // المطلوب مو "3 مهام مدى الحياة" بل "3 مهام جديدة بعد آخر حملة نشرتها"
+  const tasksSinceLastPublish =
+    user.completed_tasks - (user.tasks_at_last_publish || 0)
+
   // كل ما تغيّر نوع الحملة، نصحّح الميزانية عشان تضل تحترم الحد الأدنى الجديد
   // ومضاعفات المكافأة (بدل ما تضل عالقة على قيمة صالحة للنوع القديم بس).
   useEffect(() => {
@@ -123,9 +127,9 @@ export function Publish({
     )
 
   async function submit() {
-    if (user.completed_tasks < MIN_TASKS_TO_PUBLISH) {
+    if (tasksSinceLastPublish < MIN_TASKS_TO_PUBLISH) {
       showAlert(
-        `يجب إتمام ${MIN_TASKS_TO_PUBLISH} مهام على الأقل قبل نشر أي حملة. رصيدك الحالي: ${user.completed_tasks}.`
+        `يجب إتمام ${MIN_TASKS_TO_PUBLISH} مهام جديدة بعد آخر حملة نشرتها. رصيدك الحالي: ${tasksSinceLastPublish}.`
       )
 
       return
@@ -281,7 +285,7 @@ export function Publish({
       </div>
 
 
-      {user.completed_tasks < MIN_TASKS_TO_PUBLISH && (
+      {tasksSinceLastPublish < MIN_TASKS_TO_PUBLISH && (
         <div className="publish-warning">
 
           <div className="warning-icon">
@@ -294,8 +298,8 @@ export function Publish({
             </strong>
 
             <p>
-              يجب إتمام {MIN_TASKS_TO_PUBLISH} مهام على الأقل قبل ما تقدر تنشر أي حملة.
-              رصيدك الحالي: {user.completed_tasks} من {MIN_TASKS_TO_PUBLISH}.
+              يجب إتمام {MIN_TASKS_TO_PUBLISH} مهام جديدة بعد آخر حملة نشرتها.
+              رصيدك الحالي: {tasksSinceLastPublish} من {MIN_TASKS_TO_PUBLISH}.
             </p>
           </div>
 
@@ -584,7 +588,7 @@ export function Publish({
         disabled={
           busy ||
           maxBudget < minBudget ||
-          user.completed_tasks < MIN_TASKS_TO_PUBLISH
+          tasksSinceLastPublish < MIN_TASKS_TO_PUBLISH
         }
         onClick={() =>
           void submit()
@@ -592,7 +596,7 @@ export function Publish({
       >
         {busy
           ? 'جاري إنشاء الحملة...'
-          : user.completed_tasks < MIN_TASKS_TO_PUBLISH
+          : tasksSinceLastPublish < MIN_TASKS_TO_PUBLISH
             ? `يلزم ${MIN_TASKS_TO_PUBLISH} مهام للنشر`
             : maxBudget < minBudget
               ? `رصيد غير كافٍ (الحد الأدنى ${minBudget} نقطة)`

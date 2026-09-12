@@ -25,6 +25,7 @@ export interface User {
   points: number
   completed_tasks: number
   successful_referrals: number
+  tasks_at_last_publish: number
   referral_code: string
 }
 

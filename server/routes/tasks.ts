@@ -173,9 +173,17 @@ tasksRouter.post(
       const completedTasks =
         Number(req.dbUser.completed_tasks || 0)
 
-      if (completedTasks < MIN_TASKS_TO_PUBLISH) {
+      // المطلوب مو "3 مهام مدى الحياة" بل "3 مهام جديدة بعد آخر حملة نشرها"،
+      // عشان ما يقدر ينشر حملة ورا حملة برصيد مهام قديم.
+      const tasksAtLastPublish =
+        Number(req.dbUser.tasks_at_last_publish || 0)
+
+      const tasksSinceLastPublish =
+        completedTasks - tasksAtLastPublish
+
+      if (tasksSinceLastPublish < MIN_TASKS_TO_PUBLISH) {
         return res.status(403).json({
-          error: `يجب إتمام ${MIN_TASKS_TO_PUBLISH} مهام على الأقل قبل نشر أي حملة.`
+          error: `يجب إتمام ${MIN_TASKS_TO_PUBLISH} مهام جديدة على الأقل بعد آخر حملة نشرتها.`
         })
       }
 
@@ -258,6 +266,11 @@ tasksRouter.post(
           }
           new_balance: number
         }
+
+        await supabase
+          .from('users')
+          .update({ tasks_at_last_publish: completedTasks })
+          .eq('id', req.dbUser.id)
 
         return res.json({
           task: botPayload.task,
@@ -506,6 +519,11 @@ tasksRouter.post(
           task: unknown
           new_balance: number
         }
+
+      await supabase
+        .from('users')
+        .update({ tasks_at_last_publish: completedTasks })
+        .eq('id', req.dbUser.id)
 
       res.json({
         task:
