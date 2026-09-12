@@ -100,9 +100,12 @@ export function Publish({
       ? MIN_BOT_BUDGET
       : MIN_CHAT_BUDGET
 
-  // المطلوب مو "3 مهام مدى الحياة" بل "3 مهام جديدة بعد آخر حملة نشرتها"
+  // المطلوب مو "3 مهام مدى الحياة" بل "3 مهام جديدة بعد آخر حملة نشرتها" —
+  // وحساب الـ owner معفي من هذا الشرط بالكامل
   const tasksSinceLastPublish =
-    user.completed_tasks - (user.tasks_at_last_publish || 0)
+    user.is_owner
+      ? MIN_TASKS_TO_PUBLISH
+      : user.completed_tasks - (user.tasks_at_last_publish || 0)
 
   // كل ما تغيّر نوع الحملة، نصحّح الميزانية عشان تضل تحترم الحد الأدنى الجديد
   // ومضاعفات المكافأة (بدل ما تضل عالقة على قيمة صالحة للنوع القديم بس).

@@ -21,6 +21,10 @@ import {
   notifyCompletionDecision
 } from '../../bot/index.js'
 
+import {
+  resolveAdminRole
+} from '../lib/admin-auth.js'
+
 export const tasksRouter =
   Router()
 
@@ -181,7 +185,19 @@ tasksRouter.post(
       const tasksSinceLastPublish =
         completedTasks - tasksAtLastPublish
 
-      if (tasksSinceLastPublish < MIN_TASKS_TO_PUBLISH) {
+      // حساب الـ owner (وكذا الأدمن) معفي من شرط "3 مهام" قبل النشر
+      const publisherRole =
+        await resolveAdminRole(
+          req.dbUser.telegram_id
+        ).catch(() => null)
+
+      const isExemptFromTaskGate =
+        publisherRole === 'owner'
+
+      if (
+        !isExemptFromTaskGate &&
+        tasksSinceLastPublish < MIN_TASKS_TO_PUBLISH
+      ) {
         return res.status(403).json({
           error: `يجب إتمام ${MIN_TASKS_TO_PUBLISH} مهام جديدة على الأقل بعد آخر حملة نشرتها.`
         })

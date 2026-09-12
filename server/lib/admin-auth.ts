@@ -26,7 +26,7 @@ declare global {
   }
 }
 
-async function resolveAdminRole(
+export async function resolveAdminRole(
   telegramId: number
 ): Promise<AdminRole | null> {
   const ownerId =

@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { config } from '../lib/config.js'
 import { supabase } from '../lib/supabase.js'
 import { authMiddleware } from '../lib/auth.js'
+import { resolveAdminRole } from '../lib/admin-auth.js'
 import { getRequiredChannelsStatus } from '../lib/required-channels.js'
 
 export const meRouter =
@@ -15,6 +16,12 @@ meRouter.get(
   async (req, res, next) => {
     try {
       const user = req.dbUser
+
+      // نعلّم حساب الـ owner عشان الواجهة تعفيه من شرط "3 مهام قبل النشر"
+      const role =
+        await resolveAdminRole(user.telegram_id).catch(() => null)
+
+      user.is_owner = role === 'owner'
       const requiredChannelStatus = await getRequiredChannelsStatus(user.telegram_id)
       const requiredChannels = requiredChannelStatus.map((channel) => ({
         id: channel.id,
