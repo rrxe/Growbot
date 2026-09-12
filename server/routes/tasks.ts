@@ -166,14 +166,14 @@ tasksRouter.post(
     try {
       const settings = await getSettings()
 
-      const MIN_REFERRALS_TO_PUBLISH = 3
+      const MIN_TASKS_TO_PUBLISH = 3
 
-      const successfulReferrals =
-        Number(req.dbUser.successful_referrals || 0)
+      const completedTasks =
+        Number(req.dbUser.completed_tasks || 0)
 
-      if (successfulReferrals < MIN_REFERRALS_TO_PUBLISH) {
+      if (completedTasks < MIN_TASKS_TO_PUBLISH) {
         return res.status(403).json({
-          error: `يجب إتمام ${MIN_REFERRALS_TO_PUBLISH} إحالات ناجحة على الأقل قبل نشر أي حملة.`
+          error: `يجب إتمام ${MIN_TASKS_TO_PUBLISH} مهام على الأقل قبل نشر أي حملة.`
         })
       }
 

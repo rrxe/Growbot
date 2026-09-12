@@ -31,7 +31,7 @@ const PRESETS = [
   2500
 ]
 
-const MIN_REFERRALS_TO_PUBLISH = 3
+const MIN_TASKS_TO_PUBLISH = 3
 
 export function Publish({
   user,
@@ -99,9 +99,9 @@ export function Publish({
     )
 
   async function submit() {
-    if (user.successful_referrals < MIN_REFERRALS_TO_PUBLISH) {
+    if (user.completed_tasks < MIN_TASKS_TO_PUBLISH) {
       showAlert(
-        `يجب إتمام ${MIN_REFERRALS_TO_PUBLISH} إحالات ناجحة على الأقل قبل نشر أي حملة. رصيدك الحالي: ${user.successful_referrals}.`
+        `يجب إتمام ${MIN_TASKS_TO_PUBLISH} مهام على الأقل قبل نشر أي حملة. رصيدك الحالي: ${user.completed_tasks}.`
       )
 
       return
@@ -257,7 +257,7 @@ export function Publish({
       </div>
 
 
-      {user.successful_referrals < MIN_REFERRALS_TO_PUBLISH && (
+      {user.completed_tasks < MIN_TASKS_TO_PUBLISH && (
         <div className="publish-warning">
 
           <div className="warning-icon">
@@ -270,8 +270,8 @@ export function Publish({
             </strong>
 
             <p>
-              يجب إتمام {MIN_REFERRALS_TO_PUBLISH} إحالات ناجحة على الأقل قبل ما تقدر تنشر أي حملة.
-              رصيدك الحالي: {user.successful_referrals} من {MIN_REFERRALS_TO_PUBLISH}.
+              يجب إتمام {MIN_TASKS_TO_PUBLISH} مهام على الأقل قبل ما تقدر تنشر أي حملة.
+              رصيدك الحالي: {user.completed_tasks} من {MIN_TASKS_TO_PUBLISH}.
             </p>
           </div>
 
@@ -559,7 +559,7 @@ export function Publish({
         disabled={
           busy ||
           maxBudget < 5 ||
-          user.successful_referrals < MIN_REFERRALS_TO_PUBLISH
+          user.completed_tasks < MIN_TASKS_TO_PUBLISH
         }
         onClick={() =>
           void submit()
@@ -567,8 +567,8 @@ export function Publish({
       >
         {busy
           ? 'جاري إنشاء الحملة...'
-          : user.successful_referrals < MIN_REFERRALS_TO_PUBLISH
-            ? `يلزم ${MIN_REFERRALS_TO_PUBLISH} إحالات ناجحة للنشر`
+          : user.completed_tasks < MIN_TASKS_TO_PUBLISH
+            ? `يلزم ${MIN_TASKS_TO_PUBLISH} مهام للنشر`
             : maxBudget < 5
               ? 'رصيد غير كافٍ'
               : `إطلاق الحملة — ${budget.toLocaleString('en-US')} نقطة`}
