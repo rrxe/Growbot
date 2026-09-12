@@ -1225,6 +1225,13 @@
 
 
         <div class="user-section-label">
+          طرق جمع النقاط
+        </div>
+
+        <div id="userTransactions"></div>
+
+
+        <div class="user-section-label">
           تعديل النقاط
         </div>
 
@@ -1898,6 +1905,70 @@ function formatDate(value) {
 }
 
 
+// وقت نسبي (قبل 5 دقائق / قبل ساعة / قبل يوم...) بدل التاريخ المطلق
+function formatRelativeTime(value) {
+  if (!value) {
+    return '-'
+  }
+
+  const date =
+    new Date(value)
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return '-'
+  }
+
+  const diffSeconds =
+    Math.round(
+      (Date.now() - date.getTime()) / 1000
+    )
+
+  if (diffSeconds < 0) {
+    return formatDate(value)
+  }
+
+  if (diffSeconds < 10) {
+    return 'الآن'
+  }
+
+  const units = [
+    { limit: 60, divisor: 1, singular: 'ثانية', plural: 'ثواني' },
+    { limit: 3600, divisor: 60, singular: 'دقيقة', plural: 'دقائق' },
+    { limit: 86400, divisor: 3600, singular: 'ساعة', plural: 'ساعات' },
+    { limit: 2592000, divisor: 86400, singular: 'يوم', plural: 'أيام' },
+    { limit: 31536000, divisor: 2592000, singular: 'شهر', plural: 'أشهر' },
+    { limit: Infinity, divisor: 31536000, singular: 'سنة', plural: 'سنوات' }
+  ]
+
+  for (const unit of units) {
+    if (diffSeconds < unit.limit) {
+      const count =
+        Math.floor(diffSeconds / unit.divisor)
+
+      if (count <= 1) {
+        return `قبل ${unit.singular}`
+      }
+
+      if (count === 2) {
+        return `قبل ${unit.singular}تين`
+      }
+
+      if (count >= 3 && count <= 10) {
+        return `قبل ${count} ${unit.plural}`
+      }
+
+      return `قبل ${count} ${unit.singular}`
+    }
+  }
+
+  return formatDate(value)
+}
+
+
 function toast(message) {
   const box =
     document.getElementById(
@@ -2519,6 +2590,86 @@ async function searchUser() {
 }
 
 
+const TRANSACTION_TYPE_LABELS = {
+  task_reward: '🎯 مكافأة تنفيذ مهمة',
+  campaign_refund: '📢 حجز/استرجاع ميزانية حملة',
+  referral_reward: '🤝 مكافأة إحالة',
+  referral: '🤝 مكافأة إحالة',
+  daily_checkin: '📅 تسجيل حضور يومي',
+  daily_checkin_points: '📅 تسجيل حضور يومي',
+  adsgram_reward: '📺 مشاهدة إعلان',
+  admin_adjustment: '🛠️ تعديل يدوي من الإدارة'
+}
+
+function transactionTypeLabel(type) {
+  return (
+    TRANSACTION_TYPE_LABELS[type] ||
+    type ||
+    'عملية'
+  )
+}
+
+// يعرض سجل نقاط المستخدم المحدد (كيف جمع نقاطه بالضبط) داخل بطاقة بحث اللاعب
+function renderUserTransactions(transactions) {
+  const container =
+    document.getElementById(
+      'userTransactions'
+    )
+
+  container.innerHTML = ''
+
+  if (!transactions?.length) {
+    container.innerHTML =
+      '<div class="empty">لا توجد عمليات نقاط لهذا المستخدم.</div>'
+
+    return
+  }
+
+  transactions.forEach(
+    transaction => {
+      const amount =
+        Number(transaction.amount)
+
+      const row =
+        document.createElement('div')
+
+      row.style.display = 'flex'
+      row.style.justifyContent = 'space-between'
+      row.style.alignItems = 'center'
+      row.style.padding = '8px 0'
+      row.style.borderBottom = '1px solid var(--line)'
+      row.style.gap = '8px'
+
+      row.innerHTML = `
+        <div style="min-width:0">
+          <strong style="font-size:9px">
+            ${transactionTypeLabel(transaction.transaction_type)}
+          </strong>
+
+          <div style="color:var(--muted);font-size:8px;margin-top:2px">
+            ${transaction.description || ''}
+          </div>
+
+          <div style="color:var(--muted);font-size:7px;margin-top:2px">
+            ${formatRelativeTime(transaction.created_at)}
+          </div>
+        </div>
+
+        <strong style="
+          color:${amount >= 0 ? 'var(--lime)' : 'var(--red)'};
+          font-family:monospace;
+          white-space:nowrap;
+        ">
+          ${amount > 0 ? '+' : ''}${formatNumber(amount)}
+        </strong>
+      `
+
+      container.appendChild(row)
+    }
+  )
+}
+
+
 async function openUser(
   telegramId
 ) {
@@ -2613,9 +2764,13 @@ async function openUser(
   document.getElementById(
     'userLastSeen'
   ).textContent =
-    formatDate(
+    formatRelativeTime(
       currentUser.last_seen_at
     )
+
+  renderUserTransactions(
+    data.transactions
+  )
 
   const button =
     document.getElementById(
