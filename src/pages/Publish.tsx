@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useMemo,
   useState
 } from 'react'
@@ -32,6 +33,11 @@ const PRESETS = [
 ]
 
 const MIN_TASKS_TO_PUBLISH = 3
+
+// الحد الأدنى لميزانية الحملة حسب النوع — يضمن على الأقل 3 تنفيذات لمهمة البوت
+// و10 تنفيذات لمهمة القناة/المجموعة
+const MIN_BOT_BUDGET = 60
+const MIN_CHAT_BUDGET = 50
 
 export function Publish({
   user,
@@ -89,6 +95,24 @@ export function Publish({
       user.points / 5
     ) * 5
 
+  const minBudget =
+    type === 'bot'
+      ? MIN_BOT_BUDGET
+      : MIN_CHAT_BUDGET
+
+  // كل ما تغيّر نوع الحملة، نصحّح الميزانية عشان تضل تحترم الحد الأدنى الجديد
+  // ومضاعفات المكافأة (بدل ما تضل عالقة على قيمة صالحة للنوع القديم بس).
+  useEffect(() => {
+    const step = type === 'bot' ? reward : 5
+
+    setBudget((current) => {
+      const target = Math.max(minBudget, Math.min(maxBudget || minBudget, current))
+
+      return Math.ceil(target / step) * step
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type])
+
   const members =
     useMemo(
       () =>
@@ -120,8 +144,8 @@ export function Publish({
         return
       }
 
-      if (budget < reward || budget % reward !== 0) {
-        showAlert(`الميزانية يجب أن تكون من مضاعفات ${reward}.`)
+      if (budget < MIN_BOT_BUDGET || budget % reward !== 0) {
+        showAlert(`الحد الأدنى لميزانية حملة البوت هو ${MIN_BOT_BUDGET} نقطة (3 تنفيذات على الأقل)، ويجب أن تكون من مضاعفات ${reward}.`)
 
         return
       }
@@ -135,10 +159,10 @@ export function Publish({
 
     if (
       budget <
-      5
+      minBudget
     ) {
       showAlert(
-        'الحد الأدنى لميزانية الحملة هو 5 نقاط.'
+        `الحد الأدنى لميزانية الحملة هو ${minBudget} نقطة.`
       )
 
       return
@@ -469,6 +493,7 @@ export function Publish({
               amount =>
                 amount <=
                 maxBudget &&
+                amount >= minBudget &&
                 (type !== 'bot' || amount % reward === 0)
             )
             .map(
@@ -498,21 +523,21 @@ export function Publish({
         <div className="custom-budget">
           <input
             type="number"
-            min={type === 'bot' ? reward : 5}
+            min={minBudget}
             step={type === 'bot' ? reward : 5}
             max={maxBudget}
             value={budget}
             onChange={event =>
               setBudget(
                 Math.max(
-                  type === 'bot' ? reward : 5,
+                  minBudget,
                   Math.min(
                     maxBudget ||
-                      5,
+                      minBudget,
                     Number(
                       event.target
                         .value
-                    ) || 5
+                    ) || minBudget
                   )
                 )
               )
@@ -558,7 +583,7 @@ export function Publish({
         className="publish-submit"
         disabled={
           busy ||
-          maxBudget < 5 ||
+          maxBudget < minBudget ||
           user.completed_tasks < MIN_TASKS_TO_PUBLISH
         }
         onClick={() =>
@@ -569,8 +594,8 @@ export function Publish({
           ? 'جاري إنشاء الحملة...'
           : user.completed_tasks < MIN_TASKS_TO_PUBLISH
             ? `يلزم ${MIN_TASKS_TO_PUBLISH} مهام للنشر`
-            : maxBudget < 5
-              ? 'رصيد غير كافٍ'
+            : maxBudget < minBudget
+              ? `رصيد غير كافٍ (الحد الأدنى ${minBudget} نقطة)`
               : `إطلاق الحملة — ${budget.toLocaleString('en-US')} نقطة`}
       </button>
 

@@ -4,7 +4,7 @@ import { runTaskReminderJob } from './task-reminder.js'
 
 let started = false
 
-const ONE_HOUR_MS = 60 * 60 * 1000
+const REMINDER_INTERVAL_MS = 3 * 60 * 60 * 1000
 
 export function startJobs() {
   if (started) {
@@ -35,6 +35,6 @@ export function startJobs() {
     () => {
       void runTaskReminderJob()
     },
-    ONE_HOUR_MS
+    REMINDER_INTERVAL_MS
   )
 }

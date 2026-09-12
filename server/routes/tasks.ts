@@ -167,6 +167,8 @@ tasksRouter.post(
       const settings = await getSettings()
 
       const MIN_TASKS_TO_PUBLISH = 3
+      const MIN_BOT_BUDGET = 60
+      const MIN_CHAT_BUDGET = 50
 
       const completedTasks =
         Number(req.dbUser.completed_tasks || 0)
@@ -208,11 +210,11 @@ tasksRouter.post(
 
         if (
           !Number.isInteger(budget) ||
-          budget < reward ||
+          budget < MIN_BOT_BUDGET ||
           budget % reward !== 0
         ) {
           return res.status(400).json({
-            error: `الميزانية يجب أن تكون من مضاعفات ${reward}.`
+            error: `الحد الأدنى لميزانية حملة البوت هو ${MIN_BOT_BUDGET} نقطة، ويجب أن تكون من مضاعفات ${reward}.`
           })
         }
 
@@ -298,7 +300,7 @@ tasksRouter.post(
           budget
         ) ||
         budget <
-          settings.pointsPerTask ||
+          MIN_CHAT_BUDGET ||
         budget %
             settings.pointsPerTask !==
           0
@@ -307,7 +309,7 @@ tasksRouter.post(
           .status(400)
           .json({
             error:
-              `الميزانية يجب أن تكون من مضاعفات ${settings.pointsPerTask}.`
+              `الحد الأدنى لميزانية حملة القناة/المجموعة هو ${MIN_CHAT_BUDGET} نقطة، ويجب أن تكون من مضاعفات ${settings.pointsPerTask}.`
           })
       }
 
