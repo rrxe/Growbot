@@ -440,45 +440,31 @@ export function Home({
             </strong>
 
             <span>
-              بتاخد +{DAILY_CHECKIN_POINTS} نقطة أوتوماتيك بعد ما تسوي {checkinTasksProgress.tasksRequired} مهام كل يوم
+              {checkedInToday
+                ? `أخذت +${DAILY_CHECKIN_POINTS} نقطة اليوم`
+                : checkinTasksProgress.tasksToday < checkinTasksProgress.tasksRequired
+                  ? `سويت ${checkinTasksProgress.tasksToday} من ${checkinTasksProgress.tasksRequired} مهام`
+                  : `+${DAILY_CHECKIN_POINTS} نقطة تلقائيًا`}
             </span>
           </div>
 
           <div className={`checkin-status-badge${checkedInToday ? ' done' : checkinTasksProgress.tasksToday < checkinTasksProgress.tasksRequired ? ' locked' : ''}`}>
             {checkedInToday
-              ? 'تم اليوم ✓'
+              ? 'تم ✓'
               : checkinTasksProgress.tasksToday < checkinTasksProgress.tasksRequired
-                ? '🔒 يحتاج مهام'
+                ? '🔒 مقفول'
                 : 'رح تنضاف'}
           </div>
 
         </div>
 
-
-        {!checkedInToday && checkinTasksProgress.tasksToday < checkinTasksProgress.tasksRequired ? (
-          <div className="checkin-meta">
-            <span>
-              لازم تسوي {checkinTasksProgress.tasksRequired} مهام اليوم عشان تسجيل الدخول ينضاف —
-              سويت {checkinTasksProgress.tasksToday} من {checkinTasksProgress.tasksRequired}
-            </span>
-
-            <button
-              className="checkin-tasks-cta"
-              onClick={() => onNavigate('tasks')}
-            >
-              سوّي مهمة →
-            </button>
-          </div>
-        ) : (
-          <div className="checkin-meta">
-            <span>
-              ما في زر تضغطه — بتتحدد أوتوماتيك
-            </span>
-
-            <span>
-              مرة كل يوم
-            </span>
-          </div>
+        {!checkedInToday && checkinTasksProgress.tasksToday < checkinTasksProgress.tasksRequired && (
+          <button
+            className="checkin-tasks-cta checkin-tasks-cta-full"
+            onClick={() => onNavigate('tasks')}
+          >
+            سوّي مهمة →
+          </button>
         )}
 
       </section>

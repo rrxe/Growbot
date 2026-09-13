@@ -330,9 +330,15 @@ export function Profile({
           <div className="my-tasks-empty">
             <p>لسا ما نشرت أي مهمة.</p>
           </div>
+        ) : myTasks.filter((task) => task.status === 'active').length === 0 ? (
+          <div className="my-tasks-empty">
+            <p>ما عندك مهام نشطة حاليًا.</p>
+          </div>
         ) : (
           <div className="my-task-list">
-            {myTasks.map((task) => {
+            {myTasks
+              .filter((task) => task.status === 'active')
+              .map((task) => {
               const percent =
                 task.target_completions > 0
                   ? Math.min(
