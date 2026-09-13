@@ -69,11 +69,27 @@ meRouter.get(
       }
 
       // تسجيل الدخول اليومي تلقائي: أول مرة يفتح المستخدم التطبيق كل يوم
-      // منحاول نمنحه المكافأة مباشرة بدون أي زر أو إجراء منه.
+      // منحاول نمنحه المكافأة مباشرة بدون أي زر أو إجراء منه — بشرط إنه
+      // يكون سوّى مهمتين على الأقل اليوم (التحقق الحقيقي داخل claim_daily_checkin).
+      const REQUIRED_TASKS_FOR_CHECKIN = 2
+
+      const todayStart = new Date()
+      todayStart.setUTCHours(0, 0, 0, 0)
+
+      const { count: tasksCompletedToday } =
+        await supabase
+          .from('task_completions')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('status', 'verified')
+          .gte('verified_at', todayStart.toISOString())
+
       let dailyCheckin = {
         claimedToday: true,
         justClaimed: false,
-        points: DAILY_CHECKIN_POINTS
+        points: DAILY_CHECKIN_POINTS,
+        tasksToday: Number(tasksCompletedToday || 0),
+        tasksRequired: REQUIRED_TASKS_FOR_CHECKIN
       }
 
       const { data: checkinResult, error: checkinError } =
@@ -92,7 +108,21 @@ meRouter.get(
         dailyCheckin = {
           claimedToday: true,
           justClaimed: true,
-          points: DAILY_CHECKIN_POINTS
+          points: DAILY_CHECKIN_POINTS,
+          tasksToday: Number(tasksCompletedToday || 0),
+          tasksRequired: REQUIRED_TASKS_FOR_CHECKIN
+        }
+      } else if (
+        checkinError &&
+        checkinError.message.includes('TASKS_REQUIRED')
+      ) {
+        // ما وصل للحد المطلوب من المهام بعد — نعرض حالته بدون تسجيل كخطأ
+        dailyCheckin = {
+          claimedToday: false,
+          justClaimed: false,
+          points: DAILY_CHECKIN_POINTS,
+          tasksToday: Number(tasksCompletedToday || 0),
+          tasksRequired: REQUIRED_TASKS_FOR_CHECKIN
         }
       } else if (
         checkinError &&

@@ -213,6 +213,21 @@
   background: rgba(117,169,255,.12);
 }
 
+.checkin-status-badge.locked {
+  color: #ffce6b;
+  background: rgba(255,206,107,.12);
+}
+
+.checkin-tasks-cta {
+  border: none;
+  background: linear-gradient(90deg, #2f6fff, #75a9ff);
+  color: #04070f;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
 .checkin-meta {
   display: flex;
   justify-content: space-between;

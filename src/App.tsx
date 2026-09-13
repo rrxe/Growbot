@@ -44,6 +44,8 @@ export default function App() {
   const [membershipChecking, setMembershipChecking] = useState(false)
   const [membershipStatusReady, setMembershipStatusReady] = useState(false)
   const [checkedInToday, setCheckedInToday] = useState(false)
+  const [checkinTasksProgress, setCheckinTasksProgress] =
+    useState({ tasksToday: 0, tasksRequired: 2 })
   const [referral, setReferral] = useState<MeResponse['referral'] | null>(null)
   const [browseTasks, setBrowseTasks] = useState<Task[]>([])
   const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([])
@@ -96,6 +98,10 @@ export default function App() {
       setRequiredChannels(Array.isArray(meResponse.requiredChannels) ? meResponse.requiredChannels : [])
       setUser(meResponse.user)
       setCheckedInToday(meResponse.dailyCheckin.claimedToday)
+      setCheckinTasksProgress({
+        tasksToday: meResponse.dailyCheckin.tasksToday,
+        tasksRequired: meResponse.dailyCheckin.tasksRequired
+      })
       setReferral(meResponse.referral)
 
       // الحساب المتعدد:
@@ -294,10 +300,13 @@ export default function App() {
 
   if (splashVisible) {
     return (
-      <SplashScreen
-        progress={splashProgress}
-        fading={splashFading}
-      />
+      <>
+        <SplashScreen
+          progress={splashProgress}
+          fading={splashFading}
+        />
+        <AppModal />
+      </>
     )
   }
 
@@ -310,6 +319,8 @@ export default function App() {
           onVerify={verifyMembership}
           onOpen={openTelegramLink}
         />
+
+        <AppModal />
       </div>
     )
   }
@@ -328,6 +339,8 @@ export default function App() {
             إعادة المحاولة
           </button>
         </div>
+
+        <AppModal />
       </div>
     )
   }
@@ -343,6 +356,7 @@ export default function App() {
           <Home
             user={user}
             checkedInToday={checkedInToday}
+            checkinTasksProgress={checkinTasksProgress}
             initialAdsgramWatched={adsgramStatus?.watched}
             initialAdsgramRemaining={adsgramStatus?.remaining}
             onNavigate={setScreen}

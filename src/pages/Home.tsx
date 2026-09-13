@@ -37,6 +37,10 @@ import '../styles/home.css'
 interface Props {
   user: User
   checkedInToday: boolean
+  checkinTasksProgress: {
+    tasksToday: number
+    tasksRequired: number
+  }
   initialAdsgramWatched?: number
   initialAdsgramRemaining?: number
   onNavigate: (
@@ -78,6 +82,7 @@ const STAR_PACKAGES = [
 export function Home({
   user,
   checkedInToday,
+  checkinTasksProgress,
   initialAdsgramWatched,
   initialAdsgramRemaining,
   onNavigate,
@@ -435,28 +440,46 @@ export function Home({
             </strong>
 
             <span>
-              بتاخد +{DAILY_CHECKIN_POINTS} نقطة أوتوماتيك أول ما تفتح التطبيق كل يوم
+              بتاخد +{DAILY_CHECKIN_POINTS} نقطة أوتوماتيك بعد ما تسوي {checkinTasksProgress.tasksRequired} مهام كل يوم
             </span>
           </div>
 
-          <div className="checkin-status-badge done">
+          <div className={`checkin-status-badge${checkedInToday ? ' done' : checkinTasksProgress.tasksToday < checkinTasksProgress.tasksRequired ? ' locked' : ''}`}>
             {checkedInToday
               ? 'تم اليوم ✓'
-              : 'رح تنضاف'}
+              : checkinTasksProgress.tasksToday < checkinTasksProgress.tasksRequired
+                ? '🔒 يحتاج مهام'
+                : 'رح تنضاف'}
           </div>
 
         </div>
 
 
-        <div className="checkin-meta">
-          <span>
-            ما في زر تضغطه — بتتحدد أوتوماتيك
-          </span>
+        {!checkedInToday && checkinTasksProgress.tasksToday < checkinTasksProgress.tasksRequired ? (
+          <div className="checkin-meta">
+            <span>
+              لازم تسوي {checkinTasksProgress.tasksRequired} مهام اليوم عشان تسجيل الدخول ينضاف —
+              سويت {checkinTasksProgress.tasksToday} من {checkinTasksProgress.tasksRequired}
+            </span>
 
-          <span>
-            مرة كل يوم
-          </span>
-        </div>
+            <button
+              className="checkin-tasks-cta"
+              onClick={() => onNavigate('tasks')}
+            >
+              سوّي مهمة →
+            </button>
+          </div>
+        ) : (
+          <div className="checkin-meta">
+            <span>
+              ما في زر تضغطه — بتتحدد أوتوماتيك
+            </span>
+
+            <span>
+              مرة كل يوم
+            </span>
+          </div>
+        )}
 
       </section>
 

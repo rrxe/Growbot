@@ -104,6 +104,8 @@ export interface MeResponse {
     claimedToday: boolean
     justClaimed: boolean
     points: number
+    tasksToday: number
+    tasksRequired: number
   }
   referral: {
     code: string
