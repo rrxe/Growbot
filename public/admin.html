@@ -1,0 +1,3942 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0b0a12"
+  >
+
+  <title>STORMy Admin</title>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    :root {
+      --bg:#0b0a12;
+      --surface:#141220;
+      --surface2:#1c192d;
+      --surface3:#242039;
+      --line:#2c2845;
+      --lime:#d4ff3d;
+      --blue:#5aa7ff;
+      --red:#ff6b4a;
+      --purple:#aa8cff;
+      --text:#f7f5ff;
+      --muted:#8f8aa8;
+      --muted2:#69647f;
+    }
+
+    * {
+      box-sizing:border-box;
+    }
+
+    body {
+      margin:0;
+      background:#050509;
+      color:var(--text);
+      font-family:Tajawal,system-ui,sans-serif;
+    }
+
+    button,
+    input,
+    select {
+      font:inherit;
+    }
+
+    button {
+      cursor:pointer;
+    }
+
+    button:disabled {
+      opacity:.5;
+      cursor:not-allowed;
+    }
+
+    .app {
+      width:100%;
+      max-width:1100px;
+      min-height:100vh;
+      margin:auto;
+      background:var(--bg);
+    }
+
+    .topbar {
+      position:sticky;
+      top:0;
+      z-index:30;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      padding:14px 18px;
+
+      background:rgba(11,10,18,.95);
+      backdrop-filter:blur(16px);
+
+      border-bottom:1px solid var(--line);
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .logo {
+      flex:0 0 40px;
+      width:40px;
+      height:40px;
+      display:grid;
+      place-items:center;
+
+      border-radius:12px;
+
+      background:linear-gradient(135deg,var(--lime),#7cff9c);
+      color:#0f0e1b;
+
+      font-weight:900;
+      font-size:18px;
+    }
+
+    .brand-title {
+      font-size:14px;
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .brand-sub {
+      margin-top:2px;
+      color:var(--muted);
+      font-size:8.5px;
+    }
+
+    .role {
+      flex:0 0 auto;
+      padding:7px 10px;
+      border-radius:10px;
+
+      color:var(--lime);
+      background:rgba(212,255,61,.08);
+      border:1px solid rgba(212,255,61,.18);
+
+      font-size:9px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .layout {
+      display:grid;
+      grid-template-columns:180px minmax(0,1fr);
+      min-height:calc(100vh - 68px);
+    }
+
+    .sidebar {
+      position:sticky;
+      top:68px;
+
+      height:calc(100vh - 68px);
+
+      padding:14px 10px;
+
+      border-left:1px solid var(--line);
+      background:rgba(20,18,32,.7);
+    }
+
+    .nav-title {
+      padding:8px 9px 8px;
+      color:var(--muted2);
+      font-size:8px;
+      font-weight:900;
+      letter-spacing:.4px;
+    }
+
+    .nav-item {
+      width:100%;
+
+      display:flex;
+      align-items:center;
+      gap:9px;
+
+      border:0;
+      border-radius:12px;
+
+      background:transparent;
+      color:var(--muted);
+
+      padding:11px 10px;
+      margin-bottom:4px;
+
+      text-align:right;
+
+      font-size:10.5px;
+      font-weight:800;
+
+      transition:background .15s,color .15s;
+    }
+
+    .nav-item span:first-child {
+      flex:0 0 auto;
+      font-size:14px;
+    }
+
+    .nav-item.active {
+      background:rgba(212,255,61,.12);
+      color:var(--lime);
+    }
+
+    .content {
+      min-width:0;
+      padding:20px 18px 40px;
+    }
+
+    .screen {
+      display:none;
+    }
+
+    .screen.active {
+      display:block;
+    }
+
+    .page-head {
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    h1 {
+      margin:0;
+      font-size:23px;
+    }
+
+    .page-sub {
+      margin-top:4px;
+      color:var(--muted);
+      font-size:9px;
+    }
+
+    .card {
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:17px;
+      overflow:hidden;
+    }
+
+    .card-head {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+
+      padding:13px 14px;
+      border-bottom:1px solid var(--line);
+    }
+
+    .card-title {
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .card-sub {
+      margin-top:2px;
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .card-body {
+      padding:14px;
+    }
+
+    .stats {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .stat {
+      padding:14px;
+      border-radius:16px;
+      background:var(--surface);
+      border:1px solid var(--line);
+    }
+
+    .stat-label {
+      color:var(--muted);
+      font-size:9px;
+    }
+
+    .stat-number {
+      margin-top:8px;
+      font-family:ui-monospace,monospace;
+      font-size:23px;
+      font-weight:900;
+    }
+
+    .green {
+      color:var(--lime);
+    }
+
+    .blue {
+      color:var(--blue);
+    }
+
+    .red {
+      color:var(--red);
+    }
+
+    .grid2 {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .search-row {
+      display:flex;
+      gap:7px;
+    }
+
+    input,
+    select {
+      min-width:0;
+      width:100%;
+
+      background:var(--surface2);
+      color:var(--text);
+
+      border:1px solid var(--line);
+      border-radius:11px;
+
+      padding:10px 11px;
+      outline:none;
+
+      font-size:10px;
+    }
+
+    button.action {
+      border:0;
+      border-radius:11px;
+      padding:10px 13px;
+
+      font-size:10px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .green-btn {
+      background:var(--lime);
+      color:#0f0e1b;
+    }
+
+    .blue-btn {
+      background:var(--blue);
+      color:#07121f;
+    }
+
+    .red-btn {
+      background:rgba(255,107,74,.1);
+      color:#ff907a;
+      border:1px solid rgba(255,107,74,.2) !important;
+    }
+
+    .dark-btn {
+      background:var(--surface3);
+      color:var(--text);
+      border:1px solid var(--line) !important;
+    }
+
+    .user-panel {
+      display:none;
+      margin-top:12px;
+
+      padding:14px;
+
+      border-radius:15px;
+      background:var(--surface2);
+      border:1px solid var(--line);
+    }
+
+    .user-panel.show {
+      display:block;
+    }
+
+    .user-head {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .user-identity {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .user-avatar {
+      flex:0 0 40px;
+      width:40px;
+      height:40px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,var(--lime),#7cff9c);
+      color:#0f0e1b;
+      font-weight:900;
+      font-size:15px;
+    }
+
+    .status-pill {
+      flex:0 0 auto;
+      padding:5px 10px;
+      border-radius:20px;
+      font-size:8.5px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .status-pill.ok {
+      color:var(--lime);
+      background:rgba(212,255,61,.12);
+    }
+
+    .status-pill.banned {
+      color:#ff907a;
+      background:rgba(255,107,74,.12);
+    }
+
+    .user-id-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:10px;
+      padding:8px 10px;
+      border-radius:10px;
+      background:#151321;
+    }
+
+    .user-id-row span {
+      color:var(--muted2);
+      font-size:8px;
+    }
+
+    .user-id-row strong {
+      color:var(--blue);
+      font-family:ui-monospace,monospace;
+      font-size:10px;
+    }
+
+    .user-section-label {
+      margin:14px 0 7px;
+      color:var(--muted);
+      font-size:8.5px;
+      font-weight:900;
+    }
+
+    .points-edit-row {
+      display:flex;
+      gap:7px;
+    }
+
+    .points-edit-row input {
+      flex:1;
+      direction:ltr;
+      text-align:left;
+    }
+
+    .points-edit-row button {
+      flex:0 0 auto;
+    }
+
+    .reason-input {
+      margin-top:7px;
+    }
+
+    .account-actions-row {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:7px;
+    }
+
+
+    .user-name {
+      font-size:14px;
+      font-weight:900;
+    }
+
+    .user-username {
+      margin-top:3px;
+      color:var(--muted);
+      font-size:9px;
+      direction:ltr;
+      text-align:right;
+    }
+
+    .user-points {
+      margin-top:13px;
+
+      color:var(--lime);
+      font-family:ui-monospace,monospace;
+
+      font-size:27px;
+      font-weight:900;
+    }
+
+    .meta-grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:7px;
+      margin-top:11px;
+    }
+
+    .meta {
+      padding:9px;
+      border-radius:10px;
+      background:#151321;
+    }
+
+    .meta span {
+      display:block;
+      color:var(--muted2);
+      font-size:7px;
+    }
+
+    .meta strong {
+      display:block;
+      margin-top:4px;
+      font-size:10px;
+    }
+
+    .table-wrap {
+      overflow:auto;
+    }
+
+    table {
+      width:100%;
+      min-width:650px;
+      border-collapse:collapse;
+    }
+
+    th,
+    td {
+      padding:10px 9px;
+      border-bottom:1px solid var(--line);
+      text-align:right;
+      font-size:9px;
+    }
+
+    th {
+      color:var(--muted);
+      font-size:8px;
+    }
+
+    .points-cell {
+      color:var(--lime);
+      font-family:ui-monospace,monospace;
+      font-weight:900;
+    }
+
+    .id-cell {
+      color:var(--blue);
+      font-family:ui-monospace,monospace;
+    }
+
+    .pill {
+      display:inline-flex;
+      padding:4px 7px;
+      border-radius:8px;
+      font-size:7px;
+      font-weight:900;
+    }
+
+    .pill-green {
+      background:rgba(212,255,61,.08);
+      color:var(--lime);
+    }
+
+    .pill-red {
+      background:rgba(255,107,74,.08);
+      color:#ff8d75;
+    }
+
+    .pill-blue {
+      background:rgba(90,167,255,.08);
+      color:var(--blue);
+    }
+
+    .empty {
+      padding:25px;
+      text-align:center;
+      color:var(--muted);
+      font-size:9px;
+    }
+
+    .toast {
+      position:fixed;
+      left:50%;
+      bottom:20px;
+
+      transform:
+        translateX(-50%)
+        translateY(15px);
+
+      opacity:0;
+
+      z-index:999;
+
+      max-width:90vw;
+
+      background:#f5f3ff;
+      color:#0f0e1b;
+
+      padding:10px 14px;
+      border-radius:12px;
+
+      font-size:10px;
+      font-weight:900;
+
+      pointer-events:none;
+      transition:.2s;
+    }
+
+    .toast.show {
+      opacity:1;
+      transform:
+        translateX(-50%)
+        translateY(0);
+    }
+
+    @media(max-width:800px) {
+      .layout {
+        display:block;
+      }
+
+      .sidebar {
+        position:sticky;
+        top:68px;
+        height:auto;
+
+        display:flex;
+        gap:6px;
+
+        overflow-x:auto;
+        -webkit-overflow-scrolling:touch;
+
+        padding:9px 12px;
+
+        z-index:25;
+
+        border-left:0;
+        border-bottom:1px solid var(--line);
+        background:rgba(11,10,18,.95);
+        backdrop-filter:blur(16px);
+      }
+
+      .sidebar::-webkit-scrollbar {
+        display:none;
+      }
+
+      .nav-title {
+        display:none;
+      }
+
+      .nav-item {
+        width:auto;
+        flex:0 0 auto;
+        margin:0;
+        padding:9px 13px;
+        border-radius:20px;
+        border:1px solid transparent;
+      }
+
+      .nav-item.active {
+        border-color:rgba(212,255,61,.25);
+      }
+
+      .nav-item span:last-child {
+        display:none;
+      }
+
+      .stats {
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .grid2 {
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:520px) {
+      .content {
+        padding:13px;
+      }
+
+      .meta-grid {
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .points-edit-row {
+        flex-wrap:wrap;
+      }
+
+      .points-edit-row input {
+        width:100%;
+        flex:1 1 100%;
+      }
+    }
+
+    .broadcast-textarea {
+      width:100%;
+      min-height:140px;
+      resize:vertical;
+
+      background:var(--surface2);
+      color:var(--text);
+
+      border:1px solid var(--line);
+      border-radius:13px;
+
+      padding:12px;
+      outline:none;
+
+      font-size:11px;
+      line-height:1.8;
+      font-family:inherit;
+    }
+
+    .broadcast-meta {
+      display:flex;
+      justify-content:space-between;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:8.5px;
+    }
+
+    .broadcast-send-btn {
+      width:100%;
+      margin-top:12px;
+      padding:13px;
+      font-size:11px;
+    }
+
+    .broadcast-result {
+      margin-top:12px;
+    }
+
+    .broadcast-result:empty {
+      display:none;
+    }
+
+    .broadcast-stat-row {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+    }
+
+    .broadcast-stat {
+      padding:11px;
+      border-radius:12px;
+      background:#151321;
+      text-align:center;
+    }
+
+    .broadcast-stat span {
+      display:block;
+      color:var(--muted2);
+      font-size:8px;
+    }
+
+    .broadcast-stat strong {
+      display:block;
+      margin-top:5px;
+      font-size:16px;
+      font-family:ui-monospace,monospace;
+    }
+
+    .empty-hint {
+      padding:16px 4px;
+      text-align:center;
+      color:var(--muted);
+      font-size:10px;
+    }
+
+    .channel-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+
+      padding:11px;
+      margin-bottom:8px;
+
+      border-radius:13px;
+      background:#151321;
+    }
+
+    .channel-row:last-child {
+      margin-bottom:0;
+    }
+
+    .channel-info {
+      min-width:0;
+    }
+
+    .channel-info strong {
+      display:block;
+      font-size:11px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .channel-info span {
+      display:block;
+      margin-top:3px;
+      color:var(--blue);
+      font-size:8.5px;
+      direction:ltr;
+      text-align:right;
+    }
+
+    .channel-actions {
+      flex:0 0 auto;
+      display:flex;
+      gap:6px;
+    }
+
+    .channel-actions button {
+      padding:7px 10px;
+      font-size:8.5px;
+    }
+
+    .channel-row.inactive {
+      opacity:.5;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="topbar">
+
+  <div class="brand">
+
+    <div class="logo">
+      G
+    </div>
+
+    <div>
+      <div class="brand-title">
+        STORMy Admin
+      </div>
+
+      <div class="brand-sub">
+        لوحة الإدارة
+      </div>
+    </div>
+
+  </div>
+
+  <div
+    class="role"
+    id="roleBadge"
+  >
+    التحقق...
+  </div>
+
+</header>
+
+
+<div class="layout">
+
+<aside class="sidebar">
+
+  <button
+    class="nav-item active"
+    data-screen="dashboard"
+  >
+    <span>📊</span>
+    <span>الرئيسية</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="users"
+  >
+    <span>👤</span>
+    <span>المستخدمون</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="tasks"
+  >
+    <span>📋</span>
+    <span>المهام</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="referrals"
+  >
+    <span>👥</span>
+    <span>الإحالات</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="transactions"
+  >
+    <span>💰</span>
+    <span>النقاط</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="settings"
+  >
+    <span>⚙️</span>
+    <span>الإعدادات</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="broadcast"
+  >
+    <span>📢</span>
+    <span>رسالة جماعية</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="required-channels"
+  >
+    <span>🔒</span>
+    <span>الاشتراك الإلزامي</span>
+  </button>
+
+  <button
+    class="nav-item"
+    data-screen="admins"
+    id="adminsNav"
+  >
+    <span>🛡️</span>
+    <span>المشرفون</span>
+  </button>
+
+</aside>
+
+
+<main class="content">
+
+
+<section
+  class="screen active"
+  data-view="dashboard"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        الرئيسية
+      </h1>
+
+      <div class="page-sub">
+        نظرة عامة على STORMy
+      </div>
+    </div>
+
+    <button
+      class="action dark-btn"
+      onclick="loadDashboard()"
+    >
+      ↻ تحديث
+    </button>
+
+  </div>
+
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-label">
+        المستخدمون
+      </div>
+
+      <div
+        class="stat-number green"
+        id="statUsers"
+      >
+        —
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">
+        نشطون
+      </div>
+
+
+      <div
+        class="stat-number blue"
+        id="statActive"
+      >
+        —
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">
+        المهام النشطة
+      </div>
+
+      <div
+        class="stat-number"
+        id="statTasks"
+      >
+        —
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">
+        إجمالي النقاط
+      </div>
+
+      <div
+        class="stat-number green"
+        id="statPoints"
+      >
+        —
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="grid2">
+
+    <div class="card">
+
+      <div class="card-head">
+        <div>
+          <div class="card-title">
+            أكثر المستخدمين نقاطًا
+          </div>
+
+          <div class="card-sub">
+            أعلى الأرصدة
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="topUsers"
+        class="card-body"
+      ></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="card-head">
+        <div>
+          <div class="card-title">
+            آخر عمليات النقاط
+          </div>
+
+          <div class="card-sub">
+            إضافة وسحب ومكافآت
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="recentTransactions"
+        class="card-body"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="users"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        المستخدمون
+      </h1>
+
+      <div class="page-sub">
+        البحث والتعديل والحظر
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div class="search-row">
+
+        <input
+          id="userSearch"
+          placeholder="Telegram ID أو username"
+          dir="ltr"
+        >
+
+        <button
+          class="action green-btn"
+          onclick="searchUser()"
+        >
+          بحث
+        </button>
+
+      </div>
+
+
+      <div
+        class="user-panel"
+        id="userPanel"
+      >
+
+        <div class="user-head">
+
+          <div class="user-identity">
+            <div
+              class="user-avatar"
+              id="userAvatar"
+            ></div>
+
+            <div>
+              <div
+                class="user-name"
+                id="userName"
+              ></div>
+
+              <div
+                class="user-username"
+                id="userUsername"
+              ></div>
+            </div>
+          </div>
+
+          <span
+            class="status-pill"
+            id="userStatusPill"
+          ></span>
+
+        </div>
+
+
+        <div class="user-id-row">
+          <span>Telegram ID</span>
+
+          <strong
+            id="userId"
+          ></strong>
+        </div>
+
+
+        <div
+          class="user-points"
+          id="userPoints"
+        ></div>
+
+
+        <div class="meta-grid">
+
+          <div class="meta">
+            <span>
+              المهام
+            </span>
+
+            <strong
+              id="userTasks"
+            >
+              —
+            </strong>
+          </div>
+
+          <div class="meta">
+            <span>
+              الإحالات
+            </span>
+
+            <strong
+              id="userRefs"
+            >
+              —
+            </strong>
+          </div>
+
+          <div class="meta">
+            <span>
+              الحالة
+            </span>
+
+            <strong
+              id="userStatus"
+            >
+              —
+            </strong>
+          </div>
+
+          <div class="meta">
+            <span>
+              آخر نشاط
+            </span>
+
+            <strong
+              id="userLastSeen"
+            >
+              —
+            </strong>
+          </div>
+
+        </div>
+
+
+        <div class="user-section-label">
+          طرق جمع النقاط
+        </div>
+
+        <div id="userTransactions"></div>
+
+
+        <div class="user-section-label">
+          تعديل النقاط
+        </div>
+
+        <div class="points-edit-row">
+
+          <input
+            id="userPointAmount"
+            placeholder="القيمة، مثلاً 100"
+            inputmode="numeric"
+            dir="ltr"
+          >
+
+          <button
+            class="action green-btn"
+            onclick="addUserPoints()"
+          >
+            + إضافة
+          </button>
+
+          <button
+            class="action red-btn"
+            onclick="removeUserPoints()"
+          >
+            − سحب
+          </button>
+
+        </div>
+
+        <input
+          id="userPointReason"
+          class="reason-input"
+          placeholder="سبب التعديل (اختياري)"
+        >
+
+
+        <div class="user-section-label">
+          إجراءات الحساب
+        </div>
+
+        <div class="account-actions-row">
+
+          <button
+            class="action dark-btn"
+            onclick="zeroUserPoints()"
+          >
+            ⭘ تصفير النقاط
+          </button>
+
+          <button
+            class="action red-btn"
+            id="userBanBtn"
+            onclick="toggleUserBan()"
+          >
+            حظر
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="card"
+    style="margin-top:12px"
+  >
+
+    <div class="card-head">
+      <div>
+        <div class="card-title">
+          أعلى الأرصدة
+        </div>
+
+        <div class="card-sub">
+          اضغط بحث لإدارة مستخدم محدد
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>المستخدم</th>
+            <th>ID</th>
+            <th>النقاط</th>
+            <th>المهام</th>
+            <th>الإحالات</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+
+        <tbody
+          id="usersTable"
+        ></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="tasks"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        المهام
+      </h1>
+
+      <div class="page-sub">
+        إدارة الحملات
+      </div>
+    </div>
+
+    <button
+      class="action dark-btn"
+      onclick="loadTasks()"
+    >
+      ↻ تحديث
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-head">
+
+      <select
+        id="taskFilter"
+        onchange="loadTasks()"
+        style="max-width:160px"
+      >
+        <option value="">
+          كل المهام
+        </option>
+
+        <option value="active">
+          نشطة
+        </option>
+
+        <option value="paused">
+          متوقفة
+        </option>
+
+        <option value="completed">
+          مكتملة
+        </option>
+
+        <option value="cancelled">
+          ملغاة
+        </option>
+      </select>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>المهمة</th>
+            <th>المالك</th>
+            <th>التقدم</th>
+            <th>المتبقي</th>
+            <th>الحالة</th>
+            <th>إدارة</th>
+          </tr>
+        </thead>
+
+        <tbody
+          id="tasksTable"
+        ></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="referrals"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        الإحالات
+      </h1>
+
+      <div class="page-sub">
+        متابعة مكافآت الإحالة
+      </div>
+    </div>
+
+    <button
+      class="action dark-btn"
+      onclick="loadReferrals()"
+    >
+      ↻ تحديث
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>المُحيل</th>
+            <th>المدعو</th>
+            <th>التقدم</th>
+            <th>المكافأة</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+
+        <tbody
+          id="referralsTable"
+        ></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="transactions"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        عمليات النقاط
+      </h1>
+
+      <div class="page-sub">
+        سجل إضافة وسحب النقاط
+      </div>
+    </div>
+
+    <button
+      class="action dark-btn"
+      onclick="loadTransactions()"
+    >
+      ↻ تحديث
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>المستخدم</th>
+            <th>العملية</th>
+            <th>القيمة</th>
+            <th>الرصيد</th>
+            <th>الوصف</th>
+            <th>التاريخ</th>
+          </tr>
+        </thead>
+
+        <tbody
+          id="transactionsTable"
+        ></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="settings"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        الإعدادات
+      </h1>
+
+      <div class="page-sub">
+        اقتصاد النظام
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div style="display:grid;gap:10px">
+
+        <label>
+          <div class="page-sub">
+            نقاط المهمة
+          </div>
+
+          <input
+            id="settingsTask"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+        <label>
+          <div class="page-sub">
+            نقاط الدولار
+          </div>
+
+          <input
+            id="settingsUsd"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+        <label>
+          <div class="page-sub">
+            مكافأة الإحالة
+          </div>
+
+          <input
+            id="settingsReferral"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+        <label>
+          <div class="page-sub">
+            مهام الإحالة
+          </div>
+
+          <input
+            id="settingsReferralTasks"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+        <label>
+          <div class="page-sub">
+            ساعات التحقق
+          </div>
+
+          <input
+            id="settingsHours"
+            inputmode="numeric"
+            dir="ltr"
+          >
+        </label>
+
+      </div>
+
+      <button
+        class="action green-btn"
+        style="margin-top:12px"
+        onclick="saveSettings()"
+      >
+        حفظ
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="admins"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        المشرفون
+      </h1>
+
+      <div class="page-sub">
+        Owner فقط
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div class="search-row">
+
+        <input
+          id="newAdminId"
+          placeholder="Telegram ID"
+          inputmode="numeric"
+          dir="ltr"
+        >
+
+        <button
+          class="action green-btn"
+          onclick="addAdmin()"
+        >
+          إضافة Admin
+        </button>
+
+      </div>
+
+      <div
+        id="adminsList"
+        style="margin-top:12px"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="broadcast"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        رسالة جماعية
+      </h1>
+
+      <div class="page-sub">
+        بتوصل لكل الأعضاء النشطين (غير المحظورين)
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <textarea
+        id="broadcastMessage"
+        class="broadcast-textarea"
+        placeholder="اكتب رسالتك هون... بتوصل لكل مستخدمي STORMy عبر البوت"
+        maxlength="3500"
+      ></textarea>
+
+      <div class="broadcast-meta">
+        <span id="broadcastCount">
+          0 مستخدم نشط
+        </span>
+
+        <span id="broadcastLength">
+          0 / 3500
+        </span>
+      </div>
+
+      <button
+        class="action green-btn broadcast-send-btn"
+        id="broadcastSendBtn"
+        onclick="sendBroadcast()"
+      >
+        إرسال الرسالة
+      </button>
+
+      <div
+        class="broadcast-result"
+        id="broadcastResult"
+      ></div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section
+  class="screen"
+  data-view="required-channels"
+>
+
+  <div class="page-head">
+
+    <div>
+      <h1>
+        الاشتراك الإلزامي
+      </h1>
+
+      <div class="page-sub">
+        بوابة وصول تُطبّق على المستخدمين قبل استخدام البوت
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-body">
+
+      <div class="search-row">
+
+        <input
+          id="channelIdentifier"
+          placeholder="@channel أو رابط القناة"
+          dir="ltr"
+        >
+
+        <button
+          class="action green-btn"
+          onclick="addRequiredChannel()"
+        >
+          + إضافة
+        </button>
+
+      </div>
+
+      <input
+        id="channelTitle"
+        class="reason-input"
+        placeholder="اسم العرض للمستخدم (اختياري)"
+      >
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="card"
+    style="margin-top:12px"
+  >
+
+    <div class="card-head">
+      <div>
+        <div class="card-title">
+          القنوات الحالية
+        </div>
+
+        <div class="card-sub">
+          يجب أن يكون البوت مشرفًا في كل قناة حتى يتمكن من التحقق من العضوية
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="card-body"
+      id="requiredChannelsList"
+    >
+      <div class="empty-hint">
+        جاري التحميل...
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+</div>
+
+
+<div
+  class="toast"
+  id="toast"
+></div>
+
+
+<script>
+const tg =
+  window.Telegram?.WebApp
+
+if (tg) {
+  tg.ready()
+  tg.expand()
+}
+
+let currentUser = null
+let currentRole = null
+
+
+function formatNumber(value) {
+  return Number(
+    value || 0
+  ).toLocaleString(
+    'en-US'
+  )
+}
+
+
+function formatDate(value) {
+  if (!value) {
+    return '-'
+  }
+
+  const date =
+    new Date(value)
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return '-'
+  }
+
+  return date.toLocaleString(
+    'ar-IQ',
+    {
+      dateStyle:'short',
+      timeStyle:'short'
+    }
+  )
+}
+
+
+// وقت نسبي (قبل 5 دقائق / قبل ساعة / قبل يوم...) بدل التاريخ المطلق
+function formatRelativeTime(value) {
+  if (!value) {
+    return '-'
+  }
+
+  const date =
+    new Date(value)
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return '-'
+  }
+
+  const diffSeconds =
+    Math.round(
+      (Date.now() - date.getTime()) / 1000
+    )
+
+  if (diffSeconds < 0) {
+    return formatDate(value)
+  }
+
+  if (diffSeconds < 10) {
+    return 'الآن'
+  }
+
+  const units = [
+    { limit: 60, divisor: 1, singular: 'ثانية', plural: 'ثواني' },
+    { limit: 3600, divisor: 60, singular: 'دقيقة', plural: 'دقائق' },
+    { limit: 86400, divisor: 3600, singular: 'ساعة', plural: 'ساعات' },
+    { limit: 2592000, divisor: 86400, singular: 'يوم', plural: 'أيام' },
+    { limit: 31536000, divisor: 2592000, singular: 'شهر', plural: 'أشهر' },
+    { limit: Infinity, divisor: 31536000, singular: 'سنة', plural: 'سنوات' }
+  ]
+
+  for (const unit of units) {
+    if (diffSeconds < unit.limit) {
+      const count =
+        Math.floor(diffSeconds / unit.divisor)
+
+      if (count <= 1) {
+        return `قبل ${unit.singular}`
+      }
+
+      if (count === 2) {
+        return `قبل ${unit.singular}تين`
+      }
+
+      if (count >= 3 && count <= 10) {
+        return `قبل ${count} ${unit.plural}`
+      }
+
+      return `قبل ${count} ${unit.singular}`
+    }
+  }
+
+  return formatDate(value)
+}
+
+
+function toast(message) {
+  const box =
+    document.getElementById(
+      'toast'
+    )
+
+  box.textContent =
+    message
+
+  box.classList.add(
+    'show'
+  )
+
+  setTimeout(
+    () =>
+      box.classList.remove(
+        'show'
+      ),
+    2200
+  )
+}
+
+
+async function api(
+  path,
+  options = {}
+) {
+  const headers = {
+    'Content-Type':
+      'application/json',
+    ...(options.headers || {})
+  }
+
+  if (
+    tg?.initData
+  ) {
+    headers[
+      'X-Telegram-Init-Data'
+    ] =
+      tg.initData
+  }
+
+  const response =
+    await fetch(
+      path,
+      {
+        ...options,
+        headers
+      }
+    )
+
+  const data =
+    await response
+      .json()
+      .catch(
+        () => ({})
+      )
+
+  if (!response.ok) {
+    throw new Error(
+      data.error ||
+      'حدث خطأ'
+    )
+  }
+
+  return data
+}
+
+
+document
+  .querySelectorAll(
+    '.nav-item'
+  )
+  .forEach(
+    item => {
+      item.addEventListener(
+        'click',
+        () => {
+
+          document
+            .querySelectorAll(
+              '.nav-item'
+            )
+            .forEach(
+              x =>
+                x.classList.remove(
+                  'active'
+                )
+            )
+
+          document
+            .querySelectorAll(
+              '.screen'
+            )
+            .forEach(
+              x =>
+                x.classList.remove(
+                  'active'
+                )
+            )
+
+          item.classList.add(
+            'active'
+          )
+
+          const name =
+            item.dataset.screen
+
+          document
+            .querySelector(
+              `[data-view="${name}"]`
+            )
+            ?.classList.add(
+              'active'
+            )
+
+          loadScreen(
+            name
+          )
+        }
+      )
+    }
+  )
+
+
+async function loadScreen(
+  name
+) {
+  try {
+    if (
+      name ===
+      'dashboard'
+    ) {
+      await loadDashboard()
+    }
+
+    if (
+      name ===
+      'users'
+    ) {
+      await loadTopUsers()
+    }
+
+    if (
+      name ===
+      'tasks'
+    ) {
+      await loadTasks()
+    }
+
+    if (
+      name ===
+      'referrals'
+    ) {
+      await loadReferrals()
+    }
+
+    if (
+      name ===
+      'transactions'
+    ) {
+      await loadTransactions()
+    }
+
+    if (
+      name ===
+      'settings'
+    ) {
+      await loadSettings()
+    }
+
+    if (
+      name ===
+      'admins'
+    ) {
+      await loadAdmins()
+    }
+
+    if (
+      name ===
+      'broadcast'
+    ) {
+      await loadBroadcastCount()
+    }
+
+    if (
+      name ===
+      'required-channels'
+    ) {
+      await loadRequiredChannels()
+    }
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function loadRole() {
+  const data =
+    await api(
+      '/api/admin/me'
+    )
+
+  currentRole =
+    data.role
+
+  document.getElementById(
+    'roleBadge'
+  ).textContent =
+    data.role ===
+      'owner'
+      ? '👑 Owner'
+      : '🛡️ Admin'
+
+  if (
+    data.role !==
+    'owner'
+  ) {
+    document.getElementById(
+      'adminsNav'
+    ).style.display =
+      'none'
+  }
+}
+
+
+async function loadDashboard() {
+  const data =
+    await api(
+      '/api/admin/stats'
+    )
+
+  document.getElementById(
+    'statUsers'
+  ).textContent =
+    formatNumber(
+      data.stats.users
+    )
+
+  document.getElementById(
+    'statActive'
+  ).textContent =
+    formatNumber(
+      data.stats.activeUsers
+    )
+
+  document.getElementById(
+    'statTasks'
+  ).textContent =
+    formatNumber(
+      data.stats.activeTasks
+    )
+
+  document.getElementById(
+    'statPoints'
+  ).textContent =
+    formatNumber(
+      data.stats.totalPoints
+    )
+
+  await loadTopUsers()
+  await loadTransactions(true)
+}
+
+
+async function loadTopUsers() {
+  const data =
+    await api(
+      '/api/admin/top-users?limit=20'
+    )
+
+  const container =
+    document.getElementById(
+      'topUsers'
+    )
+
+  const table =
+    document.getElementById(
+      'usersTable'
+    )
+
+  container.innerHTML =
+    ''
+
+  table.innerHTML =
+    ''
+
+  if (
+    !data.users?.length
+  ) {
+    container.innerHTML =
+      '<div class="empty">لا توجد بيانات.</div>'
+
+    return
+  }
+
+  data.users
+    .slice(0,8)
+    .forEach(
+      (
+        user,
+        index
+      ) => {
+
+        const row =
+          document.createElement(
+            'div'
+          )
+
+        row.style.display =
+          'flex'
+
+        row.style.justifyContent =
+          'space-between'
+
+        row.style.padding =
+          '9px 0'
+
+        row.style.borderBottom =
+          '1px solid var(--line)'
+
+        row.innerHTML = `
+          <div>
+            <strong style="font-size:10px">
+              #${index + 1}
+              ${
+                user.first_name ||
+                user.username ||
+                'مستخدم'
+              }
+            </strong>
+
+            <div style="color:var(--muted);font-size:8px;margin-top:2px">
+              ${user.telegram_id}
+            </div>
+          </div>
+
+          <strong style="color:var(--lime);font-family:monospace">
+            ${formatNumber(user.points)}
+          </strong>
+        `
+
+        container.appendChild(
+          row
+        )
+      }
+    )
+
+  data.users.forEach(
+    (
+      user,
+      index
+    ) => {
+
+      const row =
+        document.createElement(
+          'tr'
+        )
+
+      row.innerHTML = `
+        <td>${index + 1}</td>
+
+        <td>
+          ${
+            [
+              user.first_name,
+              user.last_name
+            ]
+              .filter(Boolean)
+              .join(' ') ||
+            '-'
+          }
+        </td>
+
+        <td class="id-cell">
+          ${user.telegram_id}
+        </td>
+
+        <td class="points-cell">
+          ${formatNumber(user.points)}
+        </td>
+
+        <td>
+          ${formatNumber(user.completed_tasks)}
+        </td>
+
+        <td>
+          ${formatNumber(user.successful_referrals)}
+        </td>
+
+        <td>
+          ${
+            user.is_banned
+              ? '<span class="pill pill-red">محظور</span>'
+              : '<span class="pill pill-green">نشط</span>'
+          }
+        </td>
+      `
+
+      table.appendChild(
+        row
+      )
+    }
+  )
+}
+
+
+async function loadTransactions(
+  compact = false
+) {
+  const data =
+    await api(
+      '/api/admin/transactions'
+    )
+
+  const container =
+    document.getElementById(
+      'recentTransactions'
+    )
+
+  const table =
+    document.getElementById(
+      'transactionsTable'
+    )
+
+  container.innerHTML =
+    ''
+
+  table.innerHTML =
+    ''
+
+  if (
+    !data.transactions?.length
+  ) {
+    container.innerHTML =
+      '<div class="empty">لا توجد عمليات.</div>'
+
+    return
+  }
+
+  data.transactions
+    .slice(0,10)
+    .forEach(
+      transaction => {
+
+        const amount =
+          Number(
+            transaction.amount
+          )
+
+        const row =
+          document.createElement(
+            'div'
+          )
+
+        row.style.display =
+          'flex'
+
+        row.style.justifyContent =
+          'space-between'
+
+        row.style.padding =
+          '8px 0'
+
+        row.style.borderBottom =
+          '1px solid var(--line)'
+
+        row.innerHTML = `
+          <div>
+            <strong style="font-size:9px">
+              ${
+                transaction.user?.first_name ||
+                transaction.user?.telegram_id ||
+                'مستخدم'
+              }
+            </strong>
+
+            <div style="color:var(--muted);font-size:8px;margin-top:2px">
+              ${transaction.description || transaction.transaction_type}
+            </div>
+          </div>
+
+          <strong style="
+            color:${
+              amount >= 0
+                ? 'var(--lime)'
+                : 'var(--red)'
+            };
+            font-family:monospace;
+          ">
+            ${
+              amount > 0
+                ? '+'
+                : ''
+            }${formatNumber(amount)}
+          </strong>
+        `
+
+        container.appendChild(
+          row
+        )
+      }
+    )
+
+  data.transactions.forEach(
+    transaction => {
+
+      const amount =
+        Number(
+          transaction.amount
+        )
+
+      const row =
+        document.createElement(
+          'tr'
+        )
+
+      row.innerHTML = `
+        <td class="id-cell">
+          ${
+            transaction.user?.telegram_id ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${
+            transaction.transaction_type ||
+            '-'
+          }
+        </td>
+
+        <td class="${
+          amount >= 0
+            ? 'points-cell'
+            : 'red'
+        }">
+          ${
+            amount > 0
+              ? '+'
+              : ''
+          }${formatNumber(amount)}
+        </td>
+
+        <td>
+          ${formatNumber(
+            transaction.balance_after
+          )}
+        </td>
+
+        <td>
+          ${
+            transaction.description ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${formatDate(
+            transaction.created_at
+          )}
+        </td>
+      `
+
+      table.appendChild(
+        row
+      )
+    }
+  )
+}
+
+
+async function searchUser() {
+  const value =
+    document.getElementById(
+      'userSearch'
+    ).value.trim()
+
+  if (!value) {
+    toast(
+      'أدخل Telegram ID أو username'
+    )
+
+    return
+  }
+
+  try {
+    const data =
+      await api(
+        `/api/admin/users/search?q=${encodeURIComponent(value)}`
+      )
+
+    if (
+      !data.users?.length
+    ) {
+      toast(
+        'المستخدم غير موجود'
+      )
+
+      return
+    }
+
+    await openUser(
+      data.users[0]
+        .telegram_id
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error.message
+    )
+  }
+}
+
+
+const TRANSACTION_TYPE_LABELS = {
+  task_reward: '🎯 مكافأة تنفيذ مهمة',
+  campaign_refund: '📢 حجز/استرجاع ميزانية حملة',
+  referral_reward: '🤝 مكافأة إحالة',
+  referral: '🤝 مكافأة إحالة',
+  daily_checkin: '📅 تسجيل حضور يومي',
+  daily_checkin_points: '📅 تسجيل حضور يومي',
+  adsgram_reward: '📺 مشاهدة إعلان',
+  admin_adjustment: '🛠️ تعديل يدوي من الإدارة'
+}
+
+function transactionTypeLabel(type) {
+  return (
+    TRANSACTION_TYPE_LABELS[type] ||
+    type ||
+    'عملية'
+  )
+}
+
+// يعرض سجل نقاط المستخدم المحدد (كيف جمع نقاطه بالضبط) داخل بطاقة بحث اللاعب
+function renderUserTransactions(transactions) {
+  const container =
+    document.getElementById(
+      'userTransactions'
+    )
+
+  container.innerHTML = ''
+
+  if (!transactions?.length) {
+    container.innerHTML =
+      '<div class="empty">لا توجد عمليات نقاط لهذا المستخدم.</div>'
+
+    return
+  }
+
+  transactions.forEach(
+    transaction => {
+      const amount =
+        Number(transaction.amount)
+
+      const row =
+        document.createElement('div')
+
+      row.style.display = 'flex'
+      row.style.justifyContent = 'space-between'
+      row.style.alignItems = 'center'
+      row.style.padding = '8px 0'
+      row.style.borderBottom = '1px solid var(--line)'
+      row.style.gap = '8px'
+
+      row.innerHTML = `
+        <div style="min-width:0">
+          <strong style="font-size:9px">
+            ${transactionTypeLabel(transaction.transaction_type)}
+          </strong>
+
+          <div style="color:var(--muted);font-size:8px;margin-top:2px">
+            ${transaction.description || ''}
+          </div>
+
+          <div style="color:var(--muted);font-size:7px;margin-top:2px">
+            ${formatRelativeTime(transaction.created_at)}
+          </div>
+        </div>
+
+        <strong style="
+          color:${amount >= 0 ? 'var(--lime)' : 'var(--red)'};
+          font-family:monospace;
+          white-space:nowrap;
+        ">
+          ${amount > 0 ? '+' : ''}${formatNumber(amount)}
+        </strong>
+      `
+
+      container.appendChild(row)
+    }
+  )
+}
+
+
+async function openUser(
+  telegramId
+) {
+  const data =
+    await api(
+      `/api/admin/users/${telegramId}`
+    )
+
+  currentUser =
+    data.user
+
+  document.getElementById(
+    'userPanel'
+  ).classList.add(
+    'show'
+  )
+
+  const displayName =
+    [
+      currentUser.first_name,
+      currentUser.last_name
+    ]
+      .filter(Boolean)
+      .join(' ') ||
+    'بدون اسم'
+
+  document.getElementById(
+    'userAvatar'
+  ).textContent =
+    displayName
+      .charAt(0)
+      .toUpperCase()
+
+  document.getElementById(
+    'userName'
+  ).textContent =
+    displayName
+
+  document.getElementById(
+    'userUsername'
+  ).textContent =
+    currentUser.username
+      ? `@${currentUser.username}`
+      : 'بدون username'
+
+  document.getElementById(
+    'userId'
+  ).textContent =
+    currentUser.telegram_id
+
+  const statusPill =
+    document.getElementById(
+      'userStatusPill'
+    )
+
+  statusPill.textContent =
+    currentUser.is_banned
+      ? 'محظور'
+      : 'نشط'
+
+  statusPill.className =
+    currentUser.is_banned
+      ? 'status-pill banned'
+      : 'status-pill ok'
+
+  document.getElementById(
+    'userPoints'
+  ).textContent =
+    `${formatNumber(currentUser.points)} نقطة`
+
+  document.getElementById(
+    'userTasks'
+  ).textContent =
+    formatNumber(
+      currentUser.completed_tasks
+    )
+
+  document.getElementById(
+    'userRefs'
+  ).textContent =
+    formatNumber(
+      currentUser.successful_referrals
+    )
+
+  document.getElementById(
+    'userStatus'
+  ).textContent =
+    currentUser.is_banned
+      ? 'محظور'
+      : 'نشط'
+
+  document.getElementById(
+    'userLastSeen'
+  ).textContent =
+    formatRelativeTime(
+      currentUser.last_seen_at
+    )
+
+  renderUserTransactions(
+    data.transactions
+  )
+
+  const button =
+    document.getElementById(
+      'userBanBtn'
+    )
+
+  button.textContent =
+    currentUser.is_banned
+      ? 'فك الحظر'
+      : 'حظر'
+
+  button.className =
+    currentUser.is_banned
+      ? 'action green-btn'
+      : 'action red-btn'
+}
+
+
+async function addUserPoints() {
+  await adjustUserPoints(
+    1
+  )
+}
+
+
+async function removeUserPoints() {
+  await adjustUserPoints(
+    -1
+  )
+}
+
+
+function getPointReason(
+  fallback
+) {
+  const raw =
+    document.getElementById(
+      'userPointReason'
+    ).value.trim()
+
+  return raw || fallback
+}
+
+
+async function submitPointsAdjustment(
+  amount,
+  description,
+  confirmText,
+  successText
+) {
+  if (!currentUser) {
+    toast(
+      'ابحث عن المستخدم أولاً'
+    )
+
+    return
+  }
+
+  if (
+    !confirm(
+      confirmText
+    )
+  ) {
+    return
+  }
+
+  try {
+    await api(
+      `/api/admin/users/${currentUser.telegram_id}/points`,
+      {
+        method:'POST',
+
+        body:
+          JSON.stringify({
+            amount,
+            description
+          })
+      }
+    )
+
+    document.getElementById(
+      'userPointAmount'
+    ).value = ''
+
+    document.getElementById(
+      'userPointReason'
+    ).value = ''
+
+    await openUser(
+      currentUser.telegram_id
+    )
+
+    await loadDashboard()
+    await loadTopUsers()
+
+    toast(
+      successText
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر تعديل النقاط'
+    )
+  }
+}
+
+
+async function adjustUserPoints(
+  direction
+) {
+  if (!currentUser) {
+    toast(
+      'ابحث عن المستخدم أولاً'
+    )
+
+    return
+  }
+
+  const input =
+    document.getElementById(
+      'userPointAmount'
+    )
+
+  const value =
+    Math.abs(
+      Number(
+        input.value
+      )
+    )
+
+  if (
+    !Number.isSafeInteger(
+      value
+    ) ||
+    value <= 0
+  ) {
+    toast(
+      'أدخل قيمة صحيحة مثل 100'
+    )
+
+    return
+  }
+
+  const amount =
+    direction === 1
+      ? value
+      : -value
+
+  const actionText =
+    direction === 1
+      ? `إضافة ${value} نقطة`
+      : `سحب ${value} نقطة`
+
+  await submitPointsAdjustment(
+    amount,
+    getPointReason(
+      direction === 1
+        ? 'إضافة نقاط من الإدارة'
+        : 'سحب نقاط من الإدارة'
+    ),
+    `تأكيد ${actionText}؟`,
+    direction === 1
+      ? `تمت إضافة ${value} نقطة`
+      : `تم سحب ${value} نقطة`
+  )
+}
+
+
+async function zeroUserPoints() {
+  if (!currentUser) {
+    toast(
+      'ابحث عن المستخدم أولاً'
+    )
+
+    return
+  }
+
+  if (
+    currentUser.points === 0
+  ) {
+    toast(
+      'رصيد المستخدم صفر أصلًا'
+    )
+
+    return
+  }
+
+  const amount =
+    -currentUser.points
+
+  await submitPointsAdjustment(
+    amount,
+    getPointReason(
+      'تصفير الرصيد من الإدارة'
+    ),
+    `تصفير رصيد المستخدم بالكامل (${formatNumber(currentUser.points)} نقطة)؟`,
+    'تم تصفير رصيد المستخدم'
+  )
+}
+
+
+async function toggleUserBan() {
+  if (!currentUser) {
+    return
+  }
+
+  const banned =
+    currentUser.is_banned
+
+  if (
+    !confirm(
+      banned
+        ? 'فك حظر المستخدم؟'
+        : 'حظر المستخدم؟ لن يقدر يستخدم STORMy.'
+    )
+  ) {
+    return
+  }
+
+  try {
+    await api(
+      `/api/admin/users/${currentUser.telegram_id}/${banned ? 'unban' : 'ban'}`,
+      {
+        method:'POST',
+        body:
+          JSON.stringify({
+            reason:
+              getPointReason(
+                'إجراء من لوحة الإدارة'
+              )
+          })
+      }
+    )
+
+    document.getElementById(
+      'userPointReason'
+    ).value = ''
+
+    await openUser(
+      currentUser.telegram_id
+    )
+
+    await loadDashboard()
+
+    toast(
+      banned
+        ? 'تم فك الحظر'
+        : 'تم حظر المستخدم'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function loadTasks() {
+  const status =
+    document.getElementById(
+      'taskFilter'
+    ).value
+
+  const url =
+    status
+      ? `/api/admin/tasks?status=${encodeURIComponent(status)}`
+      : '/api/admin/tasks'
+
+  const data =
+    await api(
+      url
+    )
+
+  const table =
+    document.getElementById(
+      'tasksTable'
+    )
+
+  table.innerHTML =
+    ''
+
+  if (
+    !data.tasks?.length
+  ) {
+    table.innerHTML =
+      '<tr><td colspan="6" class="empty">لا توجد مهام.</td></tr>'
+
+    return
+  }
+
+  data.tasks.forEach(
+    task => {
+
+      const row =
+        document.createElement(
+          'tr'
+        )
+
+      const status =
+        task.status
+
+      const statusHtml =
+        status === 'active'
+          ? '<span class="pill pill-green">نشطة</span>'
+          : status === 'paused'
+            ? '<span class="pill pill-blue">متوقفة</span>'
+            : status === 'completed'
+              ? '<span class="pill pill-green">مكتملة</span>'
+              : '<span class="pill pill-red">ملغاة</span>'
+
+      row.innerHTML = `
+        <td>
+          <strong>
+            ${task.title}
+          </strong>
+
+          <div style="color:var(--muted);font-size:8px;margin-top:3px">
+            ${
+              task.chat_username ||
+              task.chat_title ||
+              '-'
+            }
+          </div>
+        </td>
+
+        <td>
+          ${
+            task.owner?.telegram_id ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${task.completed_completions}
+          /
+          ${task.target_completions}
+        </td>
+
+        <td class="points-cell">
+          ${formatNumber(task.remaining_points)}
+        </td>
+
+        <td>
+          ${statusHtml}
+        </td>
+
+        <td>
+          <div style="display:flex;gap:5px">
+            ${
+              status === 'active'
+                ? `
+                  <button
+                    class="action blue-btn"
+                    onclick="changeTaskStatus('${task.id}','paused')"
+                  >
+                    إيقاف
+                  </button>
+                `
+                : status === 'paused'
+                  ? `
+                    <button
+                      class="action green-btn"
+                      onclick="changeTaskStatus('${task.id}','active')"
+                    >
+                      استئناف
+                    </button>
+                  `
+                  : ''
+            }
+
+            ${
+              status === 'active' ||
+              status === 'paused'
+                ? `
+                  <button
+                    class="action red-btn"
+                    onclick="cancelTask('${task.id}')"
+                  >
+                    إلغاء
+                  </button>
+                `
+                : ''
+            }
+          </div>
+        </td>
+      `
+
+      table.appendChild(
+        row
+      )
+    }
+  )
+}
+
+
+async function changeTaskStatus(
+  id,
+  status
+) {
+  try {
+    await api(
+      `/api/admin/tasks/${id}/status`,
+      {
+        method:'POST',
+        body:
+          JSON.stringify({
+            status
+          })
+      }
+    )
+
+    await loadTasks()
+
+    toast(
+      status === 'active'
+        ? 'تم استئناف المهمة'
+        : 'تم إيقاف المهمة'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function cancelTask(
+  id
+) {
+  if (
+    !confirm(
+      'إلغاء المهمة وإرجاع الميزانية المتبقية للمالك؟'
+    )
+  ) {
+    return
+  }
+
+  try {
+    await api(
+      `/api/admin/tasks/${id}/cancel`,
+      {
+        method:'POST'
+      }
+    )
+
+    await loadTasks()
+    await loadDashboard()
+
+    toast(
+      'تم إلغاء المهمة وإرجاع الميزانية'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function loadReferrals() {
+  const data =
+    await api(
+      '/api/admin/referrals'
+    )
+
+  const table =
+    document.getElementById(
+      'referralsTable'
+    )
+
+  table.innerHTML =
+    ''
+
+  if (
+    !data.referrals?.length
+  ) {
+    table.innerHTML =
+      '<tr><td colspan="5" class="empty">لا توجد إحالات.</td></tr>'
+
+    return
+  }
+
+  data.referrals.forEach(
+    referral => {
+
+      const row =
+        document.createElement(
+          'tr'
+        )
+
+      row.innerHTML = `
+        <td>
+          ${
+            referral.referrer?.telegram_id ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${
+            referral.referred?.telegram_id ||
+            '-'
+          }
+        </td>
+
+        <td>
+          ${referral.completed_tasks}
+          /
+          ${referral.required_tasks}
+        </td>
+
+        <td class="points-cell">
+          +${formatNumber(
+            referral.reward_points
+          )}
+        </td>
+
+        <td>
+          ${
+            referral.rewarded
+              ? '<span class="pill pill-green">تم الصرف</span>'
+              : '<span class="pill pill-blue">قيد التقدم</span>'
+          }
+        </td>
+      `
+
+      table.appendChild(
+        row
+      )
+    }
+  )
+}
+
+
+async function loadSettings() {
+  const data =
+    await api(
+      '/api/admin/settings'
+    )
+
+  const s =
+    data.settings || {}
+
+  document.getElementById(
+    'settingsTask'
+  ).value =
+    s.points_per_task ||
+    '5'
+
+  document.getElementById(
+    'settingsUsd'
+  ).value =
+    s.points_per_usd ||
+    '500'
+
+  document.getElementById(
+    'settingsReferral'
+  ).value =
+    s.referral_reward ||
+    '150'
+
+  document.getElementById(
+    'settingsReferralTasks'
+  ).value =
+    s.referral_required_tasks ||
+    '5'
+
+  document.getElementById(
+    'settingsHours'
+  ).value =
+    s.verification_delay_hours ||
+    '10'
+}
+
+
+async function saveSettings() {
+  if (
+    currentRole !==
+    'owner'
+  ) {
+    toast(
+      'الإعدادات للـOwner فقط'
+    )
+
+
+    return
+  }
+
+  try {
+    await api(
+      '/api/admin/settings',
+      {
+        method:'POST',
+
+        body:
+          JSON.stringify({
+            settings:{
+              points_per_task:
+                document.getElementById(
+                  'settingsTask'
+                ).value,
+
+              points_per_usd:
+                document.getElementById(
+                  'settingsUsd'
+                ).value,
+
+              referral_reward:
+                document.getElementById(
+                  'settingsReferral'
+                ).value,
+
+              referral_required_tasks:
+                document.getElementById(
+                  'settingsReferralTasks'
+                ).value,
+
+              verification_delay_hours:
+                document.getElementById(
+                  'settingsHours'
+                ).value
+            }
+          })
+      }
+    )
+
+    toast(
+      'تم حفظ الإعدادات'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function loadAdmins() {
+  if (
+    currentRole !==
+    'owner'
+  ) {
+    return
+  }
+
+  const data =
+    await api(
+      '/api/admin/admins'
+    )
+
+  const list =
+    document.getElementById(
+      'adminsList'
+    )
+
+  list.innerHTML =
+    ''
+
+  if (
+    !data.admins?.length
+  ) {
+    list.innerHTML =
+      '<div class="empty">لا يوجد مشرفون.</div>'
+
+    return
+  }
+
+  data.admins.forEach(
+    admin => {
+
+      const row =
+        document.createElement(
+          'div'
+        )
+
+      row.style.display =
+        'flex'
+
+      row.style.justifyContent =
+        'space-between'
+
+      row.style.alignItems =
+        'center'
+
+      row.style.padding =
+        '9px'
+
+      row.style.marginBottom =
+        '6px'
+
+      row.style.borderRadius =
+        '10px'
+
+      row.style.background =
+        'var(--surface2)'
+
+      row.innerHTML = `
+        <div>
+          <strong style="font-size:10px">
+            ${admin.telegram_id}
+          </strong>
+
+          <div style="color:var(--muted);font-size:8px;margin-top:2px">
+            ${admin.role}
+          </div>
+        </div>
+
+        ${
+          admin.role === 'admin'
+            ? `
+              <button
+                class="action red-btn"
+                onclick="removeAdmin(${admin.telegram_id})"
+              >
+                إزالة
+              </button>
+            `
+            : ''
+        }
+      `
+
+      list.appendChild(
+        row
+      )
+    }
+  )
+}
+
+
+async function addAdmin() {
+  const id =
+    Number(
+      document.getElementById(
+        'newAdminId'
+      ).value
+    )
+
+  if (
+    !Number.isSafeInteger(
+      id
+    ) ||
+    id <= 0
+  ) {
+    toast(
+      'Telegram ID غير صحيح'
+    )
+
+    return
+  }
+
+  try {
+    await api(
+      '/api/admin/admins',
+      {
+        method:'POST',
+
+        body:
+          JSON.stringify({
+            telegramId:id
+          })
+      }
+    )
+
+    document.getElementById(
+      'newAdminId'
+    ).value =
+      ''
+
+    await loadAdmins()
+
+    toast(
+      'تمت إضافة Admin'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function removeAdmin(
+  id
+) {
+  if (
+    !confirm(
+      `إزالة Admin ${id}؟`
+    )
+  ) {
+    return
+  }
+
+  try {
+    await api(
+      `/api/admin/admins/${id}`,
+      {
+        method:'DELETE'
+      }
+    )
+
+    await loadAdmins()
+
+    toast(
+      'تمت إزالة Admin'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function loadBroadcastCount() {
+  try {
+    const data =
+      await api(
+        '/api/admin/stats'
+      )
+
+    const activeCount =
+      (data.stats.users || 0) -
+      (data.stats.bannedUsers || 0)
+
+    document.getElementById(
+      'broadcastCount'
+    ).textContent =
+      `${formatNumber(activeCount)} مستخدم نشط`
+  } catch (
+    error
+  ) {
+    void error
+  }
+}
+
+
+document
+  .getElementById(
+    'broadcastMessage'
+  )
+  ?.addEventListener(
+    'input',
+    (event) => {
+      document.getElementById(
+        'broadcastLength'
+      ).textContent =
+        `${event.target.value.length} / 3500`
+    }
+  )
+
+
+async function sendBroadcast() {
+  const textarea =
+    document.getElementById(
+      'broadcastMessage'
+    )
+
+  const message =
+    textarea.value.trim()
+
+  if (!message) {
+    toast(
+      'اكتب رسالة أولاً'
+    )
+
+    return
+  }
+
+  if (
+    !confirm(
+      'رح تنبعث هاي الرسالة لكل الأعضاء النشطين. متأكد؟'
+    )
+  ) {
+    return
+  }
+
+  const button =
+    document.getElementById(
+      'broadcastSendBtn'
+    )
+
+  button.disabled = true
+  button.textContent =
+    'جاري الإرسال...'
+
+  try {
+    const data =
+      await api(
+        '/api/admin/broadcast',
+        {
+          method:'POST',
+          body:
+            JSON.stringify({
+              message
+            })
+        }
+      )
+
+    document.getElementById(
+      'broadcastResult'
+    ).innerHTML = `
+      <div class="broadcast-stat-row">
+        <div class="broadcast-stat">
+          <span>وصلت</span>
+          <strong class="green">${formatNumber(data.sent)}</strong>
+        </div>
+        <div class="broadcast-stat">
+          <span>محظور البوت</span>
+          <strong class="red">${formatNumber(data.blocked)}</strong>
+        </div>
+        <div class="broadcast-stat">
+          <span>فشلت</span>
+          <strong>${formatNumber(data.failed)}</strong>
+        </div>
+      </div>
+    `
+
+    textarea.value = ''
+
+    document.getElementById(
+      'broadcastLength'
+    ).textContent =
+      '0 / 3500'
+
+    toast(
+      `تم الإرسال — وصلت لـ${data.sent} مستخدم`
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر إرسال الرسالة'
+    )
+  } finally {
+    button.disabled = false
+    button.textContent =
+      'إرسال الرسالة'
+  }
+}
+
+
+async function loadRequiredChannels() {
+  const container =
+    document.getElementById(
+      'requiredChannelsList'
+    )
+
+  container.innerHTML =
+    '<div class="empty-hint">جاري التحميل...</div>'
+
+  try {
+    const data =
+      await api(
+        '/api/admin/required-channels'
+      )
+
+    const channels =
+      data.channels || []
+
+    if (channels.length === 0) {
+      container.innerHTML =
+        '<div class="empty-hint">ما في قنوات مضافة بعد.</div>'
+
+      return
+    }
+
+    container.innerHTML =
+      channels
+        .map(
+          (channel) => `
+            <div class="channel-row ${channel.is_active ? '' : 'inactive'}">
+              <div class="channel-info">
+                <strong>${channel.title}</strong>
+                <span>${channel.chat_username ? '@' + channel.chat_username : channel.chat_id}</span>
+                <small style="display:block;margin-top:5px;color:${channel.is_active ? 'var(--green)' : 'var(--muted)'}">
+                  ${channel.is_active ? 'مفعّلة — تمنع الوصول حتى إكمال الاشتراك' : 'متوقفة'}
+                </small>
+              </div>
+              <div class="channel-actions">
+                <button
+                  class="action dark-btn"
+                  onclick="toggleRequiredChannel('${channel.id}')"
+                >
+                  ${channel.is_active ? 'تعطيل' : 'تفعيل'} 
+                </button>
+                <button
+                  class="action red-btn"
+                  onclick="deleteRequiredChannel('${channel.id}')"
+                >
+                  حذف
+                </button>
+              </div>
+            </div>
+          `
+        )
+        .join('')
+  } catch (
+    error
+  ) {
+    container.innerHTML =
+      '<div class="empty-hint">تعذر تحميل القنوات.</div>'
+
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function addRequiredChannel() {
+  const button = document.querySelector('[onclick="addRequiredChannel()"]')
+  if (button) button.disabled = true
+
+  const identifierInput =
+    document.getElementById(
+      'channelIdentifier'
+    )
+
+  const titleInput =
+    document.getElementById(
+      'channelTitle'
+    )
+
+  const identifier =
+    identifierInput.value.trim()
+
+  if (!identifier) {
+    toast(
+      'أدخل @channel أو رابط القناة'
+    )
+
+    return
+  }
+
+  try {
+    await api(
+      '/api/admin/required-channels',
+      {
+        method:'POST',
+        body:
+          JSON.stringify({
+            identifier,
+            title:
+              titleInput.value.trim()
+          })
+      }
+    )
+
+    identifierInput.value = ''
+    titleInput.value = ''
+
+    await loadRequiredChannels()
+
+    toast(
+      'تمت إضافة القناة'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر إضافة القناة'
+    )
+  } finally {
+    if (button) button.disabled = false
+  }
+}
+
+
+async function toggleRequiredChannel(
+  id
+) {
+  try {
+    await api(
+      `/api/admin/required-channels/${id}/toggle`,
+      {
+        method:'POST'
+      }
+    )
+
+    await loadRequiredChannels()
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'حدث خطأ'
+    )
+  }
+}
+
+
+async function deleteRequiredChannel(
+  id
+) {
+  if (
+    !confirm(
+      'حذف هاي القناة من الاشتراك الإلزامي؟'
+    )
+  ) {
+    return
+  }
+
+  try {
+    await api(
+      `/api/admin/required-channels/${id}`,
+      {
+        method:'DELETE'
+      }
+    )
+
+    await loadRequiredChannels()
+
+    toast(
+      'تم الحذف'
+    )
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر الحذف'
+    )
+  }
+}
+
+
+async function init() {
+  try {
+    await loadRole()
+    await loadDashboard()
+  } catch (
+    error
+  ) {
+    toast(
+      error?.message ||
+      'تعذر تحميل لوحة الإدارة'
+    )
+  }
+}
+
+
+init()
+</script>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Tajawal:wght@400;500;700;900&display=swap');
+
+:root {
+  font-family:
+    Tajawal,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: var(--storm-text);
+  background: var(--storm-bg-mid);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-width: 320px;
+  background: var(--storm-bg-mid);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+
+/* ============================================================
+   STORM UNIFIED PALETTE — نسخة هادئة، تشبّع أقل، بدون بريق
+   ============================================================ */
+
+:root {
+  /* ========= المظهر الداكن (الافتراضي — أي مستخدم جديد يشوف هاد) ========= */
+  --storm-bg: #071527;
+  --storm-bg-top: #0d1f3c;
+  --storm-bg-mid: #071527;
+  --storm-bg-deep: #03101f;
+  --storm-surface: #1b2a5e;
+  --storm-surface-2: #182552;
+  --storm-surface-3: #16224a;
+  --storm-surface-4: #1c2a5c;
+  --storm-border: #2a3a72;
+  --storm-blue: #4f7dff;
+  --storm-blue-deep: #2f52c9;
+  --storm-blue-rgb: 79, 125, 255;
+  --storm-blue-soft: rgba(var(--storm-blue-rgb), .12);
+  --storm-text: #eef3ff;
+  --storm-muted: #8ea3d6;
+  --storm-pink: #2a1c33;
+  --storm-cream: #1b1730;
+  --storm-nav-bg: rgba(15, 23, 51, .92);
+  --storm-header-bg: rgba(19, 29, 66, .92);
+  --storm-header-border: rgba(63, 90, 160, .4);
+  --storm-shadow-card: 0 10px 24px rgba(30, 58, 168, .45);
+  --storm-splash-bg: #03101f;
+  --storm-splash-bar-a: #3a5fd0;
+  --storm-splash-bar-b: #5f8aff;
+  /* تايل خفيف مكرر لأيقونات قطط/بصمات صغيرة — شفافية واطئة جدًا حتى تصير
+     تفصيلة زينة بالخلفية بدون ما تشتت أو تزعج العين */
+  --storm-cat-tile: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%20%3Cg%20fill%3D%22%237fa8ff%22%3E%20%3Cg%20opacity%3D%220.16%22%20transform%3D%22translate%2818%2C16%29%20rotate%28-16%29%22%3E%20%3Cellipse%20cx%3D%220%22%20cy%3D%2210%22%20rx%3D%228%22%20ry%3D%226.8%22%2F%3E%20%3Cellipse%20cx%3D%22-8.5%22%20cy%3D%22-1.4%22%20rx%3D%223.4%22%20ry%3D%224%22%2F%3E%20%3Cellipse%20cx%3D%22-1.8%22%20cy%3D%22-5.8%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%225.4%22%20cy%3D%22-5.2%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%2210.8%22%20cy%3D%22-0.4%22%20rx%3D%223%22%20ry%3D%223.8%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20opacity%3D%220.13%22%20transform%3D%22translate%2888%2C50%29%20rotate%2822%29%20scale%280.68%29%22%3E%20%3Cellipse%20cx%3D%220%22%20cy%3D%2210%22%20rx%3D%228%22%20ry%3D%226.8%22%2F%3E%20%3Cellipse%20cx%3D%22-8.5%22%20cy%3D%22-1.4%22%20rx%3D%223.4%22%20ry%3D%224%22%2F%3E%20%3Cellipse%20cx%3D%22-1.8%22%20cy%3D%22-5.8%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%225.4%22%20cy%3D%22-5.2%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%2210.8%22%20cy%3D%22-0.4%22%20rx%3D%223%22%20ry%3D%223.8%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20opacity%3D%220.11%22%20transform%3D%22translate%2838%2C88%29%20rotate%28-30%29%20scale%280.55%29%22%3E%20%3Cellipse%20cx%3D%220%22%20cy%3D%2210%22%20rx%3D%228%22%20ry%3D%226.8%22%2F%3E%20%3Cellipse%20cx%3D%22-8.5%22%20cy%3D%22-1.4%22%20rx%3D%223.4%22%20ry%3D%224%22%2F%3E%20%3Cellipse%20cx%3D%22-1.8%22%20cy%3D%22-5.8%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%225.4%22%20cy%3D%22-5.2%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%2210.8%22%20cy%3D%22-0.4%22%20rx%3D%223%22%20ry%3D%223.8%22%2F%3E%20%3C%2Fg%3E%20%3C%2Fg%3E%20%3C%2Fsvg%3E");
+
+  --storm-font-brand: 'Baloo 2', Tajawal, system-ui, sans-serif;
+  --storm-radius-lg: 22px;
+  --storm-radius-md: 16px;
+}
+
+/* ========= المظهر الفاتح — يتفعّل لما المستخدم يختاره من صفحة حسابه =========
+   نفس القيم الأصلية اللي كانت بالتطبيق قبل التحويل للثيم الداكن. */
+:root[data-theme="light"] {
+  --storm-bg: #5b9bd0;
+  --storm-bg-top: #8fc6ea;
+  --storm-bg-mid: #5b9bd0;
+  --storm-bg-deep: #2f6a9e;
+  --storm-surface: #ffffff;
+  --storm-surface-2: #eef4fa;
+  --storm-surface-3: #f3f9fc;
+  --storm-surface-4: #e9eef4;
+  --storm-border: #e2e7ee;
+  --storm-blue: #8fb0d1;
+  --storm-blue-deep: #7098bf;
+  --storm-blue-rgb: 143, 176, 209;
+  --storm-text: #3a4a5c;
+  --storm-muted: #83919f;
+  --storm-pink: #f2dde3;
+  --storm-cream: #f8f2e8;
+  --storm-nav-bg: rgba(255, 255, 255, .92);
+  --storm-header-bg: rgba(232, 236, 241, .94);
+  --storm-header-border: rgba(211, 219, 228, .9);
+  --storm-shadow-card: 0 10px 24px rgba(47, 106, 158, .22);
+  --storm-splash-bg: #e7eefb;
+  --storm-splash-bar-a: #93b8dc;
+  --storm-splash-bar-b: #c0d7ea;
+  --storm-cat-tile: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%20%3Cg%20fill%3D%22%232e3238%22%3E%20%3Cg%20opacity%3D%220.16%22%20transform%3D%22translate%2818%2C16%29%20rotate%28-16%29%22%3E%20%3Cellipse%20cx%3D%220%22%20cy%3D%2210%22%20rx%3D%228%22%20ry%3D%226.8%22%2F%3E%20%3Cellipse%20cx%3D%22-8.5%22%20cy%3D%22-1.4%22%20rx%3D%223.4%22%20ry%3D%224%22%2F%3E%20%3Cellipse%20cx%3D%22-1.8%22%20cy%3D%22-5.8%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%225.4%22%20cy%3D%22-5.2%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%2210.8%22%20cy%3D%22-0.4%22%20rx%3D%223%22%20ry%3D%223.8%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20opacity%3D%220.13%22%20transform%3D%22translate%2888%2C50%29%20rotate%2822%29%20scale%280.68%29%22%3E%20%3Cellipse%20cx%3D%220%22%20cy%3D%2210%22%20rx%3D%228%22%20ry%3D%226.8%22%2F%3E%20%3Cellipse%20cx%3D%22-8.5%22%20cy%3D%22-1.4%22%20rx%3D%223.4%22%20ry%3D%224%22%2F%3E%20%3Cellipse%20cx%3D%22-1.8%22%20cy%3D%22-5.8%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%225.4%22%20cy%3D%22-5.2%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%2210.8%22%20cy%3D%22-0.4%22%20rx%3D%223%22%20ry%3D%223.8%22%2F%3E%20%3C%2Fg%3E%20%3Cg%20opacity%3D%220.11%22%20transform%3D%22translate%2838%2C88%29%20rotate%28-30%29%20scale%280.55%29%22%3E%20%3Cellipse%20cx%3D%220%22%20cy%3D%2210%22%20rx%3D%228%22%20ry%3D%226.8%22%2F%3E%20%3Cellipse%20cx%3D%22-8.5%22%20cy%3D%22-1.4%22%20rx%3D%223.4%22%20ry%3D%224%22%2F%3E%20%3Cellipse%20cx%3D%22-1.8%22%20cy%3D%22-5.8%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%225.4%22%20cy%3D%22-5.2%22%20rx%3D%223.4%22%20ry%3D%224.3%22%2F%3E%20%3Cellipse%20cx%3D%2210.8%22%20cy%3D%22-0.4%22%20rx%3D%223%22%20ry%3D%223.8%22%2F%3E%20%3C%2Fg%3E%20%3C%2Fg%3E%20%3C%2Fsvg%3E");
+}
+
+/* خلفية زرقاء سماوية داكنة شوي، بطبقتين بس (تايل البصمات + تدرّج واحد)
+   وبدون background-attachment: fixed — كان هو سبب ثقل السكرول لأنه
+   يفرض إعادة رسم الخلفية كل فريم. بهاي الطريقة composited خفيف وسلس. */
+.app-shell {
+  background-color: var(--storm-bg-mid);
+  background-image:
+    var(--storm-cat-tile),
+    linear-gradient(180deg, var(--storm-bg-top) 0%, var(--storm-bg-mid) 45%, var(--storm-bg-deep) 100%);
+  background-repeat: repeat, no-repeat;
+  background-size: 120px 120px, 100% 100%;
+}
+
+body {
+  background-color: var(--storm-bg-mid);
+  background-image:
+    var(--storm-cat-tile),
+    linear-gradient(180deg, var(--storm-bg-top) 0%, var(--storm-bg-mid) 45%, var(--storm-bg-deep) 100%);
+  background-repeat: repeat, no-repeat;
+  background-size: 120px 120px, 100% 100%;
+}
+
+.storm-brand {
+  font-family: var(--storm-font-brand);
+  letter-spacing: .2px;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  color: var(--storm-text);
+}
+
+button,
+input {
+  font-family: inherit;
+}
