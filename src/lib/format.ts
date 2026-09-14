@@ -36,28 +36,6 @@ export function taskDisplayName(
     : 'مجموعة تيليجرام'
 }
 
-// ألوان شارة ثابتة حسب نوع المهمة (قناة/بوت/مجموعة) — نفس التدرّج
-// دايمًا لنفس النوع. الأيقونة نفسها بقت SVG قطة (TaskCatIcon) بدل
-// الإيموجي القديم، وتُختار بشكل عشوائي-ثابت حسب معرّف كل مهمة.
-export function taskTypeStyle(
-  type: Task['type']
-) {
-  if (type === 'channel') {
-    return {
-      colorFrom: '#5aa7ff',
-      colorTo: '#7ce0ff'
-    }
-  }
-
-  if (type === 'bot') {
-    return {
-      colorFrom: '#b98cff',
-      colorTo: '#ff8cf0'
-    }
-  }
-
-  return {
-    colorFrom: '#ff9c6b',
-    colorTo: '#ffd76b'
-  }
-}
+// شارة المهمة (قناة/بوت/مجموعة) صارت وجه قطة (TaskCatIcon) على خلفية
+// تتبع المظهر مباشرة (أسود مع وجه أبيض بالمظهر الداكن، أبيض مع وجه
+// أسود بالفاتح) — راجع .task-avatar / .my-task-avatar بالـ CSS.

@@ -9,7 +9,7 @@ import {
   rejectCompletion
 } from '../lib/api'
 import { hapticError, hapticSuccess, showAlert, showConfirm } from '../lib/telegram'
-import { taskDisplayName, taskTypeStyle } from '../lib/format'
+import { taskDisplayName } from '../lib/format'
 import { TaskCatIcon } from '../components/CatDecor'
 import { getStoredTheme, applyTheme, type ThemeMode } from '../lib/theme'
 import type { MeResponse, OwnerReviewItem, Task, User } from '../lib/types'
@@ -386,7 +386,6 @@ export function Profile({
                   : 0
 
               const name = taskDisplayName(task)
-              const style = taskTypeStyle(task.type)
 
               return (
                 <div
@@ -395,12 +394,7 @@ export function Profile({
                 >
                   <div className="my-task-top">
                     <div className="my-task-identity">
-                      <div
-                        className="my-task-avatar"
-                        style={{
-                          background: `linear-gradient(135deg, ${style.colorFrom}, ${style.colorTo})`
-                        }}
-                      >
+                      <div className="my-task-avatar">
                         <TaskCatIcon seed={task.id} size={20} />
                       </div>
 

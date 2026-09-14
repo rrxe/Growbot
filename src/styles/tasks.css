@@ -81,6 +81,8 @@
   border-radius: 13px;
   display: grid;
   place-items: center;
+  background: var(--storm-task-bg);
+  border: 1px solid var(--storm-border);
   color: #eef1f6;
   font-weight: 900;
   font-size: 15px;

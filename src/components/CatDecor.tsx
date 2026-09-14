@@ -37,8 +37,8 @@ function TaskCatEyes({ variant }: { variant: TaskCatVariant }) {
   if (variant === 'wink') {
     return (
       <>
-        <path d="M15 21 Q18 18.5 21 21" stroke="#2a3a72" strokeWidth="2" strokeLinecap="round" fill="none" />
-        <circle cx="29" cy="20" r="2.6" fill="#2a3a72" />
+        <path d="M15 21 Q18 18.5 21 21" stroke="var(--storm-task-detail)" strokeWidth="2" strokeLinecap="round" fill="none" />
+        <circle cx="29" cy="20" r="2.6" fill="var(--storm-task-detail)" />
       </>
     )
   }
@@ -46,8 +46,8 @@ function TaskCatEyes({ variant }: { variant: TaskCatVariant }) {
   if (variant === 'sleepy') {
     return (
       <>
-        <path d="M14.5 20.5 Q18 23 21.5 20.5" stroke="#2a3a72" strokeWidth="2" strokeLinecap="round" fill="none" />
-        <path d="M26.5 20.5 Q30 23 33.5 20.5" stroke="#2a3a72" strokeWidth="2" strokeLinecap="round" fill="none" />
+        <path d="M14.5 20.5 Q18 23 21.5 20.5" stroke="var(--storm-task-detail)" strokeWidth="2" strokeLinecap="round" fill="none" />
+        <path d="M26.5 20.5 Q30 23 33.5 20.5" stroke="var(--storm-task-detail)" strokeWidth="2" strokeLinecap="round" fill="none" />
       </>
     )
   }
@@ -55,32 +55,32 @@ function TaskCatEyes({ variant }: { variant: TaskCatVariant }) {
   if (variant === 'star') {
     return (
       <>
-        <path d="M16 15.5 L17 19 L20.5 20 L17 21 L16 24.5 L15 21 L11.5 20 L15 19 Z" fill="#2a3a72" />
-        <path d="M32 15.5 L33 19 L36.5 20 L33 21 L32 24.5 L31 21 L27.5 20 L31 19 Z" fill="#2a3a72" />
+        <path d="M16 15.5 L17 19 L20.5 20 L17 21 L16 24.5 L15 21 L11.5 20 L15 19 Z" fill="var(--storm-task-detail)" />
+        <path d="M32 15.5 L33 19 L36.5 20 L33 21 L32 24.5 L31 21 L27.5 20 L31 19 Z" fill="var(--storm-task-detail)" />
       </>
     )
   }
 
   return (
     <>
-      <circle cx="17.5" cy="20" r="2.8" fill="#2a3a72" />
-      <circle cx="30.5" cy="20" r="2.8" fill="#2a3a72" />
-      <circle cx="18.3" cy="19" r=".9" fill="#fdfefe" />
-      <circle cx="31.3" cy="19" r=".9" fill="#fdfefe" />
+      <circle cx="17.5" cy="20" r="2.8" fill="var(--storm-task-detail)" />
+      <circle cx="30.5" cy="20" r="2.8" fill="var(--storm-task-detail)" />
+      <circle cx="18.3" cy="19" r=".9" fill="var(--storm-task-face)" />
+      <circle cx="31.3" cy="19" r=".9" fill="var(--storm-task-face)" />
     </>
   )
 }
 
 function TaskCatMouth({ variant }: { variant: TaskCatVariant }) {
   if (variant === 'sleepy') {
-    return <path d="M21 27 Q24 26 27 27" stroke="#2a3a72" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+    return <path d="M21 27 Q24 26 27 27" stroke="var(--storm-task-detail)" strokeWidth="1.6" strokeLinecap="round" fill="none" />
   }
 
   if (variant === 'star') {
-    return <ellipse cx="24" cy="27.5" rx="3" ry="2.4" fill="#2a3a72" />
+    return <ellipse cx="24" cy="27.5" rx="3" ry="2.4" fill="var(--storm-task-detail)" />
   }
 
-  return <path d="M19 26 Q24 30.5 29 26" stroke="#2a3a72" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+  return <path d="M19 26 Q24 30.5 29 26" stroke="var(--storm-task-detail)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
 }
 
 // شارة مهمة على شكل وجه قطة — تحط جوا الدائرة الملوّنة يلي بالكرت
@@ -91,15 +91,15 @@ export function TaskCatIcon({ seed, size = 24 }: { seed: string; size?: number }
 
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M9 8 L16 19 L7 20 Z" fill="#fdfefe" />
-      <path d="M39 8 L41 20 L32 19 Z" fill="#fdfefe" />
-      <path d="M11 11 L15.5 18.5 L9.5 19.2 Z" fill="#2a3a72" opacity=".55" />
-      <path d="M37 11 L38.5 19.2 L32.5 18.5 Z" fill="#2a3a72" opacity=".55" />
-      <circle cx="24" cy="24" r="15.5" fill="#fdfefe" />
+      <path d="M9 8 L16 19 L7 20 Z" fill="var(--storm-task-face)" />
+      <path d="M39 8 L41 20 L32 19 Z" fill="var(--storm-task-face)" />
+      <path d="M11 11 L15.5 18.5 L9.5 19.2 Z" fill="var(--storm-task-detail)" opacity=".55" />
+      <path d="M37 11 L38.5 19.2 L32.5 18.5 Z" fill="var(--storm-task-detail)" opacity=".55" />
+      <circle cx="24" cy="24" r="15.5" fill="var(--storm-task-face)" />
       <TaskCatEyes variant={variant} />
       <TaskCatMouth variant={variant} />
       {variant === 'happy' && (
-        <path d="M15 24 L8 22.5M15 26 L8 27.5M33 24 L40 22.5M33 26 L40 27.5" stroke="#2a3a72" strokeWidth="1" strokeLinecap="round" opacity=".45" />
+        <path d="M15 24 L8 22.5M15 26 L8 27.5M33 24 L40 22.5M33 26 L40 27.5" stroke="var(--storm-task-detail)" strokeWidth="1" strokeLinecap="round" opacity=".45" />
       )}
     </svg>
   )

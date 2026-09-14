@@ -9,7 +9,7 @@ import {
   showAlert,
   showConfirm
 } from '../lib/telegram'
-import { taskDisplayName, taskTypeStyle } from '../lib/format'
+import { taskDisplayName } from '../lib/format'
 import { TaskCatIcon } from '../components/CatDecor'
 import type { Task, User } from '../lib/types'
 import '../styles/tasks.css'
@@ -371,7 +371,6 @@ export function Tasks({
         <div className="task-list">
           {visibleTasks.map((task) => {
             const name = taskDisplayName(task)
-            const style = taskTypeStyle(task.type)
             const isJoined = joinedIds.includes(task.id)
 
             return (
@@ -379,12 +378,7 @@ export function Tasks({
               className="task-card"
               key={task.id}
             >
-              <div
-                className="task-avatar"
-                style={{
-                  background: `linear-gradient(135deg, ${style.colorFrom}, ${style.colorTo})`
-                }}
-              >
+              <div className="task-avatar">
                 <TaskCatIcon seed={task.id} size={30} />
               </div>
 
