@@ -18,7 +18,7 @@ import './styles/app.css'
 // يصير وميض/قفزة لون عند فتح التطبيق
 applyTheme(getStoredTheme())
 
-const ADSGRAM_AUTO_BLOCK_ID = 'int-46084'
+const ADSGRAM_AUTO_BLOCK_ID = '0'
 const ADSGRAM_SCRIPT_SRC = 'https://sad.adsgram.ai/js/sad.min.js'
 
 type AdsgramController = {
