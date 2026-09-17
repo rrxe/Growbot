@@ -23,8 +23,11 @@ interface Props {
 
 type Filter = 'all' | 'channel' | 'group' | 'bot'
 
-const ADSGRAM_NATIVE_TASK_BLOCK_ID = '0'
+const ADSGRAM_NATIVE_TASK_BLOCK_ID = 'task-46724'
 const ADSGRAM_NATIVE_TASK_REWARD = 1
+// إيقاف مؤقت لمهمة إعلان AdsGram الـ native لحد ما ينعمل block id
+// جديد صحيح — لما تصير جاهز رجّعها true.
+const ADSGRAM_NATIVE_TASK_ENABLED = false
 
 
 export function Tasks({
@@ -300,7 +303,7 @@ export function Tasks({
         </div>
       </div>
 
-      {nativeTaskAvailable && nativeTaskReady && (
+      {ADSGRAM_NATIVE_TASK_ENABLED && nativeTaskAvailable && nativeTaskReady && (
         <article className="adsgram-native-task-card">
           <div className="adsgram-native-task-badge">AD</div>
           <div className="adsgram-native-task-copy">

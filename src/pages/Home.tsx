@@ -34,6 +34,10 @@ import type {
 
 import { CatFaceIcon, CatEarsPeek, PawPrintIcon, SparkleIcon } from '../components/CatDecor.js'
 
+// إيقاف مؤقت لإعلان المكافأة (reward ad) لحد ما ينعمل block id جديد
+// صحيح بحساب AdsGram — لما تصير جاهز رجّعها true.
+const ADSGRAM_REWARD_ENABLED = false
+
 import '../styles/home.css'
 
 interface Props {
@@ -156,6 +160,10 @@ export function Home({
   }, [])
 
   async function watchAdsgramReward() {
+    if (!ADSGRAM_REWARD_ENABLED) {
+      showAlert('ميزة الإعلانات متوقفة مؤقتًا، رح ترجع قريبًا 🙏')
+      return
+    }
     if (adsgramBusy) return
     if (adsgramRemaining <= 0) {
       showAlert('وصلت للحد اليومي. يرجع العداد تلقائيًا عند منتصف الليل بتوقيت بغداد.')
@@ -391,6 +399,7 @@ export function Home({
 
       </div>
 
+      {ADSGRAM_REWARD_ENABLED && (
       <section className="adsgram-reward-card">
         <div className="adsgram-reward-head">
           <div className="adsgram-reward-icon">AD</div>
@@ -429,6 +438,7 @@ export function Home({
 
         <small>يتجدد العداد تلقائيًا كل يوم عند 00:00 بتوقيت بغداد.</small>
       </section>
+      )}
 
       <section className="checkin-card">
 

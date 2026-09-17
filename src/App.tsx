@@ -18,8 +18,12 @@ import './styles/app.css'
 // يصير وميض/قفزة لون عند فتح التطبيق
 applyTheme(getStoredTheme())
 
-const ADSGRAM_AUTO_BLOCK_ID = '0'
+const ADSGRAM_AUTO_BLOCK_ID = 'int-46084'
 const ADSGRAM_SCRIPT_SRC = 'https://sad.adsgram.ai/js/sad.min.js'
+// إيقاف مؤقت لإعلان الـ int (التلقائي) لحد ما ينعمل block id جديد
+// صحيح — لما تصير جاهز رجّعها true. السكربت نفسه يضل يتحمّل عادي
+// حتى إعلانات reward/native task (بالصفحات التانية) ما تتأثر.
+const ADSGRAM_AUTO_ENABLED = false
 
 type AdsgramController = {
   show: () => Promise<any>
@@ -209,6 +213,7 @@ export default function App() {
     if (typeof window === 'undefined') return
 
     const initAdsgram = () => {
+      if (!ADSGRAM_AUTO_ENABLED) return
       if (!window.Adsgram) return
       if (!adsgramAutoRef.current) {
         adsgramAutoRef.current = window.Adsgram.init({ blockId: ADSGRAM_AUTO_BLOCK_ID })
@@ -267,6 +272,7 @@ export default function App() {
     let timer: number | null = null
 
     const showAutoAd = async () => {
+      if (!ADSGRAM_AUTO_ENABLED) return
       // Hard safety guard: never show an automatic ad on the
       // mandatory subscription screen.
       if (!membershipStatusReady) return

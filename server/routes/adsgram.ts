@@ -4,10 +4,10 @@ import { supabase } from '../lib/supabase.js'
 
 export const adsgramRouter = Router()
 
-const ADSGRAM_REWARD_BLOCK_ID = '0'
+const ADSGRAM_REWARD_BLOCK_ID = '46262'
 const ADSGRAM_REWARD_DAILY_LIMIT = 20
 const ADSGRAM_REWARD_POINTS = 6
-const ADSGRAM_NATIVE_TASK_BLOCK_ID = '0'
+const ADSGRAM_NATIVE_TASK_BLOCK_ID = 'task-46724'
 const ADSGRAM_NATIVE_TASK_REWARD = 3
 
 function getBaghdadDay() {
