@@ -23,7 +23,7 @@ interface Props {
 
 type Filter = 'all' | 'channel' | 'group' | 'bot'
 
-const ADSGRAM_NATIVE_TASK_BLOCK_ID = 'task-46724'
+const ADSGRAM_NATIVE_TASK_BLOCK_ID = '0'
 const ADSGRAM_NATIVE_TASK_REWARD = 1
 
 
