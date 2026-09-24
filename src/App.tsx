@@ -70,10 +70,29 @@ export default function App() {
 
   useEffect(() => {
     if (!splashVisible || !loading) return
-    const id = window.setInterval(() => {
-      setSplashProgress((prev) => (prev >= 90 ? prev : prev + (90 - prev) * 0.08 + 0.4))
-    }, 120)
-    return () => window.clearInterval(id)
+    let frame = 0
+    let last = performance.now()
+
+    const animate = (now: number) => {
+      const delta = Math.min(now - last, 32)
+      last = now
+
+      setSplashProgress((prev) => {
+        if (prev >= 90) return prev
+
+        const remaining = 90 - prev
+        const speed = Math.max(0.018, remaining * 0.0007)
+        const next = prev + remaining * speed * delta
+
+        return Math.min(90, next)
+      })
+
+      frame = requestAnimationFrame(animate)
+    }
+
+    frame = requestAnimationFrame(animate)
+
+    return () => cancelAnimationFrame(frame)
   }, [splashVisible, loading])
 
   useEffect(() => {

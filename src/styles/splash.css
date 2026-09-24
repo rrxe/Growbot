@@ -36,3 +36,45 @@
 @keyframes splash-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 @keyframes splash-spin-reverse{to{transform:translate(-50%,-50%) rotate(-360deg)}}
 @media(max-width:380px){.gx-loader-mark{width:145px;height:145px}.ring-one{width:128px;height:128px}.ring-two{width:91px;height:91px}.gx-splash-wordmark{font-size:38px}.gx-splash-side{display:none}}
+
+
+/* Smooth loading progress */
+.gx-splash-rail {
+  overflow: hidden;
+  will-change: transform;
+}
+
+.gx-splash-rail > i {
+  transition:
+    width 180ms cubic-bezier(.22, 1, .36, 1),
+    transform 180ms cubic-bezier(.22, 1, .36, 1);
+  will-change: width;
+}
+
+.gx-splash-rail > b {
+  transition:
+    inset-inline-start 180ms cubic-bezier(.22, 1, .36, 1);
+  will-change: inset-inline-start;
+}
+
+.gx-splash-rail > i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,.22) 45%,
+    transparent 100%
+  );
+  animation: splashProgressShine 1.8s ease-in-out infinite;
+}
+
+@keyframes splashProgressShine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
