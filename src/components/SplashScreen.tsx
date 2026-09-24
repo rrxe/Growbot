@@ -17,7 +17,7 @@ export default function SplashScreen({ progress, fading = false }: SplashScreenP
         <div className="gx-splash-readout"><span>{phase}</span><strong>{String(Math.round(value)).padStart(3, '0')}%</strong></div>
         <div className="gx-splash-rail" role="progressbar" aria-valuenow={Math.round(value)} aria-valuemin={0} aria-valuemax={100}><i style={{width:`${value}%`}}/><b style={{insetInlineStart:`calc(${value}% - 4px)`}}/></div>
       </main>
-      <div className="gx-splash-bottom"><span>STORMY</span><span>نسخة مستقرة</span><span>النظام جاهز</span></div>
+      <div className="gx-splash-bottom"><span>STORMY</span><span>النظام جاهز</span></div>
     </div>
   )
 }

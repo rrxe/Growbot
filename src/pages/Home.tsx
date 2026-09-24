@@ -341,7 +341,9 @@ export function Home({
         <button
           className="quick-action"
           onClick={() =>
-            setShowBuy(true)
+            openTelegramLink(
+              'https://t.me/SLYMintX_SUPPORT'
+            )
           }
         >
           <div className="quick-icon green">
