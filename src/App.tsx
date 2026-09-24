@@ -74,17 +74,21 @@ export default function App() {
     let last = performance.now()
 
     const animate = (now: number) => {
-      const delta = Math.min(now - last, 32)
+      const delta = Math.min(now - last, 50)
       last = now
 
       setSplashProgress((prev) => {
-        if (prev >= 90) return prev
+        // التقدم يكون سريعًا في البداية ثم يبطئ تدريجيًا
+        // ولا يصل إلى 90% قبل أن يكون التطبيق جاهزًا
+        if (prev >= 82) return prev
 
-        const remaining = 90 - prev
-        const speed = Math.max(0.018, remaining * 0.0007)
-        const next = prev + remaining * speed * delta
+        const target = 82
+        const remaining = target - prev
 
-        return Math.min(90, next)
+        // حركة بطيئة وناعمة بدون قفزات
+        const amount = Math.max(0.015, remaining * 0.00032) * delta
+
+        return Math.min(target, prev + amount)
       })
 
       frame = requestAnimationFrame(animate)

@@ -46,14 +46,14 @@
 
 .gx-splash-rail > i {
   transition:
-    width 180ms cubic-bezier(.22, 1, .36, 1),
+    width 90ms linear,
     transform 180ms cubic-bezier(.22, 1, .36, 1);
   will-change: width;
 }
 
 .gx-splash-rail > b {
   transition:
-    inset-inline-start 180ms cubic-bezier(.22, 1, .36, 1);
+    inset-inline-start 90ms linear;
   will-change: inset-inline-start;
 }
 
