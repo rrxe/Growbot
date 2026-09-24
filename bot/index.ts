@@ -577,9 +577,17 @@ export async function notifyCompletionDecision(
     return
   }
 
-  const executorTelegramId = completion.users?.telegram_id
+  const executor = completion.users
+  const executorTelegramId = executor?.telegram_id
   const reward = completion.tasks.reward_points ?? 0
   const title = completion.tasks.title || '—'
+
+  const executorLabel = executor
+    ? [
+        executor.first_name?.trim() || 'مستخدم',
+        executor.username ? `@${executor.username}` : ''
+      ].filter(Boolean).join(' ')
+    : 'غير معروف'
 
   if (decision === 'approved') {
     if (executorTelegramId) {
@@ -606,8 +614,8 @@ export async function notifyCompletionDecision(
       completion.owner_notify_chat_id,
       completion.owner_notify_message_id,
       opts.auto
-        ? `\n\n⏰ تمت الموافقة تلقائيًا بعد 15 دقيقة — المهمة: ${title}`
-        : `\n\n✅ تمت الموافقة — المهمة: ${title}`
+        ? `\n\n⏰ تمت الموافقة تلقائيًا بعد 15 دقيقة — المهمة: ${title}\n👤 المنفّذ: ${executorLabel}`
+        : `\n\n✅ تمت الموافقة — المهمة: ${title}\n👤 المنفّذ: ${executorLabel}`
     )
   } else {
     if (executorTelegramId) {
@@ -629,7 +637,7 @@ export async function notifyCompletionDecision(
     await finalizeCompletionOwnerMessage(
       completion.owner_notify_chat_id,
       completion.owner_notify_message_id,
-      `\n\n❌ تم الرفض — المهمة: ${title}`
+      `\n\n❌ تم الرفض — المهمة: ${title}\n👤 المنفّذ: ${executorLabel}`
     )
   }
 }

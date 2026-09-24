@@ -10,7 +10,7 @@ import {
   showConfirm
 } from '../lib/telegram'
 import { taskDisplayName, taskTypeStyle } from '../lib/format'
-import { TaskCatIcon } from '../components/CatDecor'
+import { ChannelTaskIcon, GroupTaskIcon, BotTaskIcon } from '../components/CatDecor'
 import type { Task, User } from '../lib/types'
 import '../styles/tasks.css'
 
@@ -385,7 +385,13 @@ export function Tasks({
                   background: `linear-gradient(135deg, ${style.colorFrom}, ${style.colorTo})`
                 }}
               >
-                <TaskCatIcon seed={task.id} size={30} />
+                {task.type === 'channel' ? (
+                  <ChannelTaskIcon size={30} />
+                ) : task.type === 'bot' ? (
+                  <BotTaskIcon size={30} />
+                ) : (
+                  <GroupTaskIcon size={30} />
+                )}
               </div>
 
               <div className="task-content">

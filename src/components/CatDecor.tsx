@@ -20,6 +20,41 @@ export function TaskCatIcon({ seed: _seed, size = 24 }: { seed: string; size?: n
   )
 }
 
+export function ChannelTaskIcon({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="24" cy="24" r="17" stroke="currentColor" strokeWidth="2.2" opacity=".55" />
+      <path d="M19 20.5a7 7 0 0 1 10 0" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" fill="none" />
+      <path d="M15.5 17a12.5 12.5 0 0 1 17 0" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" fill="none" opacity=".75" />
+      <circle cx="24" cy="29" r="2.8" fill="currentColor" />
+    </svg>
+  )
+}
+
+export function GroupTaskIcon({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="24" cy="24" r="17" stroke="currentColor" strokeWidth="2.2" opacity=".55" />
+      <circle cx="18.5" cy="21" r="4" stroke="currentColor" strokeWidth="2.2" />
+      <circle cx="29.5" cy="21" r="4" stroke="currentColor" strokeWidth="2.2" />
+      <path d="M11.5 33c1.2-4.6 4.4-7 7-7M36.5 33c-1.2-4.6-4.4-7-7-7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+    </svg>
+  )
+}
+
+export function BotTaskIcon({ size = 24 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="24" cy="24" r="17" stroke="currentColor" strokeWidth="2.2" opacity=".55" />
+      <path d="M24 18v-3.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      <circle cx="24" cy="13" r="1.5" fill="currentColor" />
+      <rect x="16" y="18" width="16" height="13" rx="4" stroke="currentColor" strokeWidth="2.2" />
+      <circle cx="20.5" cy="24.5" r="1.6" fill="currentColor" />
+      <circle cx="27.5" cy="24.5" r="1.6" fill="currentColor" />
+    </svg>
+  )
+}
+
 export function PawPrintIcon({ size = 20, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
