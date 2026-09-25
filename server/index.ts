@@ -15,7 +15,8 @@ import {
 } from './jobs/index.js'
 
 import {
-  startBot
+  startBot,
+  bot as telegramBot
 } from '../bot/index.js'
 
 async function start() {
@@ -27,14 +28,14 @@ async function start() {
     )
   } else {
     try {
-      const bot =
+      const me =
         await getTelegramMe()
 
       process.env.BOT_ID =
-        String(bot.id)
+        String(me.id)
 
       console.log(
-        `[storm] Telegram bot @${bot.username || 'unknown'}`
+        `[storm] Telegram bot @${me.username || 'unknown'}`
       )
     } catch (error) {
       console.error(
@@ -58,5 +59,20 @@ async function start() {
     }
   )
 }
+
+async function shutdown(signal: string) {
+  console.log(`[storm] ${signal} received, stopping bot polling...`)
+
+  try {
+    await telegramBot?.stop()
+  } catch (error) {
+    console.error('[storm] error while stopping bot:', error)
+  }
+
+  process.exit(0)
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'))
+process.on('SIGINT', () => shutdown('SIGINT'))
 
 void start()
