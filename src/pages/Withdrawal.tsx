@@ -20,6 +20,8 @@ type AdsgramWalletController = {
 
 type Props = {
   user: User
+  initialWallet?: WalletResponse | null
+  onWalletLoaded?: (wallet: WalletResponse) => void
   onUserChanged: (user: User) => void
   onOpenLeaderboard: () => void
 }
@@ -31,9 +33,9 @@ function formatUsdt(value: number) {
   return Number(value || 0).toFixed(4)
 }
 
-export default function Withdrawal({ user, onUserChanged, onOpenLeaderboard }: Props) {
-  const [wallet, setWallet] = useState<WalletResponse | null>(null)
-  const [loading, setLoading] = useState(true)
+export default function Withdrawal({ user, initialWallet, onWalletLoaded, onUserChanged, onOpenLeaderboard }: Props) {
+  const [wallet, setWallet] = useState<WalletResponse | null>(initialWallet ?? null)
+  const [loading, setLoading] = useState(!initialWallet)
   const [refreshing, setRefreshing] = useState(false)
   const [exchangeOpen, setExchangeOpen] = useState(false)
   const [exchangeCoins, setExchangeCoins] = useState('1000')
@@ -77,8 +79,12 @@ export default function Withdrawal({ user, onUserChanged, onOpenLeaderboard }: P
   }
 
   useEffect(() => {
-    void refreshWallet(false)
+    void refreshWallet(Boolean(initialWallet))
   }, [])
+
+  useEffect(() => {
+    if (wallet) onWalletLoaded?.(wallet)
+  }, [wallet])
 
   const exchangeAmount = Math.floor(Number(exchangeCoins || 0))
   const exchangeUsdt = wallet ? exchangeAmount / wallet.coinsPerUsdt : exchangeAmount / 100000
@@ -342,9 +348,10 @@ export default function Withdrawal({ user, onUserChanged, onOpenLeaderboard }: P
             <span>Coins</span>
             <strong>{(wallet?.coins || 0).toLocaleString('en-US')}</strong>
           </div>
-          <div>
+          <div className="wallet-price-box">
             <span>السعر</span>
-            <strong>1,000 → ${usdtPer1000.toFixed(2)}</strong>
+            <strong dir="ltr">1,000 Coins</strong>
+            <em dir="ltr">= ${usdtPer1000.toFixed(2)}</em>
           </div>
           <div>
             <span>إعلانات السحب</span>
@@ -383,7 +390,6 @@ export default function Withdrawal({ user, onUserChanged, onOpenLeaderboard }: P
           <strong>نظام الكوينز</strong>
           <p>كل مهمة قناة أو مجموعة تعطيك 50 Coins، ومهمة البوت تعطيك 80 Coins.</p>
         </div>
-        <span>{coinsPerUsdt >= 1000 ? `${Math.round(coinsPerUsdt / 1000)}K` : coinsPerUsdt} = $1</span>
       </section>
 
       <section className="wallet-unlock-card">

@@ -12,7 +12,7 @@ import SplashScreen from './components/SplashScreen'
 import AppModal from './components/AppModal'
 import BalanceBar from './components/BalanceBar'
 import { PawPrintIcon, CatFaceIcon } from './components/CatDecor'
-import { getMe, getTasks, getMyTasks, getAdsgramWatchStatus } from './lib/api'
+import { getMe, getTasks, getMyTasks, getAdsgramWatchStatus, getWallet, type WalletResponse } from './lib/api'
 import { applyTheme } from './lib/theme'
 import type { MeResponse, Task, User } from './lib/types'
 import './styles/app.css'
@@ -62,6 +62,7 @@ export default function App() {
   const [completedTaskIds, setCompletedTaskIds] = useState<string[]>([])
   const [myTasks, setMyTasks] = useState<Task[]>([])
   const [adsgramStatus, setAdsgramStatus] = useState<{ watched: number; remaining: number } | null>(null)
+  const [walletData, setWalletData] = useState<WalletResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const adsgramAutoRef = useRef<AdsgramController | null>(null)
@@ -157,18 +158,20 @@ export default function App() {
         return
       }
 
-      const [tasksResponse, myTasksResponse, adsgramStatusResult] = await Promise.all([
+      const [tasksResponse, myTasksResponse, adsgramStatusResult, walletResult] = await Promise.all([
         getTasks(),
         getMyTasks(),
         // بنجيبها هون كمان (مع بقية بيانات التحميل الأولي) حتى ما تظهر
         // "0/20" لحظيًا بشاشة الرئيسية وبعدين تتحدث للرقم الصح — منخليها
         // تتحمّل مع شاشة loading زي باقي البيانات.
-        getAdsgramWatchStatus().catch(() => null)
+        getAdsgramWatchStatus().catch(() => null),
+        getWallet().catch(() => null)
       ])
 
       setBrowseTasks(tasksResponse.tasks)
       setCompletedTaskIds(tasksResponse.completedTaskIds)
       setMyTasks(myTasksResponse.tasks)
+      if (walletResult) setWalletData(walletResult)
 
       if (adsgramStatusResult) {
         setAdsgramStatus({
@@ -324,7 +327,7 @@ export default function App() {
 
       interval = window.setInterval(() => {
         void showAutoAd()
-      }, 30000)
+      }, 50000)
     }, 3000)
 
     return () => {
@@ -443,6 +446,8 @@ export default function App() {
         {screen === 'withdrawal' && (
           <Withdrawal
             user={user}
+            initialWallet={walletData}
+            onWalletLoaded={setWalletData}
             onUserChanged={setUser}
             onOpenLeaderboard={() => setScreen('leaderboard')}
           />

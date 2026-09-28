@@ -799,3 +799,6 @@
 .wallet-exchange-modal .modal-button:disabled {
   opacity: 0.55;
 }
+
+.wallet-price-box strong{overflow:visible;text-overflow:clip;white-space:nowrap;font-size:11.5px}
+.wallet-price-box em{display:block;margin-top:3px;color:#70ddbd;font-family:ui-monospace,monospace;font-size:11px;font-style:normal;font-weight:900}
