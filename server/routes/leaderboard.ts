@@ -9,7 +9,7 @@ leaderboardRouter.get('/', authMiddleware, async (req, res, next) => {
     const { data: weekRows, error: weekError } = await supabase.rpc('get_baghdad_week_start')
     if (weekError) {
       // Fallback in case an older database has not loaded the migration yet.
-      if (!String(weekError.message || '').includes('does not exist')) throw weekError
+      console.warn('get_baghdad_week_start unavailable, using JS fallback')
     }
 
     let weekStart: string
