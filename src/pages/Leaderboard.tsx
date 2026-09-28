@@ -63,7 +63,7 @@ export default function Leaderboard({ onBack }: Props) {
       <section className="leaderboard-list-card">
         <div className="leaderboard-section-head">
           <div>
-            <span className="eyebrow">Top 50</span>
+            <span className="eyebrow">Top 10</span>
             <h2>أكثر المستخدمين إنجازًا</h2>
           </div>
           <small>Reset كل جمعة</small>

@@ -30,60 +30,28 @@ leaderboardRouter.get('/', authMiddleware, async (req, res, next) => {
       weekStart = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`
     }
 
-    const { data: rows, error } = await supabase
-      .from('weekly_task_leaderboard')
-      .select('user_id,telegram_id,username,first_name,task_count,updated_at')
-      .eq('week_start', weekStart)
-      .gt('task_count', 0)
-      .order('task_count', { ascending: false })
-      .order('updated_at', { ascending: true })
-      .limit(50)
+    const TOP_LIMIT = 10
+
+    const { data: rows, error } = await supabase.rpc('get_weekly_leaderboard', {
+      p_week_start: weekStart,
+      p_user_id: req.dbUser.id,
+      p_limit: TOP_LIMIT,
+    })
 
     if (error) throw error
 
-    const meTelegramId = req.dbUser.telegram_id
-    const list = (rows || []).map((row, index) => ({
-      rank: index + 1,
+    const all = (rows || []).map((row: any) => ({
+      rank: Number(row.rank),
       telegramId: String(row.telegram_id),
       name: row.username
         ? `@${row.username}`
         : row.first_name || `User ••••${String(row.telegram_id).slice(-4)}`,
       tasks: Number(row.task_count || 0),
-      isMe: Number(row.telegram_id) === Number(meTelegramId),
+      isMe: Number(row.telegram_id) === Number(req.dbUser.telegram_id),
     }))
 
-    let me = list.find((row) => row.isMe) || null
-
-    if (!me) {
-      const { data: meRow, error: meError } = await supabase
-        .from('weekly_task_leaderboard')
-        .select('telegram_id,username,first_name,task_count')
-        .eq('week_start', weekStart)
-        .eq('user_id', req.dbUser.id)
-        .maybeSingle()
-
-      if (meError) throw meError
-
-      if (meRow) {
-        const { count, error: countError } = await supabase
-          .from('weekly_task_leaderboard')
-          .select('user_id', { count: 'exact', head: true })
-          .eq('week_start', weekStart)
-          .gt('task_count', Number(meRow.task_count || 0))
-
-        if (countError) throw countError
-
-        me = {
-          rank: Number(count || 0) + 1,
-          telegramId: String(meRow.telegram_id),
-          name: meRow.username
-            ? `@${meRow.username}`
-            : meRow.first_name || `User ••••${String(meRow.telegram_id).slice(-4)}`,
-          tasks: Number(meRow.task_count || 0),
-          isMe: true,
-        }
-      }
-    }
+    const list = all.filter((row: any) => row.rank <= TOP_LIMIT)
+    const me = all.find((row: any) => row.isMe) || null
 
     res.json({
       success: true,
