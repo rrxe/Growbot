@@ -1,0 +1,80 @@
+.balance-bar {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  width: 100%;
+  max-width: 430px;
+  padding: max(8px, env(safe-area-inset-top)) 12px 6px;
+  background: linear-gradient(180deg, #071018 68%, rgba(7, 16, 24, 0));
+  pointer-events: none;
+}
+
+/* مساحة بالتدفق العادي بحجم الشريط عشان ما يغطي أعلى الصفحات */
+.balance-bar-spacer {
+  height: calc(62px + env(safe-area-inset-top));
+}
+
+.balance-bar-inner {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.3fr;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid rgba(192, 216, 229, 0.07);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(6, 14, 22, 0.92), rgba(6, 14, 22, 0.78));
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
+  color: inherit;
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  pointer-events: auto;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.balance-chip {
+  min-width: 0;
+  padding: 6px 4px;
+  border-radius: 11px;
+  background: rgba(13, 27, 39, 0.72);
+  border: 1px solid rgba(178, 208, 223, 0.06);
+}
+
+.balance-chip span,
+.balance-chip strong {
+  display: block;
+}
+
+.balance-chip span {
+  color: var(--storm-muted);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.balance-chip strong {
+  margin-top: 3px;
+  color: var(--storm-text);
+  font-family: ui-monospace, monospace;
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.balance-chip--points strong {
+  color: var(--storm-blue);
+}
+
+.balance-chip--coins strong {
+  color: #f4cb62;
+}
+
+.balance-chip--usdt strong {
+  color: #70ddbd;
+}

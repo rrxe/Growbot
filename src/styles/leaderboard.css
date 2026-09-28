@@ -1,0 +1,215 @@
+.leaderboard-page {
+  padding-bottom: 30px;
+}
+
+.leaderboard-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.leaderboard-back {
+  border: 1px solid var(--storm-border);
+  border-radius: 11px;
+  background: var(--storm-surface-3);
+  color: var(--storm-muted);
+  padding: 9px 10px;
+  font-size: 9px;
+}
+
+.leaderboard-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 15px;
+  border-radius: 18px;
+  border: 1px solid var(--storm-border);
+  background:
+    radial-gradient(100% 130% at 0% 0%, rgba(var(--storm-blue-rgb), .09), transparent 55%),
+    var(--storm-surface-3);
+}
+
+.leaderboard-crown {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: rgba(var(--storm-blue-rgb), .1);
+  font-size: 23px;
+}
+
+.leaderboard-hero-card span,
+.leaderboard-hero-card small,
+.leaderboard-me-card span,
+.leaderboard-me-card small {
+  color: var(--storm-muted);
+  font-size: 9px;
+}
+
+.leaderboard-hero-card strong,
+.leaderboard-hero-card small {
+  display: block;
+}
+
+.leaderboard-hero-card strong {
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.leaderboard-hero-card small {
+  margin-top: 3px;
+}
+
+.leaderboard-me-card {
+  display: grid;
+  grid-template-columns: auto 45px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 13px;
+  border-radius: 15px;
+  border: 1px solid rgba(var(--storm-blue-rgb), .18);
+  background: rgba(var(--storm-blue-rgb), .06);
+}
+
+.leaderboard-me-card > strong {
+  color: var(--storm-blue);
+  font-family: ui-monospace, monospace;
+  font-size: 20px;
+}
+
+.leaderboard-me-card b,
+.leaderboard-me-card small {
+  display: block;
+}
+
+.leaderboard-me-card b {
+  font-size: 10px;
+}
+
+.leaderboard-me-card small {
+  margin-top: 2px;
+}
+
+.leaderboard-list-card {
+  margin-top: 12px;
+  border: 1px solid var(--storm-border);
+  border-radius: 18px;
+  background: var(--storm-surface-3);
+  overflow: hidden;
+}
+
+.leaderboard-section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--storm-border);
+}
+
+.leaderboard-section-head h2 {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+
+.leaderboard-section-head > small {
+  color: var(--storm-muted);
+  font-size: 8px;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 30px 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 13px;
+  border-bottom: 1px solid var(--storm-border);
+}
+
+.leaderboard-row:last-child {
+  border-bottom: 0;
+}
+
+.leaderboard-row.me {
+  background: rgba(var(--storm-blue-rgb), .055);
+}
+
+.leaderboard-rank {
+  color: var(--storm-muted);
+  text-align: center;
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.leaderboard-rank.rank-1,
+.leaderboard-rank.rank-2,
+.leaderboard-rank.rank-3 {
+  font-size: 16px;
+}
+
+.leaderboard-avatar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--storm-surface-2);
+  color: var(--storm-blue);
+  border: 1px solid var(--storm-border);
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.leaderboard-user {
+  min-width: 0;
+}
+
+.leaderboard-user strong,
+.leaderboard-user span,
+.leaderboard-tasks strong,
+.leaderboard-tasks span {
+  display: block;
+}
+
+.leaderboard-user strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10.5px;
+}
+
+.leaderboard-user span,
+.leaderboard-tasks span {
+  margin-top: 2px;
+  color: var(--storm-muted);
+  font-size: 8px;
+}
+
+.leaderboard-tasks {
+  text-align: left;
+}
+
+.leaderboard-tasks strong {
+  color: var(--storm-blue);
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+}
+
+.leaderboard-empty,
+.leaderboard-note {
+  color: var(--storm-muted);
+  text-align: center;
+  font-size: 9px;
+}
+
+.leaderboard-empty {
+  padding: 26px 14px;
+}
+
+.leaderboard-note {
+  margin: 10px 3px 0;
+  line-height: 1.7;
+}

@@ -1,0 +1,11 @@
+--- server/lib/required-channels.ts
++++ server/lib/required-channels.ts
+@@ -60,7 +60,7 @@
+       const joined =
+         member.status === 'member' ||
+         member.status === 'administrator' ||
+         member.status === 'creator' ||
+-        (member.status === 'restricted' && member.is_member === true)
++        (member.status === 'restricted' && (member as { is_member?: boolean }).is_member === true)
+ 
+       return {
