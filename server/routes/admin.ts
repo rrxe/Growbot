@@ -4,7 +4,7 @@ import { adminMiddleware } from '../lib/admin-auth.js'
 import { clearSettingsCache } from '../lib/settings.js'
 
 import { supabase } from '../lib/supabase.js'
-import { broadcastToUsers } from '../lib/telegram-send.js'
+import { broadcastToUsers, sendTelegramMessage } from '../lib/telegram-send.js'
 import { getChat, getChatMember, getMe as getTelegramMe } from '../lib/telegram.js'
 
 export const adminRouter =
@@ -341,6 +341,61 @@ adminRouter.post(
         p_request_id: id,
       })
       if (error) throw error
+
+      // Send approved withdrawal announcement to the payouts channel.
+      // The bot must be an administrator in @SLYMintX_payment.
+      try {
+        const { data: withdrawal, error: withdrawalError } = await supabase
+          .from('withdrawal_requests')
+          .select('telegram_id, username, first_name, amount_usdt, gram_address')
+          .eq('id', id)
+          .single()
+
+        if (withdrawalError) throw withdrawalError
+
+        const userLabel = withdrawal.username
+          ? `@${withdrawal.username.replace(/^@/, '')}`
+          : (withdrawal.first_name?.trim() || `ID ${withdrawal.telegram_id}`)
+
+        const amount = Number(withdrawal.amount_usdt || 0).toFixed(4)
+
+        const message = [
+          '✅ WITHDRAWAL APPROVED',
+          '',
+          `👤 User: ${userLabel}`,
+          '',
+          '💰 Amount',
+          `${amount} USDT`,
+          '',
+          '📤 Payment Method',
+          'GRAM Wallet (TON)',
+          '',
+          '💳 Wallet Address',
+          withdrawal.gram_address || '—',
+          '',
+          '🚀 Payment has been sent successfully.',
+          '',
+          '🤖 Bot: @Freegramerbot',
+        ].join('\\n')
+
+        const channelResult = await sendTelegramMessage(
+          '@SLYMintX_payment',
+          message
+        )
+
+        if (!channelResult.ok) {
+          console.error(
+            '[withdrawal:channel_notify]',
+            channelResult.error
+          )
+        }
+      } catch (notifyError) {
+        // Do not undo an already-approved withdrawal if channel posting fails.
+        console.error(
+          '[withdrawal:channel_notify]',
+          notifyError
+        )
+      }
 
       res.json({ success: true, ...(data || {}) })
     } catch (error) {

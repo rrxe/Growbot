@@ -1,10 +1,10 @@
 // Global AdsGram surface lock, copied in spirit from SLYMintX.
-// Manual/reward ads keep a 12s cooldown; automatic int ads are exempt.
+// Manual/reward ads keep a 10s cooldown; automatic int ads are exempt.
 let globalAdLock = false;
 let lastAdEndedAt = 0;
 let lockAcquiredAt = 0;
 
-export const MIN_GAP_BETWEEN_ADS_MS = 12000;
+export const MIN_GAP_BETWEEN_ADS_MS = 10000;
 const ASSUMED_MAX_AD_DURATION_MS = 30000;
 
 // إذا القفل انعلق (مثلاً controller.show() ما رجعت نتيجة إطلاقًا --

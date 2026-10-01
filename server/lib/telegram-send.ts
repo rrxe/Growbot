@@ -3,7 +3,7 @@ import { config } from './config.js'
 // إرسال مباشر عبر Telegram Bot API، بدون الحاجة لتحميل grammY كامل
 // بروتة الإدارة — كافي لرسالة واحدة أو broadcast متسلسل.
 export async function sendTelegramMessage(
-  chatId: number,
+  chatId: number | string,
   text: string,
   replyMarkup?: unknown
 ): Promise<{ ok: boolean; error?: string }> {
