@@ -183,7 +183,7 @@ export function Profile({
 
   const totalInvited = referral?.total_invited ?? 0
   const successfulReferrals = referral?.successful_referrals ?? 0
-  const referralPrice = referral?.reward_points ?? 50
+  const referralPrice = referral?.reward_points ?? 500
 
   const referralSuccessRate =
     totalInvited > 0
@@ -284,12 +284,12 @@ export function Profile({
         </span>
 
         <h2>
-          ادعُ صديقًا واربح {referralPrice} نقطة
+          ادعُ صديقًا واربح {referralPrice.toLocaleString('en-US')} Coins
         </h2>
 
         <p>
           بعد دخول صديقك من رابطك وتنفيذه {referral?.required_tasks ?? 5} مهام،
-          تحصل أنت على {referralPrice} نقطة إضافية.
+          تحصل أنت على {referralPrice.toLocaleString('en-US')} Coins إضافية.
         </p>
 
         <div className="referral-stats-row">
@@ -304,8 +304,8 @@ export function Profile({
           </div>
 
           <div className="referral-stat-box referral-stat-price">
-            <strong>+{referralPrice}</strong>
-            <span>نقطة لكل إحالة</span>
+            <strong>+{referralPrice.toLocaleString('en-US')}</strong>
+            <span>Coins لكل إحالة</span>
           </div>
         </div>
 

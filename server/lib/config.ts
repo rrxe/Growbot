@@ -37,7 +37,7 @@ export const config = {
     numberEnv('POINTS_PER_USD', 500),
 
   referralReward:
-    numberEnv('REFERRAL_REWARD', 50),
+    numberEnv('REFERRAL_REWARD', 500),
 
   dailyCheckinPoints:
     numberEnv('DAILY_CHECKIN_POINTS', 20),
