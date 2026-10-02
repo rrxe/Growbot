@@ -224,28 +224,24 @@ export function Tasks({
       const expectedCoins = task.type === 'bot' ? 130 : 100
       const coinsBefore = Number(user.coins || 0)
 
-      const latest = await getMe().catch(() => null)
-
-      let coinsGained = expectedCoins
-
-      if (latest?.user) {
-        // نعرض الكوينز الفعلية اللي انضافت بالداتابيز (مو رقم ثابت)
-        coinsGained = Math.max(0, Number(latest.user.coins || 0) - coinsBefore)
-        onUserChanged(latest.user)
-      } else {
-        onUserChanged({
-          ...user,
-          points: response.userPoints,
-          completed_tasks: user.completed_tasks + 1,
-          coins: coinsBefore + expectedCoins
-        })
-      }
+      // تحديث محلي فوري + عرض الرسالة بدون انتظار السيرفر
+      onUserChanged({
+        ...user,
+        points: response.userPoints,
+        completed_tasks: user.completed_tasks + 1,
+        coins: coinsBefore + expectedCoins
+      })
 
       showAlert(
-        coinsGained > 0
-          ? `تم التحقق بنجاح ✅\n\n+${response.completion.rewardPoints} نقطة + ${coinsGained.toLocaleString('en-US')} Coins\nسيعاد فحص العضوية بعد 10 ساعات.`
-          : `تم التحقق بنجاح ✅\n\n+${response.completion.rewardPoints} نقطة\nسيعاد فحص العضوية بعد 10 ساعات.`
+        `تم التحقق بنجاح ✅\n\n+${response.completion.rewardPoints} نقطة + ${expectedCoins.toLocaleString('en-US')} Coins\nسيعاد فحص العضوية بعد 10 ساعات.`
       )
+
+      // مزامنة الرصيد الحقيقي بالخلفية
+      getMe()
+        .then((latest) => {
+          if (latest?.user) onUserChanged(latest.user)
+        })
+        .catch(() => {})
     } catch (error) {
       hapticError()
 

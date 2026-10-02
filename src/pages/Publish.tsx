@@ -288,6 +288,25 @@ export function Publish({
       </div>
 
 
+      <div className="publish-warning">
+
+        <div className="warning-icon">
+          🪙
+        </div>
+
+        <div>
+          <strong>
+            مكافأة الناشر
+          </strong>
+
+          <p>
+            عن كل شخص ينفذ مهمتك تحصل أنت على مكافأة عشوائية من 2 إلى 5 Coins تضاف لرصيدك تلقائيًا.
+          </p>
+        </div>
+
+      </div>
+
+
       {tasksSinceLastPublish < MIN_TASKS_TO_PUBLISH && (
         <div className="publish-warning">
 
