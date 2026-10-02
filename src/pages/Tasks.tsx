@@ -221,7 +221,7 @@ export function Tasks({
         task.id
       ])
 
-      const expectedCoins = task.type === 'bot' ? 80 : 50
+      const expectedCoins = task.type === 'bot' ? 130 : 100
       const coinsBefore = Number(user.coins || 0)
 
       const latest = await getMe().catch(() => null)
