@@ -328,7 +328,7 @@ export default function App() {
       interval = window.setInterval(() => {
         void showAutoAd()
       }, 30000)
-    }, 3000)
+    }, 5000)
 
     return () => {
       cancelled = true
