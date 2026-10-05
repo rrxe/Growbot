@@ -92,6 +92,7 @@ as $$
 declare
   v_ref public.referrals%rowtype;
   v_is_duplicate boolean;
+  v_new_coins bigint;
 begin
   -- لا تحتسب الإحالة ولا تمنح صاحبها مكافأة
   -- إذا كان الحساب المُحال مكررًا
@@ -125,13 +126,25 @@ begin
     set rewarded = true
     where id = v_ref.id;
 
-    perform public.adjust_user_points(
-      v_ref.referrer_id,
-      v_ref.reward_points,
-      'referral_reward',
-      v_ref.id,
-      'مكافأة إحالة صديق بعد إكمال المهام المطلوبة'
-    );
+    update public.users
+    set coins = coins + v_ref.reward_points,
+        last_seen_at = now()
+    where id = v_ref.referrer_id
+    returning coins into v_new_coins;
+
+    if found then
+      insert into public.coin_transactions(
+        user_id, amount, balance_after, transaction_type,
+        reference_id, description
+      ) values (
+        v_ref.referrer_id,
+        v_ref.reward_points,
+        v_new_coins,
+        'referral_reward',
+        v_ref.id,
+        'مكافأة إحالة صديق (Coins) بعد إكمال المهام المطلوبة'
+      );
+    end if;
   end if;
 end;
 $$;
