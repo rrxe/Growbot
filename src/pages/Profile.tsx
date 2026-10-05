@@ -183,7 +183,7 @@ export function Profile({
 
   const totalInvited = referral?.total_invited ?? 0
   const successfulReferrals = referral?.successful_referrals ?? 0
-  const referralPrice = referral?.reward_points ?? 500
+  const referralPrice = referral?.reward_points ?? 2500
 
   const referralSuccessRate =
     totalInvited > 0
